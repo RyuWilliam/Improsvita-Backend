@@ -5,6 +5,11 @@
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/improsvita/improsvita" />
         <option name="gradleJvm" value="#JAVA_HOME" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/improsvita/improsvita" />
+          </set>
+        </option>
       </GradleProjectSettings>
     </option>
   </component>
