@@ -1,0 +1,13 @@
+﻿# IDE
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Gradle
+.gradle/
+build/
+
+# OS
+Thumbs.db
+.DS_Store
