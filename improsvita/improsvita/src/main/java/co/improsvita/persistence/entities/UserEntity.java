@@ -28,27 +28,14 @@ public class UserEntity {
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Favorite> favorites;
-
     public UserEntity() {
-    }
-
-    public UserEntity(Integer id, String name, String email, String password, Role role, List<Token> tokens, List<Favorite> favorites) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.tokens = tokens;
-        this.favorites = favorites;
     }
 
     public UserEntity(String name, String email, String password, Role role) {
         this.name = name;
         this.email = email;
-        this.role = role;
         this.password = password;
+        this.role = role;
     }
 
     public Integer getId() {
@@ -97,13 +84,5 @@ public class UserEntity {
 
     public void setTokens(List<Token> tokens) {
         this.tokens = tokens;
-    }
-
-    public List<Favorite> getFavorites() {
-        return favorites;
-    }
-
-    public void setFavorites(List<Favorite> favorites) {
-        this.favorites = favorites;
     }
 }
