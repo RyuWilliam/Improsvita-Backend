@@ -24,8 +24,8 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
 
     private static final String ADMIN = "ADMIN";
-    private static final String VENDEDOR = "VENDEDOR";
-    private static final String CLIENTE = "CLIENTE";
+    private static final String SELLER = "SELLER";
+    private static final String USER = "USER";
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
                           UserDetailsService userDetailsService) {
