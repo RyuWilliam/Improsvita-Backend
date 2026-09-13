@@ -1,4 +1,4 @@
-package co.improsvita.improsvita;
+package co.improsvita;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
