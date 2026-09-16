@@ -1,5 +1,6 @@
 package co.improsvita.persistence.entities;
 
+import co.improsvita.persistence.enums.SeedType;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -21,17 +22,16 @@ public class SeedEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private String variety;
-
-    @Column(nullable = false)
-    private String supplier;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id", nullable = false)
+    private SupplierEntity supplier;
 
     @Column(nullable = false)
     private Integer quantity;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "seed_type")
-    private String type;
+    private SeedType type;
 
     @Column(name = "acquisition_date")
     private LocalDate acquisitionDate;
@@ -51,12 +51,10 @@ public class SeedEntity {
     private Boolean active = true;
 
     public SeedEntity() {
-        // Required by JPA
     }
 
-    public SeedEntity(String name, String variety, String supplier, Integer quantity, String type, LocalDate acquisitionDate, LocalDate expirationDate) {
+    public SeedEntity(String name, SupplierEntity supplier, Integer quantity, SeedType type, LocalDate acquisitionDate, LocalDate expirationDate) {
         this.name = name;
-        this.variety = variety;
         this.supplier = supplier;
         this.quantity = quantity;
         this.type = type;
@@ -81,19 +79,11 @@ public class SeedEntity {
         this.name = name;
     }
 
-    public String getVariety() {
-        return variety;
-    }
-
-    public void setVariety(String variety) {
-        this.variety = variety;
-    }
-
-    public String getSupplier() {
+    public SupplierEntity getSupplier() {
         return supplier;
     }
 
-    public void setSupplier(String supplier) {
+    public void setSupplier(SupplierEntity supplier) {
         this.supplier = supplier;
     }
 
@@ -105,11 +95,11 @@ public class SeedEntity {
         this.quantity = quantity;
     }
 
-    public String getType() {
+    public SeedType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(SeedType type) {
         this.type = type;
     }
 
