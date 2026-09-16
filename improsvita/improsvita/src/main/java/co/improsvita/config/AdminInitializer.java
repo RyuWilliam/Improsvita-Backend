@@ -28,7 +28,6 @@ public class AdminInitializer implements CommandLineRunner {
                     Role.ADMIN
             );
             userRepository.save(admin);
-            System.out.println("Admin creado: admin@improsvita.com / admin123");
         }
     }
 }
