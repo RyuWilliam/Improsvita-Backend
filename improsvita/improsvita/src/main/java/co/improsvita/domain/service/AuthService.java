@@ -1,4 +1,4 @@
-package co.improsvita.service;
+package co.improsvita.domain.service;
 
 import co.improsvita.config.security.JwtService;
 import co.improsvita.config.security.UserDetailsImpl;
