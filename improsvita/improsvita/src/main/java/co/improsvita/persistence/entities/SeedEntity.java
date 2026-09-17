@@ -6,7 +6,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -34,10 +33,10 @@ public class SeedEntity {
     private SeedType type;
 
     @Column(name = "acquisition_date")
-    private LocalDate acquisitionDate;
+    private LocalDateTime acquisitionDate;
 
     @Column(name = "expiration_date")
-    private LocalDate expirationDate;
+    private LocalDateTime expirationDate;
 
     @CreatedDate
     @Column(name = "created_date", updatable = false)
@@ -53,15 +52,7 @@ public class SeedEntity {
     public SeedEntity() {
     }
 
-    public SeedEntity(String name, SupplierEntity supplier, Integer quantity, SeedType type, LocalDate acquisitionDate, LocalDate expirationDate) {
-        this.name = name;
-        this.supplier = supplier;
-        this.quantity = quantity;
-        this.type = type;
-        this.acquisitionDate = acquisitionDate;
-        this.expirationDate = expirationDate;
-        this.active = true;
-    }
+
 
     public Integer getSeedId() {
         return seedId;
@@ -103,19 +94,33 @@ public class SeedEntity {
         this.type = type;
     }
 
-    public LocalDate getAcquisitionDate() {
+
+    public SeedEntity(Integer seedId, String name, SupplierEntity supplier, Integer quantity, SeedType type, LocalDateTime acquisitionDate, LocalDateTime expirationDate, LocalDateTime createdDate, LocalDateTime lastUpdated, Boolean active) {
+        this.seedId = seedId;
+        this.name = name;
+        this.supplier = supplier;
+        this.quantity = quantity;
+        this.type = type;
+        this.acquisitionDate = acquisitionDate;
+        this.expirationDate = expirationDate;
+        this.createdDate = createdDate;
+        this.lastUpdated = lastUpdated;
+        this.active = active;
+    }
+
+    public LocalDateTime getAcquisitionDate() {
         return acquisitionDate;
     }
 
-    public void setAcquisitionDate(LocalDate acquisitionDate) {
+    public void setAcquisitionDate(LocalDateTime acquisitionDate) {
         this.acquisitionDate = acquisitionDate;
     }
 
-    public LocalDate getExpirationDate() {
+    public LocalDateTime getExpirationDate() {
         return expirationDate;
     }
 
-    public void setExpirationDate(LocalDate expirationDate) {
+    public void setExpirationDate(LocalDateTime expirationDate) {
         this.expirationDate = expirationDate;
     }
 

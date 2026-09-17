@@ -1,6 +1,6 @@
 package co.improsvita.web.controller;
 
-import co.improsvita.service.AuthService;
+import co.improsvita.domain.service.AuthService;
 import co.improsvita.web.dto.AuthResponse;
 import co.improsvita.web.dto.LoginRequest;
 import co.improsvita.web.dto.RegisterRequest;
