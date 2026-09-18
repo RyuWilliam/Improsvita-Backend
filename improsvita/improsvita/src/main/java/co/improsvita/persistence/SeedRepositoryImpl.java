@@ -22,6 +22,14 @@ public class SeedRepositoryImpl implements SeedRepository {
     }
 
     @Override
+    public List<Seed> getAll() {
+        return seedJpaRepository.findAll()
+                .stream()
+                .map(SeedMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Seed getById(Integer id) {
         return seedJpaRepository.findById(id)
                 .map(SeedMapper::toDomain)
