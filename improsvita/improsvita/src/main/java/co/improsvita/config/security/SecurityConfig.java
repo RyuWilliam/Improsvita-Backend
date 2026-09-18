@@ -65,17 +65,14 @@ public class SecurityConfig {
                         // Swagger / docs
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
-                        // GETs públicos (catálogos, info general)
-                        .requestMatchers(HttpMethod.GET, "/api/semillas/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/plantas/**").permitAll()
-
-                        // GETs autenticados (cualquier rol logueado)
-                        .requestMatchers(HttpMethod.GET, "/api/**").authenticated()
+                        // Seeds y Suppliers - GETs públicos
+                        .requestMatchers(HttpMethod.GET, "/seeds/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/suppliers/**").permitAll()
 
                         // POST/PUT/DELETE solo ADMIN
-                        .requestMatchers(HttpMethod.POST, "/api/**").hasRole(ADMIN)
-                        .requestMatchers(HttpMethod.PUT, "/api/**").hasRole(ADMIN)
-                        .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole(ADMIN)
+                        .requestMatchers(HttpMethod.POST, "/**").hasRole(ADMIN)
+                        .requestMatchers(HttpMethod.PUT, "/**").hasRole(ADMIN)
+                        .requestMatchers(HttpMethod.DELETE, "/**").hasRole(ADMIN)
 
                         // Cualquier otra cosa autenticada
                         .anyRequest().authenticated()

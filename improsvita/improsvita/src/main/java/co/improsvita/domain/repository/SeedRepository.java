@@ -6,6 +6,7 @@ import co.improsvita.domain.model.Seed;
 import java.util.List;
 
 public interface SeedRepository {
+    List<Seed> getAll();
     Seed getById(Integer id);
     Seed getByName(String name);
     Seed save(Seed seed);
