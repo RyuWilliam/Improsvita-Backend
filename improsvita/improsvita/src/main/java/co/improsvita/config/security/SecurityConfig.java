@@ -61,7 +61,9 @@ public class SecurityConfig {
         configuration.setAllowedOriginPatterns(Arrays.asList(
                 "http://localhost:*",
                 "https://*.ngrok-free.dev",
-                "https://*.ngrok.io"
+                "https://*.ngrok.io",
+                "https://improsvita-frontend.vercel.app",
+                "https://*.vercel.app"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
