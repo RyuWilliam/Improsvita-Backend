@@ -6,6 +6,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -25,6 +26,9 @@ public class SupplierEntity {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @OneToMany(mappedBy = "supplier")
+    private List<SeedLotEntity> lots;
 
     @CreatedDate
     @Column(name = "created_date", updatable = false)
@@ -77,6 +81,14 @@ public class SupplierEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<SeedLotEntity> getLots() {
+        return lots;
+    }
+
+    public void setLots(List<SeedLotEntity> lots) {
+        this.lots = lots;
     }
 
     public LocalDateTime getCreatedDate() {
