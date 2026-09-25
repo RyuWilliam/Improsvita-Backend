@@ -28,7 +28,7 @@ public class SupplierEntity {
     private String email;
 
     @OneToMany(mappedBy = "supplier")
-    private List<SeedLotEntity> lots;
+    private List<SeedEntity> seeds;
 
     @CreatedDate
     @Column(name = "created_date", updatable = false)
@@ -83,12 +83,12 @@ public class SupplierEntity {
         this.email = email;
     }
 
-    public List<SeedLotEntity> getLots() {
-        return lots;
+    public List<SeedEntity> getSeeds() {
+        return seeds;
     }
 
-    public void setLots(List<SeedLotEntity> lots) {
-        this.lots = lots;
+    public void setSeeds(List<SeedEntity> seeds) {
+        this.seeds = seeds;
     }
 
     public LocalDateTime getCreatedDate() {

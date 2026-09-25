@@ -23,10 +23,6 @@ public class SeedLotEntity {
     @JoinColumn(name = "seed_id", nullable = false)
     private SeedEntity seed;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "supplier_id", nullable = false)
-    private SupplierEntity supplier;
-
     @Column(name = "entry_date")
     private LocalDate entryDate;
 
@@ -71,14 +67,6 @@ public class SeedLotEntity {
 
     public void setSeed(SeedEntity seed) {
         this.seed = seed;
-    }
-
-    public SupplierEntity getSupplier() {
-        return supplier;
-    }
-
-    public void setSupplier(SupplierEntity supplier) {
-        this.supplier = supplier;
     }
 
     public LocalDate getEntryDate() {
