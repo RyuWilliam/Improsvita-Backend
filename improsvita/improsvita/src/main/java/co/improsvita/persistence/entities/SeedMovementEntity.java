@@ -7,13 +7,18 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "transaction_movements")
-public class TransactionMovementEntity {
+@Table(name = "seed_movement",
+        indexes = {@Index(columnList = "lot_id"), @Index(columnList = "movement_date")})
+public class SeedMovementEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "transaction_id")
     private Integer transactionId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id")
+    private SupplierEntity supplier;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lot_id", nullable = false)
@@ -32,7 +37,7 @@ public class TransactionMovementEntity {
     @Column(length = 500)
     private String reason;
 
-    public TransactionMovementEntity() {
+    public SeedMovementEntity() {
     }
 
     public Integer getTransactionId() {
@@ -41,6 +46,14 @@ public class TransactionMovementEntity {
 
     public void setTransactionId(Integer transactionId) {
         this.transactionId = transactionId;
+    }
+
+    public SupplierEntity getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(SupplierEntity supplier) {
+        this.supplier = supplier;
     }
 
     public SeedLotEntity getSeedLot() {

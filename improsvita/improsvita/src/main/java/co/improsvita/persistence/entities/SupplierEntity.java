@@ -27,8 +27,11 @@ public class SupplierEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SeedSupplierEntity> seedSuppliers;
+
     @OneToMany(mappedBy = "supplier")
-    private List<SeedEntity> seeds;
+    private List<SeedMovementEntity> movements;
 
     @CreatedDate
     @Column(name = "created_date", updatable = false)
@@ -83,12 +86,20 @@ public class SupplierEntity {
         this.email = email;
     }
 
-    public List<SeedEntity> getSeeds() {
-        return seeds;
+    public List<SeedSupplierEntity> getSeedSuppliers() {
+        return seedSuppliers;
     }
 
-    public void setSeeds(List<SeedEntity> seeds) {
-        this.seeds = seeds;
+    public void setSeedSuppliers(List<SeedSupplierEntity> seedSuppliers) {
+        this.seedSuppliers = seedSuppliers;
+    }
+
+    public List<SeedMovementEntity> getMovements() {
+        return movements;
+    }
+
+    public void setMovements(List<SeedMovementEntity> movements) {
+        this.movements = movements;
     }
 
     public LocalDateTime getCreatedDate() {

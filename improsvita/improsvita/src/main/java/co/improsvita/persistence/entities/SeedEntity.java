@@ -22,16 +22,15 @@ public class SeedEntity {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "supplier_id", nullable = false)
-    private SupplierEntity supplier;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "seed_type")
     private SeedType type;
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @OneToMany(mappedBy = "seed", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SeedSupplierEntity> seedSuppliers;
 
     @OneToMany(mappedBy = "seed", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SeedLotEntity> lots;
@@ -50,10 +49,9 @@ public class SeedEntity {
     public SeedEntity() {
     }
 
-    public SeedEntity(Integer seedId, String name, SupplierEntity supplier, SeedType type, String description, LocalDateTime createdDate, LocalDateTime lastUpdated, Boolean active) {
+    public SeedEntity(Integer seedId, String name, SeedType type, String description, LocalDateTime createdDate, LocalDateTime lastUpdated, Boolean active) {
         this.seedId = seedId;
         this.name = name;
-        this.supplier = supplier;
         this.type = type;
         this.description = description;
         this.createdDate = createdDate;
@@ -77,14 +75,6 @@ public class SeedEntity {
         this.name = name;
     }
 
-    public SupplierEntity getSupplier() {
-        return supplier;
-    }
-
-    public void setSupplier(SupplierEntity supplier) {
-        this.supplier = supplier;
-    }
-
     public SeedType getType() {
         return type;
     }
@@ -99,6 +89,14 @@ public class SeedEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<SeedSupplierEntity> getSeedSuppliers() {
+        return seedSuppliers;
+    }
+
+    public void setSeedSuppliers(List<SeedSupplierEntity> seedSuppliers) {
+        this.seedSuppliers = seedSuppliers;
     }
 
     public List<SeedLotEntity> getLots() {

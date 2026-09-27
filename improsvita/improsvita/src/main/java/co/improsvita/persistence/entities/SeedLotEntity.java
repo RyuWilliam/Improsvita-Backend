@@ -8,7 +8,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Table(name = "seed_lots")
+@Table(name = "seed_lots",
+        indexes = {@Index(columnList = "seed_id"), @Index(columnList = "location_id")})
 public class SeedLotEntity {
 
     @Id
@@ -22,6 +23,10 @@ public class SeedLotEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seed_id", nullable = false)
     private SeedEntity seed;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "location_id", nullable = false)
+    private LocationEntity location;
 
     @Column(name = "entry_date")
     private LocalDate entryDate;
@@ -40,7 +45,7 @@ public class SeedLotEntity {
     private SeedLotStatus status;
 
     @OneToMany(mappedBy = "seedLot", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TransactionMovementEntity> movements;
+    private List<SeedMovementEntity> movements;
 
     public SeedLotEntity() {
     }
@@ -67,6 +72,14 @@ public class SeedLotEntity {
 
     public void setSeed(SeedEntity seed) {
         this.seed = seed;
+    }
+
+    public LocationEntity getLocation() {
+        return location;
+    }
+
+    public void setLocation(LocationEntity location) {
+        this.location = location;
     }
 
     public LocalDate getEntryDate() {
@@ -109,11 +122,11 @@ public class SeedLotEntity {
         this.status = status;
     }
 
-    public List<TransactionMovementEntity> getMovements() {
+    public List<SeedMovementEntity> getMovements() {
         return movements;
     }
 
-    public void setMovements(List<TransactionMovementEntity> movements) {
+    public void setMovements(List<SeedMovementEntity> movements) {
         this.movements = movements;
     }
 }
