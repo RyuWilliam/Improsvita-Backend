@@ -1,29 +1,25 @@
 package co.improsvita.web.dto;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
 
 public class SeedResponse {
 
     private Integer id;
     private String name;
-    private SupplierResponse supplier;
-    private Integer quantity;
     private String type;
-    private LocalDateTime acquisitionDate;
-    private LocalDateTime expirationDate;
+    private String description;
+    private BigDecimal totalAvailable;
     private Boolean active;
 
     public SeedResponse() {
     }
 
-    public SeedResponse(Integer id, String name, SupplierResponse supplier, Integer quantity, String type, LocalDateTime acquisitionDate, LocalDateTime expirationDate, Boolean active) {
+    public SeedResponse(Integer id, String name, String type, String description, BigDecimal totalAvailable, Boolean active) {
         this.id = id;
         this.name = name;
-        this.supplier = supplier;
-        this.quantity = quantity;
         this.type = type;
-        this.acquisitionDate = acquisitionDate;
-        this.expirationDate = expirationDate;
+        this.description = description;
+        this.totalAvailable = totalAvailable;
         this.active = active;
     }
 
@@ -43,22 +39,6 @@ public class SeedResponse {
         this.name = name;
     }
 
-    public SupplierResponse getSupplier() {
-        return supplier;
-    }
-
-    public void setSupplier(SupplierResponse supplier) {
-        this.supplier = supplier;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
     public String getType() {
         return type;
     }
@@ -67,20 +47,20 @@ public class SeedResponse {
         this.type = type;
     }
 
-    public LocalDateTime getAcquisitionDate() {
-        return acquisitionDate;
+    public String getDescription() {
+        return description;
     }
 
-    public void setAcquisitionDate(LocalDateTime acquisitionDate) {
-        this.acquisitionDate = acquisitionDate;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public LocalDateTime getExpirationDate() {
-        return expirationDate;
+    public BigDecimal getTotalAvailable() {
+        return totalAvailable;
     }
 
-    public void setExpirationDate(LocalDateTime expirationDate) {
-        this.expirationDate = expirationDate;
+    public void setTotalAvailable(BigDecimal totalAvailable) {
+        this.totalAvailable = totalAvailable;
     }
 
     public Boolean getActive() {
