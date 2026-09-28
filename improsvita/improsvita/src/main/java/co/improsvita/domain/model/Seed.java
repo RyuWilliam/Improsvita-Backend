@@ -1,36 +1,25 @@
 package co.improsvita.domain.model;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
 
 public class Seed {
 
-    public enum SeedType {
-        HYBRID,
-        TRADITIONAL,
-        MODIFIED
-    }
-
     private Integer id;
     private String name;
-    private Supplier supplier;
-    private Integer quantity;
     private SeedType type;
-    private LocalDateTime acquisitionDate;
-    private LocalDateTime expirationDate;
-
+    private String description;
     private Boolean active;
+
+    private BigDecimal totalAvailable;
 
     public Seed() {
     }
 
-    public Seed(Integer id, String name, Supplier supplier, Integer quantity, SeedType type, LocalDateTime acquisitionDate, LocalDateTime expirationDate, Boolean active) {
+    public Seed(Integer id, String name, SeedType type, String description, Boolean active) {
         this.id = id;
         this.name = name;
-        this.supplier = supplier;
-        this.quantity = quantity;
         this.type = type;
-        this.acquisitionDate = acquisitionDate;
-        this.expirationDate = expirationDate;
+        this.description = description;
         this.active = active;
     }
 
@@ -50,22 +39,6 @@ public class Seed {
         this.name = name;
     }
 
-    public Supplier getSupplier() {
-        return supplier;
-    }
-
-    public void setSupplier(Supplier supplier) {
-        this.supplier = supplier;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
     public SeedType getType() {
         return type;
     }
@@ -74,20 +47,12 @@ public class Seed {
         this.type = type;
     }
 
-    public LocalDateTime getAcquisitionDate() {
-        return acquisitionDate;
+    public String getDescription() {
+        return description;
     }
 
-    public void setAcquisitionDate(LocalDateTime acquisitionDate) {
-        this.acquisitionDate = acquisitionDate;
-    }
-
-    public LocalDateTime getExpirationDate() {
-        return expirationDate;
-    }
-
-    public void setExpirationDate(LocalDateTime expirationDate) {
-        this.expirationDate = expirationDate;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Boolean getActive() {
@@ -96,5 +61,13 @@ public class Seed {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public BigDecimal getTotalAvailable() {
+        return totalAvailable;
+    }
+
+    public void setTotalAvailable(BigDecimal totalAvailable) {
+        this.totalAvailable = totalAvailable;
     }
 }

@@ -1,8 +1,9 @@
 package co.improsvita.domain.repository;
 
-import co.improsvita.domain.model.Supplier;
 import co.improsvita.domain.model.Seed;
+import co.improsvita.domain.model.SeedType;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface SeedRepository {
@@ -12,7 +13,7 @@ public interface SeedRepository {
     Seed save(Seed seed);
     void deleteByName(String name);
     void deleteById(Integer id);
-    List<Seed> getBySupplier(Supplier supplier);
-    List<Seed> getByType(Seed.SeedType type);
-    List<Seed> getByStockLess(Integer stock);
+    List<Seed> getBySupplierId(Integer supplierId);
+    List<Seed> getByType(SeedType type);
+    BigDecimal getStockBySeedId(Integer seedId);
 }
