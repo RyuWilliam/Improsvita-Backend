@@ -1,0 +1,62 @@
+name: CI - Backend
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  test:
+    name: Compilar y correr pruebas
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: improsvita/improsvita
+
+    # PostgreSQL temporal para las pruebas que levantan el contexto de Spring.
+    # Usa los mismos datos de application-dev.properties (puerto 9011, local_database).
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: local_database
+          POSTGRES_USER: william
+          POSTGRES_PASSWORD: secret123
+        ports:
+          - 9011:5432
+        options: >-
+          --health-cmd "pg_isready -U william -d local_database"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      SPRING_PROFILES_ACTIVE: dev
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Instalar Java 24
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '24'
+
+      - name: Configurar Gradle (con caché)
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Dar permiso de ejecución a gradlew
+        run: chmod +x gradlew
+
+      - name: Correr pruebas (siembras, plántulas y demás módulos)
+        run: ./gradlew test --no-daemon
+
+      - name: Guardar reporte de pruebas
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-pruebas
+          path: improsvita/improsvita/build/reports/tests/test/
