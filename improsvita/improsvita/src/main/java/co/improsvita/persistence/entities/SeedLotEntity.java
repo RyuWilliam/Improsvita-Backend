@@ -44,7 +44,7 @@ public class SeedLotEntity {
     @Column(nullable = false)
     private SeedLotStatus status;
 
-    @OneToMany(mappedBy = "seedLot", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "seedLot")
     private List<SeedMovementEntity> movements;
 
     public SeedLotEntity() {

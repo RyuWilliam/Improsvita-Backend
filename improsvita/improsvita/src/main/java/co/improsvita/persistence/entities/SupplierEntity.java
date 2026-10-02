@@ -27,7 +27,7 @@ public class SupplierEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "supplier")
     private List<SeedSupplierEntity> seedSuppliers;
 
     @OneToMany(mappedBy = "supplier")

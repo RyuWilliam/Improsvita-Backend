@@ -29,10 +29,10 @@ public class SeedEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @OneToMany(mappedBy = "seed", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "seed")
     private List<SeedSupplierEntity> seedSuppliers;
 
-    @OneToMany(mappedBy = "seed", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "seed")
     private List<SeedLotEntity> lots;
 
     @CreatedDate
