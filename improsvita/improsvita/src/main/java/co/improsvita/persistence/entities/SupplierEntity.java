@@ -6,6 +6,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -25,6 +26,12 @@ public class SupplierEntity {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @OneToMany(mappedBy = "supplier")
+    private List<SeedSupplierEntity> seedSuppliers;
+
+    @OneToMany(mappedBy = "supplier")
+    private List<SeedMovementEntity> movements;
 
     @CreatedDate
     @Column(name = "created_date", updatable = false)
@@ -77,6 +84,22 @@ public class SupplierEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<SeedSupplierEntity> getSeedSuppliers() {
+        return seedSuppliers;
+    }
+
+    public void setSeedSuppliers(List<SeedSupplierEntity> seedSuppliers) {
+        this.seedSuppliers = seedSuppliers;
+    }
+
+    public List<SeedMovementEntity> getMovements() {
+        return movements;
+    }
+
+    public void setMovements(List<SeedMovementEntity> movements) {
+        this.movements = movements;
     }
 
     public LocalDateTime getCreatedDate() {

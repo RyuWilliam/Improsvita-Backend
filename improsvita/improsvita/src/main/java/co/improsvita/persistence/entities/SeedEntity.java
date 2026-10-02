@@ -7,6 +7,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -21,22 +22,18 @@ public class SeedEntity {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "supplier_id", nullable = false)
-    private SupplierEntity supplier;
-
-    @Column(nullable = false)
-    private Integer quantity;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "seed_type")
     private SeedType type;
 
-    @Column(name = "acquisition_date")
-    private LocalDateTime acquisitionDate;
+    @Column(columnDefinition = "TEXT")
+    private String description;
 
-    @Column(name = "expiration_date")
-    private LocalDateTime expirationDate;
+    @OneToMany(mappedBy = "seed")
+    private List<SeedSupplierEntity> seedSuppliers;
+
+    @OneToMany(mappedBy = "seed")
+    private List<SeedLotEntity> lots;
 
     @CreatedDate
     @Column(name = "created_date", updatable = false)
@@ -52,7 +49,15 @@ public class SeedEntity {
     public SeedEntity() {
     }
 
-
+    public SeedEntity(Integer seedId, String name, SeedType type, String description, LocalDateTime createdDate, LocalDateTime lastUpdated, Boolean active) {
+        this.seedId = seedId;
+        this.name = name;
+        this.type = type;
+        this.description = description;
+        this.createdDate = createdDate;
+        this.lastUpdated = lastUpdated;
+        this.active = active;
+    }
 
     public Integer getSeedId() {
         return seedId;
@@ -70,22 +75,6 @@ public class SeedEntity {
         this.name = name;
     }
 
-    public SupplierEntity getSupplier() {
-        return supplier;
-    }
-
-    public void setSupplier(SupplierEntity supplier) {
-        this.supplier = supplier;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
     public SeedType getType() {
         return type;
     }
@@ -94,34 +83,28 @@ public class SeedEntity {
         this.type = type;
     }
 
-
-    public SeedEntity(Integer seedId, String name, SupplierEntity supplier, Integer quantity, SeedType type, LocalDateTime acquisitionDate, LocalDateTime expirationDate, LocalDateTime createdDate, LocalDateTime lastUpdated, Boolean active) {
-        this.seedId = seedId;
-        this.name = name;
-        this.supplier = supplier;
-        this.quantity = quantity;
-        this.type = type;
-        this.acquisitionDate = acquisitionDate;
-        this.expirationDate = expirationDate;
-        this.createdDate = createdDate;
-        this.lastUpdated = lastUpdated;
-        this.active = active;
+    public String getDescription() {
+        return description;
     }
 
-    public LocalDateTime getAcquisitionDate() {
-        return acquisitionDate;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public void setAcquisitionDate(LocalDateTime acquisitionDate) {
-        this.acquisitionDate = acquisitionDate;
+    public List<SeedSupplierEntity> getSeedSuppliers() {
+        return seedSuppliers;
     }
 
-    public LocalDateTime getExpirationDate() {
-        return expirationDate;
+    public void setSeedSuppliers(List<SeedSupplierEntity> seedSuppliers) {
+        this.seedSuppliers = seedSuppliers;
     }
 
-    public void setExpirationDate(LocalDateTime expirationDate) {
-        this.expirationDate = expirationDate;
+    public List<SeedLotEntity> getLots() {
+        return lots;
+    }
+
+    public void setLots(List<SeedLotEntity> lots) {
+        this.lots = lots;
     }
 
     public LocalDateTime getCreatedDate() {

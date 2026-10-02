@@ -1,26 +1,18 @@
 package co.improsvita.web.dto;
 
-import java.time.LocalDateTime;
-
 public class SeedRequest {
 
     private String name;
-    private Integer supplierId;
-    private Integer quantity;
     private String type;
-    private LocalDateTime acquisitionDate;
-    private LocalDateTime expirationDate;
+    private String description;
 
     public SeedRequest() {
     }
 
-    public SeedRequest(String name, Integer supplierId, Integer quantity, String type, LocalDateTime acquisitionDate, LocalDateTime expirationDate) {
+    public SeedRequest(String name, String type, String description) {
         this.name = name;
-        this.supplierId = supplierId;
-        this.quantity = quantity;
         this.type = type;
-        this.acquisitionDate = acquisitionDate;
-        this.expirationDate = expirationDate;
+        this.description = description;
     }
 
     public String getName() {
@@ -31,22 +23,6 @@ public class SeedRequest {
         this.name = name;
     }
 
-    public Integer getSupplierId() {
-        return supplierId;
-    }
-
-    public void setSupplierId(Integer supplierId) {
-        this.supplierId = supplierId;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
     public String getType() {
         return type;
     }
@@ -55,19 +31,11 @@ public class SeedRequest {
         this.type = type;
     }
 
-    public LocalDateTime getAcquisitionDate() {
-        return acquisitionDate;
+    public String getDescription() {
+        return description;
     }
 
-    public void setAcquisitionDate(LocalDateTime acquisitionDate) {
-        this.acquisitionDate = acquisitionDate;
-    }
-
-    public LocalDateTime getExpirationDate() {
-        return expirationDate;
-    }
-
-    public void setExpirationDate(LocalDateTime expirationDate) {
-        this.expirationDate = expirationDate;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
