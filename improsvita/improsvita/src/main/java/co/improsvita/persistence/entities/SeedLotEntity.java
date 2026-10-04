@@ -47,6 +47,9 @@ public class SeedLotEntity {
     @OneToMany(mappedBy = "seedLot")
     private List<SeedMovementEntity> movements;
 
+    @OneToMany(mappedBy = "seedLot")
+    private List<SowingEntity> sowings;
+
     public SeedLotEntity() {
     }
 
@@ -128,5 +131,13 @@ public class SeedLotEntity {
 
     public void setMovements(List<SeedMovementEntity> movements) {
         this.movements = movements;
+    }
+
+    public List<SowingEntity> getSowings() {
+        return sowings;
+    }
+
+    public void setSowings(List<SowingEntity> sowings) {
+        this.sowings = sowings;
     }
 }
