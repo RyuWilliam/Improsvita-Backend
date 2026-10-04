@@ -1,5 +1,6 @@
 package co.improsvita.domain.service;
 
+import co.improsvita.domain.model.Bed;
 import co.improsvita.domain.model.Location;
 import co.improsvita.domain.model.MovementType;
 import co.improsvita.domain.model.Seed;
@@ -7,12 +8,16 @@ import co.improsvita.domain.model.SeedLot;
 import co.improsvita.domain.model.SeedLotStatus;
 import co.improsvita.domain.model.SeedMovement;
 import co.improsvita.domain.model.SeedSupplier;
+import co.improsvita.domain.model.Sowing;
+import co.improsvita.domain.model.SowingStatus;
 import co.improsvita.domain.model.Supplier;
+import co.improsvita.domain.repository.BedRepository;
 import co.improsvita.domain.repository.LocationRepository;
 import co.improsvita.domain.repository.SeedLotRepository;
 import co.improsvita.domain.repository.SeedMovementRepository;
 import co.improsvita.domain.repository.SeedRepository;
 import co.improsvita.domain.repository.SeedSupplierRepository;
+import co.improsvita.domain.repository.SowingRepository;
 import co.improsvita.domain.repository.SupplierRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,19 +36,25 @@ public class InventoryService {
     private final SeedLotRepository seedLotRepository;
     private final SeedMovementRepository seedMovementRepository;
     private final SeedSupplierRepository seedSupplierRepository;
+    private final SowingRepository sowingRepository;
+    private final BedRepository bedRepository;
 
     public InventoryService(SeedRepository seedRepository,
                             SupplierRepository supplierRepository,
                             LocationRepository locationRepository,
                             SeedLotRepository seedLotRepository,
                             SeedMovementRepository seedMovementRepository,
-                            SeedSupplierRepository seedSupplierRepository) {
+                            SeedSupplierRepository seedSupplierRepository,
+                            SowingRepository sowingRepository,
+                            BedRepository bedRepository) {
         this.seedRepository = seedRepository;
         this.supplierRepository = supplierRepository;
         this.locationRepository = locationRepository;
         this.seedLotRepository = seedLotRepository;
         this.seedMovementRepository = seedMovementRepository;
         this.seedSupplierRepository = seedSupplierRepository;
+        this.sowingRepository = sowingRepository;
+        this.bedRepository = bedRepository;
     }
 
     @Transactional
@@ -141,6 +152,51 @@ public class InventoryService {
 
     public SeedLot getLotById(Integer lotId) {
         return seedLotRepository.getById(lotId);
+    }
+
+    @Transactional
+    public Sowing sow(Integer lotId, Integer bedId, BigDecimal quantity,
+                      LocalDate sowingDate, LocalDate expectedGerminationDate, String notes) {
+        requirePositive(quantity, "La cantidad sembrada debe ser mayor a cero");
+
+        SeedLot lot = requireLot(lotId);
+        Bed bed = bedRepository.getById(bedId);
+        if (bed == null) {
+            throw new IllegalArgumentException("Cama no encontrada: " + bedId);
+        }
+        if (Boolean.FALSE.equals(bed.getActive())) {
+            throw new IllegalStateException("La cama " + bed.getCode() + " está inhabilitada");
+        }
+        if (lot.getAvailableQuantity().compareTo(quantity) < 0) {
+            throw new IllegalStateException("Stock insuficiente en el lote " + lotId
+                    + ": disponible " + lot.getAvailableQuantity() + ", solicitado " + quantity);
+        }
+
+        SeedMovement movement = new SeedMovement();
+        movement.setLotId(lot.getId());
+        movement.setSupplierId(null);
+        movement.setMovementType(MovementType.EXIT);
+        movement.setQuantity(quantity);
+        movement.setMovementDate(LocalDateTime.now());
+        movement.setReason("Siembra en cama " + bed.getCode());
+        seedMovementRepository.save(movement);
+
+        lot.setAvailableQuantity(lot.getAvailableQuantity().subtract(quantity));
+        if (lot.getAvailableQuantity().compareTo(BigDecimal.ZERO) == 0) {
+            lot.setStatus(SeedLotStatus.DEPLETED);
+        }
+        seedLotRepository.save(lot);
+
+        Sowing sowing = new Sowing();
+        sowing.setLotId(lot.getId());
+        sowing.setBedId(bed.getId());
+        sowing.setQuantitySown(quantity);
+        sowing.setSowingDate(sowingDate != null ? sowingDate : LocalDate.now());
+        sowing.setExpectedGerminationDate(expectedGerminationDate);
+        sowing.setStatus(SowingStatus.IN_PROGRESS);
+        sowing.setNotes(notes);
+        sowing.setActive(true);
+        return sowingRepository.save(sowing);
     }
 
     public List<SeedLot> getAllLots() {
