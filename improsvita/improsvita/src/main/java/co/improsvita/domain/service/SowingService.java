@@ -3,6 +3,10 @@ package co.improsvita.domain.service;
 import co.improsvita.domain.model.Sowing;
 import co.improsvita.domain.model.SowingStatus;
 import co.improsvita.domain.repository.SowingRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -11,6 +15,8 @@ import java.util.Set;
 
 @Service
 public class SowingService {
+
+    private static final Logger log = LoggerFactory.getLogger(SowingService.class);
 
     private static final Set<SowingStatus> TERMINAL = Set.of(
             SowingStatus.COMPLETED, SowingStatus.FAILED, SowingStatus.CANCELLED);
@@ -59,11 +65,18 @@ public class SowingService {
 
     public Sowing changeStatus(Integer id, SowingStatus status) {
         Sowing sowing = requireSowing(id);
-        if (TERMINAL.contains(sowing.getStatus()) && sowing.getStatus() != status) {
-            throw new IllegalStateException("La siembra " + id + " está en estado terminal " + sowing.getStatus() + " y no admite cambios");
+        SowingStatus previous = sowing.getStatus();
+        if (TERMINAL.contains(previous) && previous != status) {
+            log.warn("Cambio de estado RECHAZADO en siembra id={}: {} -> {} (usuario={}). El estado actual es terminal",
+                    id, previous, status, currentUser());
+            throw new IllegalStateException("La siembra " + id + " está en estado terminal " + previous + " y no admite cambios");
         }
         sowing.setStatus(status);
-        return sowingRepository.save(sowing);
+        Sowing saved = sowingRepository.save(sowing);
+        if (previous != status) {
+            log.info("Cambio de estado en siembra id={}: {} -> {} (usuario={})", id, previous, status, currentUser());
+        }
+        return saved;
     }
 
     public void deleteSowingById(Integer id) {
@@ -76,5 +89,10 @@ public class SowingService {
             throw new IllegalArgumentException("Siembra no encontrada: " + id);
         }
         return sowing;
+    }
+
+    private String currentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth != null ? auth.getName() : "sistema";
     }
 }

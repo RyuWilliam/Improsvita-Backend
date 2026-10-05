@@ -55,4 +55,32 @@ class DateRangeValidatorTest {
         assertTrue(ex.getMessage().contains("fecha de vencimiento"));
         assertTrue(ex.getMessage().contains("fecha de ingreso"));
     }
+
+    @Test
+    void optionalEnd_nullEnd_isValid() {
+        assertDoesNotThrow(() -> validator.validateOptionalEnd(start, null, "fecha de siembra", "fecha de germinación"));
+    }
+
+    @Test
+    void optionalEnd_nullStart_throws() {
+        assertThrows(InvalidDateRangeException.class,
+                () -> validator.validateOptionalEnd(null, start, "fecha de siembra", "fecha de germinación"));
+    }
+
+    @Test
+    void optionalEnd_endBeforeStart_throws() {
+        assertThrows(InvalidDateRangeException.class,
+                () -> validator.validateOptionalEnd(start, start.minusDays(1), "fecha de siembra", "fecha de germinación"));
+    }
+
+    @Test
+    void optionalEnd_validEnd_isValid() {
+        assertDoesNotThrow(() -> validator.validateOptionalEnd(start, start.plusDays(10), "fecha de siembra", "fecha de germinación"));
+    }
+
+    @Test
+    void exception_isIllegalArgument_soControllersReturn400WithMessage() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> validator.validate(start, start));
+        assertInstanceOf(InvalidDateRangeException.class, ex);
+    }
 }
