@@ -1,10 +1,11 @@
 package co.improsvita.domain.service;
 
 import co.improsvita.domain.model.Seed;
-import co.improsvita.domain.model.Supplier;
+import co.improsvita.domain.model.SeedType;
 import co.improsvita.domain.repository.SeedRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -44,15 +45,18 @@ public class SeedService {
         seedRepository.deleteById(id);
     }
 
-    public List<Seed> getSeedsBySupplier(Supplier supplier) {
-        return seedRepository.getBySupplier(supplier);
+    public List<Seed> getSeedsBySupplierId(Integer supplierId) {
+        return seedRepository.getBySupplierId(supplierId);
     }
 
-    public List<Seed> getSeedsByType(Seed.SeedType type) {
+    public List<Seed> getSeedsByType(SeedType type) {
         return seedRepository.getByType(type);
     }
 
-    public List<Seed> getSeedsByStockLess(Integer stock) {
-        return seedRepository.getByStockLess(stock);
+    public List<Seed> getSeedsByStockLess(BigDecimal stock) {
+        return seedRepository.getAll()
+                .stream()
+                .filter(seed -> seed.getTotalAvailable() != null && seed.getTotalAvailable().compareTo(stock) < 0)
+                .toList();
     }
 }
