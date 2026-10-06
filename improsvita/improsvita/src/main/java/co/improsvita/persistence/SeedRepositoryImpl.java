@@ -1,93 +1,102 @@
 package co.improsvita.persistence;
 
 import co.improsvita.domain.model.Seed;
-import co.improsvita.domain.model.Supplier;
+import co.improsvita.domain.model.SeedType;
 import co.improsvita.domain.repository.SeedRepository;
 import co.improsvita.persistence.crud.SeedJpaRepository;
+import co.improsvita.persistence.crud.SeedLotJpaRepository;
 import co.improsvita.persistence.entities.SeedEntity;
-import co.improsvita.persistence.enums.SeedType;
 import co.improsvita.persistence.mapper.SeedMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
+@Transactional(readOnly = true)
 public class SeedRepositoryImpl implements SeedRepository {
 
     private final SeedJpaRepository seedJpaRepository;
+    private final SeedLotJpaRepository seedLotJpaRepository;
 
-    public SeedRepositoryImpl(SeedJpaRepository seedJpaRepository) {
+    public SeedRepositoryImpl(SeedJpaRepository seedJpaRepository, SeedLotJpaRepository seedLotJpaRepository) {
         this.seedJpaRepository = seedJpaRepository;
+        this.seedLotJpaRepository = seedLotJpaRepository;
     }
 
     @Override
     public List<Seed> getAll() {
         return seedJpaRepository.findAll()
                 .stream()
-                .map(SeedMapper::toDomain)
+                .map(this::toDomainWithStock)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Seed getById(Integer id) {
         return seedJpaRepository.findById(id)
-                .map(SeedMapper::toDomain)
+                .map(this::toDomainWithStock)
                 .orElse(null);
     }
 
     @Override
     public Seed getByName(String name) {
         return seedJpaRepository.findByName(name)
-                .map(SeedMapper::toDomain)
+                .map(this::toDomainWithStock)
                 .orElse(null);
     }
 
     @Override
+    @Transactional
     public Seed save(Seed seed) {
         SeedEntity entity = SeedMapper.toEntity(seed);
         SeedEntity saved = seedJpaRepository.save(entity);
-        return SeedMapper.toDomain(saved);
+        return toDomainWithStock(saved);
     }
 
     @Override
+    @Transactional
     public void deleteByName(String name) {
         seedJpaRepository.deleteByName(name);
     }
 
     @Override
+    @Transactional
     public void deleteById(Integer id) {
         seedJpaRepository.deleteById(id);
     }
 
     @Override
-    public List<Seed> getBySupplier(Supplier supplier) {
-        SeedEntity supplierEntity = new SeedEntity();
-        supplierEntity.setSupplier(co.improsvita.persistence.mapper.ProviderMapper.toEntity(supplier));
-        return seedJpaRepository.findBySupplier(supplierEntity.getSupplier())
+    public List<Seed> getBySupplierId(Integer supplierId) {
+        return seedJpaRepository.findActiveBySupplierId(supplierId)
                 .stream()
-                .map(SeedMapper::toDomain)
+                .map(this::toDomainWithStock)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Seed> getByType(Seed.SeedType type) {
-        SeedType entityType = switch (type) {
-            case HYBRID -> SeedType.HYBRID;
-            case TRADITIONAL -> SeedType.TRADITIONAL;
-            case MODIFIED -> SeedType.MODIFIED;
+    public List<Seed> getByType(SeedType type) {
+        co.improsvita.persistence.enums.SeedType entityType = switch (type) {
+            case HYBRID -> co.improsvita.persistence.enums.SeedType.HYBRID;
+            case TRADITIONAL -> co.improsvita.persistence.enums.SeedType.TRADITIONAL;
+            case MODIFIED -> co.improsvita.persistence.enums.SeedType.MODIFIED;
         };
         return seedJpaRepository.findByType(entityType)
                 .stream()
-                .map(SeedMapper::toDomain)
+                .map(this::toDomainWithStock)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Seed> getByStockLess(Integer stock) {
-        return seedJpaRepository.findByQuantityLessThan(stock)
-                .stream()
-                .map(SeedMapper::toDomain)
-                .collect(Collectors.toList());
+    public BigDecimal getStockBySeedId(Integer seedId) {
+        return seedLotJpaRepository.sumAvailableBySeedId(seedId);
+    }
+
+    private Seed toDomainWithStock(SeedEntity entity) {
+        Seed seed = SeedMapper.toDomain(entity);
+        seed.setTotalAvailable(seedLotJpaRepository.sumAvailableBySeedId(entity.getSeedId()));
+        return seed;
     }
 }

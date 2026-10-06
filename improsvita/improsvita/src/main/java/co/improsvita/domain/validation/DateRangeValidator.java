@@ -14,8 +14,9 @@ import java.time.LocalDate;
  * <p>
  * Reglas:
  * <ol>
- *   <li>Ninguna de las dos fechas puede ser nula.</li>
- *   <li>La fecha final debe ser estrictamente posterior a la inicial.</li>
+ *   <li>La fecha inicial es obligatoria.</li>
+ *   <li>La fecha final es obligatoria, salvo en {@link #validateOptionalEnd}.</li>
+ *   <li>Si hay fecha final, debe ser estrictamente posterior a la inicial.</li>
  * </ol>
  */
 @Component
@@ -43,6 +44,20 @@ public class DateRangeValidator {
         if (!end.isAfter(start)) {
             throw new InvalidDateRangeException(
                     "La " + endLabel + " (" + end + ") debe ser posterior a la " + startLabel + " (" + start + ")");
+        }
+    }
+
+    /**
+     * Igual que {@link #validate(LocalDate, LocalDate, String, String)}, pero la fecha final
+     * puede ser nula (ej. fecha estimada de germinación, que es opcional al sembrar).
+     * Si viene informada, se valida contra la inicial.
+     */
+    public void validateOptionalEnd(LocalDate start, LocalDate end, String startLabel, String endLabel) {
+        if (start == null) {
+            throw new InvalidDateRangeException("La " + startLabel + " es obligatoria");
+        }
+        if (end != null) {
+            validate(start, end, startLabel, endLabel);
         }
     }
 }
