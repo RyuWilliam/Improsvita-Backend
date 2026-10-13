@@ -1,6 +1,5 @@
 package co.improsvita.web.dto;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class EntryRequest {
@@ -9,7 +8,8 @@ public class EntryRequest {
     private Integer supplierId;
     private Integer locationId;
     private Integer lotNumber;
-    private BigDecimal quantity;
+    private Integer quantity;
+    private Integer germinationPercentage;
     private LocalDate entryDate;
     private LocalDate dueDate;
 
@@ -48,12 +48,20 @@ public class EntryRequest {
         this.lotNumber = lotNumber;
     }
 
-    public BigDecimal getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(BigDecimal quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public Integer getGerminationPercentage() {
+        return germinationPercentage;
+    }
+
+    public void setGerminationPercentage(Integer germinationPercentage) {
+        this.germinationPercentage = germinationPercentage;
     }
 
     public LocalDate getEntryDate() {

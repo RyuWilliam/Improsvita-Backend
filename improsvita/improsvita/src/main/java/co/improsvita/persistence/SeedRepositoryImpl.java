@@ -10,7 +10,6 @@ import co.improsvita.persistence.mapper.SeedMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -90,7 +89,7 @@ public class SeedRepositoryImpl implements SeedRepository {
     }
 
     @Override
-    public BigDecimal getStockBySeedId(Integer seedId) {
+    public Long getStockBySeedId(Integer seedId) {
         return seedLotJpaRepository.sumAvailableBySeedId(seedId);
     }
 

@@ -3,7 +3,6 @@ package co.improsvita.persistence.entities;
 import co.improsvita.persistence.enums.SeedLotStatus;
 import jakarta.persistence.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -28,17 +27,20 @@ public class SeedLotEntity {
     @JoinColumn(name = "location_id", nullable = false)
     private LocationEntity location;
 
+    @Column(name = "germination_percent")
+    private Integer germinationPercentage;
+
     @Column(name = "entry_date")
     private LocalDate entryDate;
 
     @Column(name = "due_date")
     private LocalDate dueDate;
 
-    @Column(name = "initial_quantity", nullable = false, precision = 19, scale = 4)
-    private BigDecimal initialQuantity;
+    @Column(name = "initial_quantity", nullable = false)
+    private Integer initialQuantity;
 
-    @Column(name = "available_quantity", nullable = false, precision = 19, scale = 4)
-    private BigDecimal availableQuantity;
+    @Column(name = "available_quantity", nullable = false)
+    private Integer availableQuantity;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -101,19 +103,27 @@ public class SeedLotEntity {
         this.dueDate = dueDate;
     }
 
-    public BigDecimal getInitialQuantity() {
+    public Integer getGerminationPercentage() {
+        return germinationPercentage;
+    }
+
+    public void setGerminationPercentage(Integer germinationPercentage) {
+        this.germinationPercentage = germinationPercentage;
+    }
+
+    public Integer getInitialQuantity() {
         return initialQuantity;
     }
 
-    public void setInitialQuantity(BigDecimal initialQuantity) {
+    public void setInitialQuantity(Integer initialQuantity) {
         this.initialQuantity = initialQuantity;
     }
 
-    public BigDecimal getAvailableQuantity() {
+    public Integer getAvailableQuantity() {
         return availableQuantity;
     }
 
-    public void setAvailableQuantity(BigDecimal availableQuantity) {
+    public void setAvailableQuantity(Integer availableQuantity) {
         this.availableQuantity = availableQuantity;
     }
 

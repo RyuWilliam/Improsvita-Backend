@@ -1,6 +1,5 @@
 package co.improsvita.web.dto;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class SeedLotResponse {
@@ -9,10 +8,11 @@ public class SeedLotResponse {
     private Integer lotNumber;
     private Integer seedId;
     private Integer locationId;
+    private Integer germinationPercentage;
     private LocalDate entryDate;
     private LocalDate dueDate;
-    private BigDecimal initialQuantity;
-    private BigDecimal availableQuantity;
+    private Integer initialQuantity;
+    private Integer availableQuantity;
     private String status;
 
     public SeedLotResponse() {
@@ -66,19 +66,27 @@ public class SeedLotResponse {
         this.dueDate = dueDate;
     }
 
-    public BigDecimal getInitialQuantity() {
+    public Integer getGerminationPercentage() {
+        return germinationPercentage;
+    }
+
+    public void setGerminationPercentage(Integer germinationPercentage) {
+        this.germinationPercentage = germinationPercentage;
+    }
+
+    public Integer getInitialQuantity() {
         return initialQuantity;
     }
 
-    public void setInitialQuantity(BigDecimal initialQuantity) {
+    public void setInitialQuantity(Integer initialQuantity) {
         this.initialQuantity = initialQuantity;
     }
 
-    public BigDecimal getAvailableQuantity() {
+    public Integer getAvailableQuantity() {
         return availableQuantity;
     }
 
-    public void setAvailableQuantity(BigDecimal availableQuantity) {
+    public void setAvailableQuantity(Integer availableQuantity) {
         this.availableQuantity = availableQuantity;
     }
 

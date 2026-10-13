@@ -1,7 +1,5 @@
 package co.improsvita.domain.model;
 
-import java.math.BigDecimal;
-
 public class Seed {
 
     private Integer id;
@@ -10,7 +8,7 @@ public class Seed {
     private String description;
     private Boolean active;
 
-    private BigDecimal totalAvailable;
+    private Long totalAvailable;
 
     public Seed() {
     }
@@ -63,11 +61,11 @@ public class Seed {
         this.active = active;
     }
 
-    public BigDecimal getTotalAvailable() {
+    public Long getTotalAvailable() {
         return totalAvailable;
     }
 
-    public void setTotalAvailable(BigDecimal totalAvailable) {
+    public void setTotalAvailable(Long totalAvailable) {
         this.totalAvailable = totalAvailable;
     }
 }

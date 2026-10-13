@@ -32,6 +32,7 @@ public class InventoryController {
             SeedLot lot = inventoryService.registerEntry(
                     request.getSeedId(), request.getSupplierId(), request.getLocationId(),
                     request.getLotNumber(), request.getQuantity(),
+                    request.getGerminationPercentage(),
                     request.getEntryDate(), request.getDueDate());
             return ResponseEntity.ok(toLotResponse(lot));
         } catch (IllegalArgumentException | IllegalStateException e) {
@@ -114,6 +115,7 @@ public class InventoryController {
         response.setLotNumber(lot.getLotNumber());
         response.setSeedId(lot.getSeedId());
         response.setLocationId(lot.getLocationId());
+        response.setGerminationPercentage(lot.getGerminationPercentage());
         response.setEntryDate(lot.getEntryDate());
         response.setDueDate(lot.getDueDate());
         response.setInitialQuantity(lot.getInitialQuantity());

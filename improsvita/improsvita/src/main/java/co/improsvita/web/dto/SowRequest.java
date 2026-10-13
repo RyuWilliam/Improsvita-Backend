@@ -1,13 +1,12 @@
 package co.improsvita.web.dto;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class SowRequest {
 
     private Integer lotId;
     private Integer bedId;
-    private BigDecimal quantity;
+    private Integer quantity;
     private LocalDate sowingDate;
     private LocalDate expectedGerminationDate;
     private String notes;
@@ -31,11 +30,11 @@ public class SowRequest {
         this.bedId = bedId;
     }
 
-    public BigDecimal getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(BigDecimal quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 

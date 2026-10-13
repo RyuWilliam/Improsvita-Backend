@@ -1,6 +1,5 @@
 package co.improsvita.domain.model;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class Sowing {
@@ -8,8 +7,7 @@ public class Sowing {
     private Integer id;
     private Integer lotId;
     private Integer bedId;
-    private BigDecimal quantitySown;
-    private BigDecimal germinatedQuantity;
+    private Integer quantitySown;
     private LocalDate sowingDate;
     private LocalDate expectedGerminationDate;
     private SowingStatus status;
@@ -43,20 +41,12 @@ public class Sowing {
         this.bedId = bedId;
     }
 
-    public BigDecimal getQuantitySown() {
+    public Integer getQuantitySown() {
         return quantitySown;
     }
 
-    public void setQuantitySown(BigDecimal quantitySown) {
+    public void setQuantitySown(Integer quantitySown) {
         this.quantitySown = quantitySown;
-    }
-
-    public BigDecimal getGerminatedQuantity() {
-        return germinatedQuantity;
-    }
-
-    public void setGerminatedQuantity(BigDecimal germinatedQuantity) {
-        this.germinatedQuantity = germinatedQuantity;
     }
 
     public LocalDate getSowingDate() {

@@ -22,7 +22,6 @@ import co.improsvita.domain.repository.SupplierRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -59,9 +58,14 @@ public class InventoryService {
 
     @Transactional
     public SeedLot registerEntry(Integer seedId, Integer supplierId, Integer locationId,
-                                 Integer lotNumber, BigDecimal quantity,
+                                 Integer lotNumber, Integer quantity,
+                                 Integer germinationPercentage,
                                  LocalDate entryDate, LocalDate dueDate) {
         requirePositive(quantity, "La cantidad de entrada debe ser mayor a cero");
+        if (germinationPercentage != null
+                && (germinationPercentage < 1 || germinationPercentage > 100)) {
+            throw new IllegalArgumentException("El porcentaje de germinación debe estar entre 1 y 100");
+        }
 
         Seed seed = requireSeed(seedId);
         Supplier supplier = requireSupplier(supplierId);
@@ -77,6 +81,7 @@ public class InventoryService {
         lot.setLocationId(location.getId());
         lot.setEntryDate(entryDate != null ? entryDate : LocalDate.now());
         lot.setDueDate(dueDate);
+        lot.setGerminationPercentage(germinationPercentage);
         lot.setInitialQuantity(quantity);
         lot.setAvailableQuantity(quantity);
         lot.setStatus(SeedLotStatus.AVAILABLE);
@@ -95,11 +100,11 @@ public class InventoryService {
     }
 
     @Transactional
-    public SeedLot registerExit(Integer lotId, BigDecimal quantity, String reason) {
+    public SeedLot registerExit(Integer lotId, Integer quantity, String reason) {
         requirePositive(quantity, "La cantidad de salida debe ser mayor a cero");
 
         SeedLot lot = requireLot(lotId);
-        if (lot.getAvailableQuantity().compareTo(quantity) < 0) {
+        if (lot.getAvailableQuantity() < quantity) {
             throw new IllegalStateException("Stock insuficiente en el lote " + lotId
                     + ": disponible " + lot.getAvailableQuantity() + ", solicitado " + quantity);
         }
@@ -113,22 +118,22 @@ public class InventoryService {
         movement.setReason(reason);
         seedMovementRepository.save(movement);
 
-        lot.setAvailableQuantity(lot.getAvailableQuantity().subtract(quantity));
-        if (lot.getAvailableQuantity().compareTo(BigDecimal.ZERO) == 0) {
+        lot.setAvailableQuantity(lot.getAvailableQuantity() - quantity);
+        if (lot.getAvailableQuantity() == 0) {
             lot.setStatus(SeedLotStatus.DEPLETED);
         }
         return seedLotRepository.save(lot);
     }
 
     @Transactional
-    public SeedLot adjustStock(Integer lotId, BigDecimal quantity, String reason) {
-        if (quantity == null || quantity.compareTo(BigDecimal.ZERO) == 0) {
+    public SeedLot adjustStock(Integer lotId, Integer quantity, String reason) {
+        if (quantity == null || quantity == 0) {
             throw new IllegalArgumentException("La cantidad del ajuste debe ser distinta de cero (positiva suma, negativa resta)");
         }
 
         SeedLot lot = requireLot(lotId);
-        BigDecimal updated = lot.getAvailableQuantity().add(quantity);
-        if (updated.compareTo(BigDecimal.ZERO) < 0) {
+        int updated = lot.getAvailableQuantity() + quantity;
+        if (updated < 0) {
             throw new IllegalStateException("El ajuste deja el lote " + lotId + " en negativo: " + updated);
         }
 
@@ -142,7 +147,7 @@ public class InventoryService {
         seedMovementRepository.save(movement);
 
         lot.setAvailableQuantity(updated);
-        if (updated.compareTo(BigDecimal.ZERO) == 0) {
+        if (updated == 0) {
             lot.setStatus(SeedLotStatus.DEPLETED);
         } else if (lot.getStatus() == SeedLotStatus.DEPLETED) {
             lot.setStatus(SeedLotStatus.AVAILABLE);
@@ -155,7 +160,7 @@ public class InventoryService {
     }
 
     @Transactional
-    public Sowing sow(Integer lotId, Integer bedId, BigDecimal quantity,
+    public Sowing sow(Integer lotId, Integer bedId, Integer quantity,
                       LocalDate sowingDate, LocalDate expectedGerminationDate, String notes) {
         requirePositive(quantity, "La cantidad sembrada debe ser mayor a cero");
 
@@ -167,7 +172,7 @@ public class InventoryService {
         if (Boolean.FALSE.equals(bed.getActive())) {
             throw new IllegalStateException("La cama " + bed.getCode() + " está inhabilitada");
         }
-        if (lot.getAvailableQuantity().compareTo(quantity) < 0) {
+        if (lot.getAvailableQuantity() < quantity) {
             throw new IllegalStateException("Stock insuficiente en el lote " + lotId
                     + ": disponible " + lot.getAvailableQuantity() + ", solicitado " + quantity);
         }
@@ -181,8 +186,8 @@ public class InventoryService {
         movement.setReason("Siembra en cama " + bed.getCode());
         seedMovementRepository.save(movement);
 
-        lot.setAvailableQuantity(lot.getAvailableQuantity().subtract(quantity));
-        if (lot.getAvailableQuantity().compareTo(BigDecimal.ZERO) == 0) {
+        lot.setAvailableQuantity(lot.getAvailableQuantity() - quantity);
+        if (lot.getAvailableQuantity() == 0) {
             lot.setStatus(SeedLotStatus.DEPLETED);
         }
         seedLotRepository.save(lot);
@@ -220,7 +225,7 @@ public class InventoryService {
         return seedMovementRepository.getByLotId(lotId);
     }
 
-    public BigDecimal getStockBySeedId(Integer seedId) {
+    public Long getStockBySeedId(Integer seedId) {
         requireSeed(seedId);
         return seedRepository.getStockBySeedId(seedId);
     }
@@ -257,8 +262,8 @@ public class InventoryService {
         return lot;
     }
 
-    private void requirePositive(BigDecimal quantity, String message) {
-        if (quantity == null || quantity.compareTo(BigDecimal.ZERO) <= 0) {
+    private void requirePositive(Integer quantity, String message) {
+        if (quantity == null || quantity <= 0) {
             throw new IllegalArgumentException(message);
         }
     }

@@ -3,7 +3,6 @@ package co.improsvita.persistence.entities;
 import co.improsvita.persistence.enums.SowingStatus;
 import jakarta.persistence.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -25,11 +24,8 @@ public class SowingEntity {
     @JoinColumn(name = "bed_id", nullable = false)
     private BedEntity bed;
 
-    @Column(name = "quantity_sown", nullable = false, precision = 19, scale = 4)
-    private BigDecimal quantitySown;
-
-    @Column(name = "germinated_quantity", precision = 19, scale = 4)
-    private BigDecimal germinatedQuantity;
+    @Column(name = "quantity_sown", nullable = false)
+    private Integer quantitySown;
 
     @Column(name = "sowing_date", nullable = false)
     private LocalDate sowingDate;
@@ -74,20 +70,12 @@ public class SowingEntity {
         this.bed = bed;
     }
 
-    public BigDecimal getQuantitySown() {
+    public Integer getQuantitySown() {
         return quantitySown;
     }
 
-    public void setQuantitySown(BigDecimal quantitySown) {
+    public void setQuantitySown(Integer quantitySown) {
         this.quantitySown = quantitySown;
-    }
-
-    public BigDecimal getGerminatedQuantity() {
-        return germinatedQuantity;
-    }
-
-    public void setGerminatedQuantity(BigDecimal germinatedQuantity) {
-        this.germinatedQuantity = germinatedQuantity;
     }
 
     public LocalDate getSowingDate() {

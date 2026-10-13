@@ -3,7 +3,6 @@ package co.improsvita.persistence.entities;
 import co.improsvita.persistence.enums.MovementType;
 import jakarta.persistence.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,8 +27,8 @@ public class SeedMovementEntity {
     @Column(name = "movement_type", nullable = false)
     private MovementType movementType;
 
-    @Column(nullable = false, precision = 19, scale = 4)
-    private BigDecimal quantity;
+    @Column(nullable = false)
+    private Integer quantity;
 
     @Column(name = "movement_date")
     private LocalDateTime movementDate;
@@ -72,11 +71,11 @@ public class SeedMovementEntity {
         this.movementType = movementType;
     }
 
-    public BigDecimal getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(BigDecimal quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 

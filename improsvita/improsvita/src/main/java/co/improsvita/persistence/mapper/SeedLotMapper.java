@@ -17,6 +17,7 @@ public class SeedLotMapper {
         lot.setLotNumber(entity.getLotNumber());
         lot.setSeedId(entity.getSeed() != null ? entity.getSeed().getSeedId() : null);
         lot.setLocationId(entity.getLocation() != null ? entity.getLocation().getLocationId() : null);
+        lot.setGerminationPercentage(entity.getGerminationPercentage());
         lot.setEntryDate(entity.getEntryDate());
         lot.setDueDate(entity.getDueDate());
         lot.setInitialQuantity(entity.getInitialQuantity());
@@ -32,6 +33,7 @@ public class SeedLotMapper {
         entity.setLotNumber(domain.getLotNumber());
         entity.setSeed(seed);
         entity.setLocation(location);
+        entity.setGerminationPercentage(domain.getGerminationPercentage());
         entity.setEntryDate(domain.getEntryDate());
         entity.setDueDate(domain.getDueDate());
         entity.setInitialQuantity(domain.getInitialQuantity());
