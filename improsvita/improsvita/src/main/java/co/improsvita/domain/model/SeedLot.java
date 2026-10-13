@@ -1,6 +1,5 @@
 package co.improsvita.domain.model;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class SeedLot {
@@ -9,23 +8,26 @@ public class SeedLot {
     private Integer lotNumber;
     private Integer seedId;
     private Integer locationId;
+    private Integer germinationPercentage;
     private LocalDate entryDate;
     private LocalDate dueDate;
-    private BigDecimal initialQuantity;
-    private BigDecimal availableQuantity;
+    private Integer initialQuantity;
+    private Integer availableQuantity;
     private SeedLotStatus status;
 
     public SeedLot() {
     }
 
     public SeedLot(Integer id, Integer lotNumber, Integer seedId, Integer locationId,
+                   Integer germinationPercentage,
                    LocalDate entryDate, LocalDate dueDate,
-                   BigDecimal initialQuantity, BigDecimal availableQuantity,
+                   Integer initialQuantity, Integer availableQuantity,
                    SeedLotStatus status) {
         this.id = id;
         this.lotNumber = lotNumber;
         this.seedId = seedId;
         this.locationId = locationId;
+        this.germinationPercentage = germinationPercentage;
         this.entryDate = entryDate;
         this.dueDate = dueDate;
         this.initialQuantity = initialQuantity;
@@ -81,19 +83,27 @@ public class SeedLot {
         this.dueDate = dueDate;
     }
 
-    public BigDecimal getInitialQuantity() {
+    public Integer getGerminationPercentage() {
+        return germinationPercentage;
+    }
+
+    public void setGerminationPercentage(Integer germinationPercentage) {
+        this.germinationPercentage = germinationPercentage;
+    }
+
+    public Integer getInitialQuantity() {
         return initialQuantity;
     }
 
-    public void setInitialQuantity(BigDecimal initialQuantity) {
+    public void setInitialQuantity(Integer initialQuantity) {
         this.initialQuantity = initialQuantity;
     }
 
-    public BigDecimal getAvailableQuantity() {
+    public Integer getAvailableQuantity() {
         return availableQuantity;
     }
 
-    public void setAvailableQuantity(BigDecimal availableQuantity) {
+    public void setAvailableQuantity(Integer availableQuantity) {
         this.availableQuantity = availableQuantity;
     }
 

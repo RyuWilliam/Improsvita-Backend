@@ -1,6 +1,5 @@
 package co.improsvita.domain.model;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class SeedMovement {
@@ -9,7 +8,7 @@ public class SeedMovement {
     private Integer lotId;
     private Integer supplierId;
     private MovementType movementType;
-    private BigDecimal quantity;
+    private Integer quantity;
     private LocalDateTime movementDate;
     private String reason;
 
@@ -17,7 +16,7 @@ public class SeedMovement {
     }
 
     public SeedMovement(Integer id, Integer lotId, Integer supplierId,
-                        MovementType movementType, BigDecimal quantity,
+                        MovementType movementType, Integer quantity,
                         LocalDateTime movementDate, String reason) {
         this.id = id;
         this.lotId = lotId;
@@ -60,11 +59,11 @@ public class SeedMovement {
         this.movementType = movementType;
     }
 
-    public BigDecimal getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(BigDecimal quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 

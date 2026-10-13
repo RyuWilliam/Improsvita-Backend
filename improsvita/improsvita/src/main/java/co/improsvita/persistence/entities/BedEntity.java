@@ -5,7 +5,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,8 +21,8 @@ public class BedEntity {
     @Column(nullable = false, unique = true, length = 30)
     private String code;
 
-    @Column(name = "max_capacity", precision = 19, scale = 4)
-    private BigDecimal maxCapacity;
+    @Column(name = "max_capacity")
+    private Integer maxCapacity;
 
     @OneToMany(mappedBy = "bed")
     private List<SowingEntity> sowings;
@@ -42,7 +41,7 @@ public class BedEntity {
     public BedEntity() {
     }
 
-    public BedEntity(String code, BigDecimal maxCapacity) {
+    public BedEntity(String code, Integer maxCapacity) {
         this.code = code;
         this.maxCapacity = maxCapacity;
         this.active = true;
@@ -64,11 +63,11 @@ public class BedEntity {
         this.code = code;
     }
 
-    public BigDecimal getMaxCapacity() {
+    public Integer getMaxCapacity() {
         return maxCapacity;
     }
 
-    public void setMaxCapacity(BigDecimal maxCapacity) {
+    public void setMaxCapacity(Integer maxCapacity) {
         this.maxCapacity = maxCapacity;
     }
 

@@ -1,20 +1,18 @@
 package co.improsvita.web.dto;
 
-import java.math.BigDecimal;
-
 public class AdjustRequest {
 
-    private BigDecimal quantity;
+    private Integer quantity;
     private String reason;
 
     public AdjustRequest() {
     }
 
-    public BigDecimal getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(BigDecimal quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 

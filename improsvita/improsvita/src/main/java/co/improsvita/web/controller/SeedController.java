@@ -8,7 +8,6 @@ import co.improsvita.web.dto.SeedResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -109,7 +108,7 @@ public class SeedController {
 
     @GetMapping("/stock-less/{stock}")
     public ResponseEntity<List<SeedResponse>> getSeedsByStockLess(@PathVariable String stock) {
-        List<SeedResponse> seeds = seedService.getSeedsByStockLess(new BigDecimal(stock))
+        List<SeedResponse> seeds = seedService.getSeedsByStockLess(Long.valueOf(stock))
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());

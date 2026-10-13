@@ -1,16 +1,14 @@
 package co.improsvita.web.dto;
 
-import java.math.BigDecimal;
-
 public class StockResponse {
 
     private Integer seedId;
-    private BigDecimal totalAvailable;
+    private Long totalAvailable;
 
     public StockResponse() {
     }
 
-    public StockResponse(Integer seedId, BigDecimal totalAvailable) {
+    public StockResponse(Integer seedId, Long totalAvailable) {
         this.seedId = seedId;
         this.totalAvailable = totalAvailable;
     }
@@ -23,11 +21,11 @@ public class StockResponse {
         this.seedId = seedId;
     }
 
-    public BigDecimal getTotalAvailable() {
+    public Long getTotalAvailable() {
         return totalAvailable;
     }
 
-    public void setTotalAvailable(BigDecimal totalAvailable) {
+    public void setTotalAvailable(Long totalAvailable) {
         this.totalAvailable = totalAvailable;
     }
 }

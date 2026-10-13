@@ -5,7 +5,6 @@ import co.improsvita.domain.model.SeedType;
 import co.improsvita.domain.repository.SeedRepository;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -53,10 +52,10 @@ public class SeedService {
         return seedRepository.getByType(type);
     }
 
-    public List<Seed> getSeedsByStockLess(BigDecimal stock) {
+    public List<Seed> getSeedsByStockLess(Long stock) {
         return seedRepository.getAll()
                 .stream()
-                .filter(seed -> seed.getTotalAvailable() != null && seed.getTotalAvailable().compareTo(stock) < 0)
+                .filter(seed -> seed.getTotalAvailable() != null && seed.getTotalAvailable() < stock)
                 .toList();
     }
 }

@@ -97,26 +97,26 @@ SELECT 10, 2, CURRENT_TIMESTAMP, true WHERE NOT EXISTS (SELECT 1 FROM seeds_supp
 --    available ya neto de los movimientos extra (lote 1: 380, lote 4: 0
 --    DEPLETED, lote 2: 700)
 -- ---------------------------------------------------------------------
-INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status)
-SELECT 1, 1001, 1, 1, DATE '2026-09-01', DATE '2028-09-01', 500, 380, 'AVAILABLE' WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 1 OR lot_number = 1001);
-INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status)
-SELECT 2, 1002, 2, 1, DATE '2026-09-02', DATE '2028-09-02', 750, 700, 'AVAILABLE' WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 2 OR lot_number = 1002);
-INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status)
-SELECT 3, 1003, 3, 1, DATE '2026-09-03', DATE '2028-09-03', 600, 600, 'AVAILABLE' WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 3 OR lot_number = 1003);
-INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status)
-SELECT 4, 1004, 4, 1, DATE '2026-09-04', DATE '2028-03-04', 450, 0, 'DEPLETED' WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 4 OR lot_number = 1004);
-INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status)
-SELECT 5, 1005, 5, 1, DATE '2026-09-05', DATE '2028-09-05', 800, 800, 'AVAILABLE' WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 5 OR lot_number = 1005);
-INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status)
-SELECT 6, 1006, 6, 1, DATE '2026-09-06', DATE '2027-09-06', 350, 350, 'AVAILABLE' WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 6 OR lot_number = 1006);
-INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status)
-SELECT 7, 1007, 7, 1, DATE '2026-09-07', DATE '2028-09-07', 550, 550, 'AVAILABLE' WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 7 OR lot_number = 1007);
-INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status)
-SELECT 8, 1008, 8, 1, DATE '2026-09-08', DATE '2028-09-08', 700, 700, 'AVAILABLE' WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 8 OR lot_number = 1008);
-INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status)
-SELECT 9, 1009, 9, 1, DATE '2026-09-09', DATE '2027-09-09', 400, 400, 'AVAILABLE' WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 9 OR lot_number = 1009);
-INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status)
-SELECT 10, 1010, 10, 1, DATE '2026-09-10', DATE '2028-09-10', 650, 650, 'AVAILABLE' WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 10 OR lot_number = 1010);
+INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status, germination_percent)
+SELECT 1, 1001, 1, 1, DATE '2026-09-01', DATE '2028-09-01', 500, 380, 'AVAILABLE', 85 WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 1 OR lot_number = 1001);
+INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status, germination_percent)
+SELECT 2, 1002, 2, 1, DATE '2026-09-02', DATE '2028-09-02', 750, 700, 'AVAILABLE', 90 WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 2 OR lot_number = 1002);
+INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status, germination_percent)
+SELECT 3, 1003, 3, 1, DATE '2026-09-03', DATE '2028-09-03', 600, 600, 'AVAILABLE', 80 WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 3 OR lot_number = 1003);
+INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status, germination_percent)
+SELECT 4, 1004, 4, 1, DATE '2026-09-04', DATE '2028-03-04', 450, 0, 'DEPLETED', 75 WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 4 OR lot_number = 1004);
+INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status, germination_percent)
+SELECT 5, 1005, 5, 1, DATE '2026-09-05', DATE '2028-09-05', 800, 800, 'AVAILABLE', 88 WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 5 OR lot_number = 1005);
+INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status, germination_percent)
+SELECT 6, 1006, 6, 1, DATE '2026-09-06', DATE '2027-09-06', 350, 350, 'AVAILABLE', 82 WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 6 OR lot_number = 1006);
+INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status, germination_percent)
+SELECT 7, 1007, 7, 1, DATE '2026-09-07', DATE '2028-09-07', 550, 400, 'AVAILABLE', 85 WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 7 OR lot_number = 1007);
+INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status, germination_percent)
+SELECT 8, 1008, 8, 1, DATE '2026-09-08', DATE '2028-09-08', 700, 700, 'AVAILABLE', 90 WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 8 OR lot_number = 1008);
+INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status, germination_percent)
+SELECT 9, 1009, 9, 1, DATE '2026-09-09', DATE '2027-09-09', 400, 400, 'AVAILABLE', 78 WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 9 OR lot_number = 1009);
+INSERT INTO seed_lots (lot_id, lot_number, seed_id, location_id, entry_date, due_date, initial_quantity, available_quantity, status, germination_percent)
+SELECT 10, 1010, 10, 1, DATE '2026-09-10', DATE '2028-09-10', 650, 650, 'AVAILABLE', 86 WHERE NOT EXISTS (SELECT 1 FROM seed_lots WHERE lot_id = 10 OR lot_number = 1010);
 
 -- ---------------------------------------------------------------------
 -- 6. SEED_MOVEMENT: 10 ENTRY (guarda: compuesto lot/type/qty/reason)
@@ -167,7 +167,45 @@ SELECT NULL, 2, 'ADJUSTMENT', -50, TIMESTAMP '2026-09-17 10:00:00', 'Merma por h
 WHERE NOT EXISTS (SELECT 1 FROM seed_movement WHERE lot_id = 2 AND movement_type = 'ADJUSTMENT' AND quantity = -50 AND reason = 'Merma por humedad');
 
 -- ---------------------------------------------------------------------
--- 8. Avanzar secuencias IDENTITY tras inserts con ID fijo
+-- 8. CAMAS (guarda: bed_id O code)
+-- ---------------------------------------------------------------------
+INSERT INTO beds (bed_id, code, max_capacity, active, created_date, last_updated)
+SELECT 1, 'CAMA-A-01', 500, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM beds WHERE bed_id = 1 OR code = 'CAMA-A-01');
+INSERT INTO beds (bed_id, code, max_capacity, active, created_date, last_updated)
+SELECT 2, 'CAMA-A-02', 500, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM beds WHERE bed_id = 2 OR code = 'CAMA-A-02');
+INSERT INTO beds (bed_id, code, max_capacity, active, created_date, last_updated)
+SELECT 3, 'CAMA-A-03', 500, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM beds WHERE bed_id = 3 OR code = 'CAMA-A-03');
+INSERT INTO beds (bed_id, code, max_capacity, active, created_date, last_updated)
+SELECT 4, 'CAMA-A-04', 500, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM beds WHERE bed_id = 4 OR code = 'CAMA-A-04');
+INSERT INTO beds (bed_id, code, max_capacity, active, created_date, last_updated)
+SELECT 5, 'CAMA-A-05', 500, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM beds WHERE bed_id = 5 OR code = 'CAMA-A-05');
+
+-- ---------------------------------------------------------------------
+-- 9. SIEMBRAS (guarda: sowing_id)
+--    1-2 PLANNED (no mueven stock) | 3 IN_PROGRESS + EXIT en lote 7
+-- ---------------------------------------------------------------------
+INSERT INTO sowings (sowing_id, lot_id, bed_id, quantity_sown, sowing_date, expected_germination_date, status, notes, active)
+SELECT 1, 3, 1, 100, DATE '2026-10-08', DATE '2026-10-15', 'PLANNED', 'Siembra programada de arroz en CAMA-A-01.', true
+WHERE NOT EXISTS (SELECT 1 FROM sowings WHERE sowing_id = 1);
+INSERT INTO sowings (sowing_id, lot_id, bed_id, quantity_sown, sowing_date, expected_germination_date, status, notes, active)
+SELECT 2, 5, 2, 200, DATE '2026-10-10', DATE '2026-10-17', 'PLANNED', 'Siembra programada de papa en CAMA-A-02.', true
+WHERE NOT EXISTS (SELECT 1 FROM sowings WHERE sowing_id = 2);
+INSERT INTO sowings (sowing_id, lot_id, bed_id, quantity_sown, sowing_date, expected_germination_date, status, notes, active)
+SELECT 3, 7, 1, 150, DATE '2026-10-02', DATE '2026-10-09', 'IN_PROGRESS', 'Siembra en curso de zanahoria en CAMA-A-01.', true
+WHERE NOT EXISTS (SELECT 1 FROM sowings WHERE sowing_id = 3);
+
+-- EXIT que respalda la siembra 3 (lote 7: 550 - 150 = 400)
+INSERT INTO seed_movement (supplier_id, lot_id, movement_type, quantity, movement_date, reason)
+SELECT NULL, 7, 'EXIT', 150, TIMESTAMP '2026-10-02 09:00:00', 'Siembra en cama CAMA-A-01'
+WHERE NOT EXISTS (SELECT 1 FROM seed_movement WHERE lot_id = 7 AND movement_type = 'EXIT' AND quantity = 150 AND reason = 'Siembra en cama CAMA-A-01');
+
+-- ---------------------------------------------------------------------
+-- 10. Avanzar secuencias IDENTITY tras inserts con ID fijo
 -- ---------------------------------------------------------------------
 SELECT setval(pg_get_serial_sequence('suppliers', 'supplier_id'), (SELECT MAX(supplier_id) FROM suppliers));
 SELECT setval(pg_get_serial_sequence('seeds', 'seed_id'), (SELECT MAX(seed_id) FROM seeds));
@@ -175,3 +213,5 @@ SELECT setval(pg_get_serial_sequence('locations', 'location_id'), (SELECT MAX(lo
 SELECT setval(pg_get_serial_sequence('seeds_suppliers', 'seed_provider_id'), (SELECT MAX(seed_provider_id) FROM seeds_suppliers));
 SELECT setval(pg_get_serial_sequence('seed_lots', 'lot_id'), (SELECT MAX(lot_id) FROM seed_lots));
 SELECT setval(pg_get_serial_sequence('seed_movement', 'transaction_id'), (SELECT MAX(transaction_id) FROM seed_movement));
+SELECT setval(pg_get_serial_sequence('beds', 'bed_id'), (SELECT MAX(bed_id) FROM beds));
+SELECT setval(pg_get_serial_sequence('sowings', 'sowing_id'), (SELECT MAX(sowing_id) FROM sowings));

@@ -5,7 +5,6 @@ import co.improsvita.domain.model.SowingStatus;
 import co.improsvita.domain.repository.SowingRepository;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
@@ -43,18 +42,6 @@ public class SowingService {
 
     public List<Sowing> getSowingsByBedCode(String code) {
         return sowingRepository.getByBedCode(code);
-    }
-
-    public Sowing updateGermination(Integer id, BigDecimal germinatedQuantity) {
-        Sowing sowing = requireSowing(id);
-        if (germinatedQuantity == null || germinatedQuantity.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("La cantidad germinada debe ser mayor o igual a cero");
-        }
-        if (sowing.getQuantitySown() != null && germinatedQuantity.compareTo(sowing.getQuantitySown()) > 0) {
-            throw new IllegalArgumentException("La cantidad germinada no puede superar lo sembrado (" + sowing.getQuantitySown() + ")");
-        }
-        sowing.setGerminatedQuantity(germinatedQuantity);
-        return sowingRepository.save(sowing);
     }
 
     public Sowing changeStatus(Integer id, SowingStatus status) {

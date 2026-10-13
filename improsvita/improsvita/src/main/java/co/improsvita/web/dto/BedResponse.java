@@ -1,12 +1,10 @@
 package co.improsvita.web.dto;
 
-import java.math.BigDecimal;
-
 public class BedResponse {
 
     private Integer id;
     private String code;
-    private BigDecimal maxCapacity;
+    private Integer maxCapacity;
     private Boolean active;
 
     public BedResponse() {
@@ -28,11 +26,11 @@ public class BedResponse {
         this.code = code;
     }
 
-    public BigDecimal getMaxCapacity() {
+    public Integer getMaxCapacity() {
         return maxCapacity;
     }
 
-    public void setMaxCapacity(BigDecimal maxCapacity) {
+    public void setMaxCapacity(Integer maxCapacity) {
         this.maxCapacity = maxCapacity;
     }
 

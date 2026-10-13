@@ -17,7 +17,6 @@ public class SowingMapper {
         sowing.setLotId(entity.getSeedLot() != null ? entity.getSeedLot().getLotId() : null);
         sowing.setBedId(entity.getBed() != null ? entity.getBed().getBedId() : null);
         sowing.setQuantitySown(entity.getQuantitySown());
-        sowing.setGerminatedQuantity(entity.getGerminatedQuantity());
         sowing.setSowingDate(entity.getSowingDate());
         sowing.setExpectedGerminationDate(entity.getExpectedGerminationDate());
         sowing.setStatus(mapStatus(entity.getStatus()));
@@ -33,7 +32,6 @@ public class SowingMapper {
         entity.setSeedLot(lot);
         entity.setBed(bed);
         entity.setQuantitySown(domain.getQuantitySown());
-        entity.setGerminatedQuantity(domain.getGerminatedQuantity());
         entity.setSowingDate(domain.getSowingDate());
         entity.setExpectedGerminationDate(domain.getExpectedGerminationDate());
         entity.setStatus(mapStatus(domain.getStatus()));

@@ -1,18 +1,16 @@
 package co.improsvita.domain.model;
 
-import java.math.BigDecimal;
-
 public class Bed {
 
     private Integer id;
     private String code;
-    private BigDecimal maxCapacity;
+    private Integer maxCapacity;
     private Boolean active;
 
     public Bed() {
     }
 
-    public Bed(Integer id, String code, BigDecimal maxCapacity, Boolean active) {
+    public Bed(Integer id, String code, Integer maxCapacity, Boolean active) {
         this.id = id;
         this.code = code;
         this.maxCapacity = maxCapacity;
@@ -35,11 +33,11 @@ public class Bed {
         this.code = code;
     }
 
-    public BigDecimal getMaxCapacity() {
+    public Integer getMaxCapacity() {
         return maxCapacity;
     }
 
-    public void setMaxCapacity(BigDecimal maxCapacity) {
+    public void setMaxCapacity(Integer maxCapacity) {
         this.maxCapacity = maxCapacity;
     }
 

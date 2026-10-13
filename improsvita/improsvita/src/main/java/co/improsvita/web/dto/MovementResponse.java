@@ -1,6 +1,5 @@
 package co.improsvita.web.dto;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class MovementResponse {
@@ -9,7 +8,7 @@ public class MovementResponse {
     private Integer lotId;
     private Integer supplierId;
     private String movementType;
-    private BigDecimal quantity;
+    private Integer quantity;
     private LocalDateTime movementDate;
     private String reason;
 
@@ -48,11 +47,11 @@ public class MovementResponse {
         this.movementType = movementType;
     }
 
-    public BigDecimal getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(BigDecimal quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
