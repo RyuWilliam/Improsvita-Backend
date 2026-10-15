@@ -1,4 +1,4 @@
-package co.improsvita.improsvita;
+package co.improsvita.domain.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
