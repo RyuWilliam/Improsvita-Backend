@@ -11,8 +11,12 @@ import java.util.Optional;
 
 public interface SeedJpaRepository extends JpaRepository<SeedEntity, Integer> {
     Optional<SeedEntity> findByName(String name);
+
     void deleteByName(String name);
+
     List<SeedEntity> findByType(SeedType type);
+
+    boolean existsByType(SeedType type);
 
     @Query("SELECT ss.seed FROM SeedSupplierEntity ss WHERE ss.supplier.supplierId = :supplierId AND ss.active = true")
     List<SeedEntity> findActiveBySupplierId(@Param("supplierId") Integer supplierId);
