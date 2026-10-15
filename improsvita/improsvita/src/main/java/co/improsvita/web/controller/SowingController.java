@@ -1,5 +1,6 @@
 package co.improsvita.web.controller;
 
+import co.improsvita.domain.service.SowingReviewService;
 import co.improsvita.domain.model.Sowing;
 import co.improsvita.domain.model.SowingStatus;
 import co.improsvita.domain.service.InventoryService;
@@ -19,10 +20,13 @@ public class SowingController {
 
     private final InventoryService inventoryService;
     private final SowingService sowingService;
+    private final SowingReviewService sowingReviewService;
 
-    public SowingController(InventoryService inventoryService, SowingService sowingService) {
+    public SowingController(InventoryService inventoryService, SowingService sowingService,
+                            SowingReviewService sowingReviewService) {
         this.inventoryService = inventoryService;
         this.sowingService = sowingService;
+        this.sowingReviewService = sowingReviewService;
     }
 
     @PostMapping
@@ -106,6 +110,7 @@ public class SowingController {
         response.setStatus(sowing.getStatus() != null ? sowing.getStatus().name() : null);
         response.setNotes(sowing.getNotes());
         response.setActive(sowing.getActive());
+        response.setGerminatedQuantity(sowingReviewService.getLatestGerminatedQuantity(sowing.getId()));
         return response;
     }
 }
