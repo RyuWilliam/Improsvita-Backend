@@ -10,6 +10,7 @@ public class SowRequest {
     private LocalDate sowingDate;
     private LocalDate expectedGerminationDate;
     private String notes;
+    private String status;
 
     public SowRequest() {
     }
@@ -60,5 +61,13 @@ public class SowRequest {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
