@@ -30,7 +30,8 @@ public class SowingController {
         try {
             Sowing sowing = inventoryService.sow(
                     request.getLotId(), request.getBedId(), request.getQuantity(),
-                    request.getSowingDate(), request.getExpectedGerminationDate(), request.getNotes());
+                    request.getSowingDate(), request.getExpectedGerminationDate(), request.getNotes(),
+                    parseStatus(request.getStatus()));
             return ResponseEntity.ok(toResponse(sowing));
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -81,6 +82,17 @@ public class SowingController {
     public ResponseEntity<Void> deleteSowingById(@PathVariable Integer id) {
         sowingService.deleteSowingById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private SowingStatus parseStatus(String status) {
+        if (status == null || status.isBlank()) {
+            return null;
+        }
+        try {
+            return SowingStatus.valueOf(status.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Estado de siembra inválido: " + status);
+        }
     }
 
     private SowingResponse toResponse(Sowing sowing) {

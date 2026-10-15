@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.EnumSet;
+import java.util.Set;
 
 @Service
 public class InventoryService {
@@ -55,6 +57,9 @@ public class InventoryService {
         this.sowingRepository = sowingRepository;
         this.bedRepository = bedRepository;
     }
+
+    private static final Set<SowingStatus> INITIAL_STATUSES =
+        EnumSet.of(SowingStatus.PLANNED, SowingStatus.IN_PROGRESS);
 
     @Transactional
     public SeedLot registerEntry(Integer seedId, Integer supplierId, Integer locationId,
@@ -159,11 +164,17 @@ public class InventoryService {
         return seedLotRepository.getById(lotId);
     }
 
-    @Transactional
+        @Transactional
     public Sowing sow(Integer lotId, Integer bedId, Integer quantity,
-                      LocalDate sowingDate, LocalDate expectedGerminationDate, String notes) {
+                      LocalDate sowingDate, LocalDate expectedGerminationDate, String notes,
+                      SowingStatus status) {
         requirePositive(quantity, "La cantidad sembrada debe ser mayor a cero");
 
+        SowingStatus initialStatus = status != null ? status : SowingStatus.IN_PROGRESS;
+        if (!INITIAL_STATUSES.contains(initialStatus)) {
+            throw new IllegalArgumentException("Estado inicial no permitido: " + initialStatus
+                    + ". Permitidos: " + INITIAL_STATUSES);
+        }
         SeedLot lot = requireLot(lotId);
         Bed bed = bedRepository.getById(bedId);
         if (bed == null) {
@@ -198,7 +209,7 @@ public class InventoryService {
         sowing.setQuantitySown(quantity);
         sowing.setSowingDate(sowingDate != null ? sowingDate : LocalDate.now());
         sowing.setExpectedGerminationDate(expectedGerminationDate);
-        sowing.setStatus(SowingStatus.IN_PROGRESS);
+        sowing.setStatus(initialStatus);
         sowing.setNotes(notes);
         sowing.setActive(true);
         return sowingRepository.save(sowing);
