@@ -1,7 +1,6 @@
 package co.improsvita.domain.service;
 
 import co.improsvita.domain.model.Seed;
-import co.improsvita.domain.model.SeedType;
 import co.improsvita.domain.repository.SeedRepository;
 import org.springframework.stereotype.Service;
 
@@ -48,8 +47,8 @@ public class SeedService {
         return seedRepository.getBySupplierId(supplierId);
     }
 
-    public List<Seed> getSeedsByType(SeedType type) {
-        return seedRepository.getByType(type);
+        public List<Seed> getSeedsByType(String typeName) {
+        return seedRepository.getByTypeName(typeName);
     }
 
     public List<Seed> getSeedsByStockLess(Long stock) {

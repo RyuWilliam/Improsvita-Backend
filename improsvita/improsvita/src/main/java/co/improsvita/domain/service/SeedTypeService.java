@@ -26,6 +26,24 @@ public class SeedTypeService {
         return seedTypeRepository.getById(id);
     }
 
+    public SeedTypeCatalog resolveSeedType(Integer typeId, String typeName) {
+        if (typeId != null) {
+            SeedTypeCatalog seedType = seedTypeRepository.getById(typeId);
+            if (seedType == null) {
+                throw new IllegalArgumentException("Tipo de semilla no encontrado: " + typeId);
+            }
+            return seedType;
+        }
+        if (typeName != null && !typeName.isBlank()) {
+            SeedTypeCatalog seedType = seedTypeRepository.getByName(typeName.trim());
+            if (seedType == null) {
+                throw new IllegalArgumentException("Tipo de semilla no encontrado: " + typeName);
+            }
+            return seedType;
+        }
+        return null;
+    }
+
     public SeedTypeCatalog createSeedType(String name, String description) {
         String cleanName = validateName(name);
         String cleanDescription = validateDescription(description);

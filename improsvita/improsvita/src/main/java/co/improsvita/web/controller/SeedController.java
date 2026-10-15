@@ -1,8 +1,9 @@
 package co.improsvita.web.controller;
 
 import co.improsvita.domain.model.Seed;
-import co.improsvita.domain.model.SeedType;
+import co.improsvita.domain.model.SeedTypeCatalog;
 import co.improsvita.domain.service.SeedService;
+import co.improsvita.domain.service.SeedTypeService;
 import co.improsvita.web.dto.SeedRequest;
 import co.improsvita.web.dto.SeedResponse;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,11 @@ import java.util.stream.Collectors;
 public class SeedController {
 
     private final SeedService seedService;
+    private final SeedTypeService seedTypeService;
 
-    public SeedController(SeedService seedService) {
+    public SeedController(SeedService seedService, SeedTypeService seedTypeService) {
         this.seedService = seedService;
+        this.seedTypeService = seedTypeService;
     }
 
     @GetMapping
@@ -49,30 +52,47 @@ public class SeedController {
     }
 
     @PostMapping
-    public ResponseEntity<SeedResponse> createSeed(@RequestBody SeedRequest request) {
-        Seed seed = new Seed();
-        seed.setName(request.getName());
-        seed.setType(SeedType.valueOf(request.getType()));
-        seed.setDescription(request.getDescription());
-        seed.setActive(true);
+    public ResponseEntity<?> createSeed(@RequestBody SeedRequest request) {
+        try {
+            SeedTypeCatalog seedType = seedTypeService.resolveSeedType(request.getTypeId(), request.getType());
+            if (seedType == null) {
+                throw new IllegalArgumentException("El tipo de semilla es obligatorio (typeId o type)");
+            }
 
-        Seed created = seedService.createSeed(seed);
-        return ResponseEntity.ok(toResponse(created));
+            Seed seed = new Seed();
+            seed.setName(request.getName());
+            seed.setSeedType(seedType);
+            seed.setDescription(request.getDescription());
+            seed.setActive(true);
+
+            Seed created = seedService.createSeed(seed);
+            return ResponseEntity.ok(toResponse(created));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SeedResponse> updateSeed(@PathVariable Integer id, @RequestBody SeedRequest request) {
+    public ResponseEntity<?> updateSeed(@PathVariable Integer id, @RequestBody SeedRequest request) {
         Seed existing = seedService.getSeedById(id);
         if (existing == null) {
             return ResponseEntity.notFound().build();
         }
 
-        existing.setName(request.getName());
-        existing.setType(SeedType.valueOf(request.getType()));
-        existing.setDescription(request.getDescription());
+        try {
+            SeedTypeCatalog seedType = seedTypeService.resolveSeedType(request.getTypeId(), request.getType());
 
-        Seed updated = seedService.updateSeed(existing);
-        return ResponseEntity.ok(toResponse(updated));
+            existing.setName(request.getName());
+            if (seedType != null) {
+                existing.setSeedType(seedType);
+            }
+            existing.setDescription(request.getDescription());
+
+            Seed updated = seedService.updateSeed(existing);
+            return ResponseEntity.ok(toResponse(updated));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -89,8 +109,7 @@ public class SeedController {
 
     @GetMapping("/type/{type}")
     public ResponseEntity<List<SeedResponse>> getSeedsByType(@PathVariable String type) {
-        SeedType seedType = SeedType.valueOf(type);
-        List<SeedResponse> seeds = seedService.getSeedsByType(seedType)
+        List<SeedResponse> seeds = seedService.getSeedsByType(type)
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
@@ -119,7 +138,8 @@ public class SeedController {
         SeedResponse response = new SeedResponse();
         response.setId(seed.getId());
         response.setName(seed.getName());
-        response.setType(seed.getType() != null ? seed.getType().name() : null);
+        response.setTypeId(seed.getSeedType() != null ? seed.getSeedType().getId() : null);
+        response.setType(seed.getSeedType() != null ? seed.getSeedType().getName() : null);
         response.setDescription(seed.getDescription());
         response.setTotalAvailable(seed.getTotalAvailable());
         response.setActive(seed.getActive());

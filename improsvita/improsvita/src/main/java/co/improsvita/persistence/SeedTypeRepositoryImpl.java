@@ -4,7 +4,6 @@ import co.improsvita.domain.model.SeedTypeCatalog;
 import co.improsvita.domain.repository.SeedTypeRepository;
 import co.improsvita.persistence.crud.SeedJpaRepository;
 import co.improsvita.persistence.crud.SeedTypeJpaRepository;
-import co.improsvita.persistence.enums.SeedType;
 import co.improsvita.persistence.mapper.SeedTypeMapper;
 import org.springframework.stereotype.Repository;
 
@@ -58,14 +57,6 @@ public class SeedTypeRepositoryImpl implements SeedTypeRepository {
 
     @Override
     public boolean isInUse(Integer id) {
-        SeedTypeCatalog seedType = getById(id);
-        if (seedType == null) {
-            return false;
-        }
-        try {
-            return seedJpaRepository.existsByType(SeedType.valueOf(seedType.getName()));
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
+        return seedJpaRepository.existsBySeedType_Id(id);
     }
 }

@@ -1,7 +1,6 @@
 package co.improsvita.domain.repository;
 
 import co.improsvita.domain.model.Seed;
-import co.improsvita.domain.model.SeedType;
 
 import java.util.List;
 
@@ -13,6 +12,6 @@ public interface SeedRepository {
     void deleteByName(String name);
     void deleteById(Integer id);
     List<Seed> getBySupplierId(Integer supplierId);
-    List<Seed> getByType(SeedType type);
+    List<Seed> getByTypeName(String typeName);
     Long getStockBySeedId(Integer seedId);
 }

@@ -26,6 +26,10 @@ public class SeedEntity {
     @Column(name = "seed_type")
     private SeedType type;
 
+    @ManyToOne
+    @JoinColumn(name = "seed_type_id")
+    private SeedTypeEntity seedType;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 
@@ -129,5 +133,13 @@ public class SeedEntity {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+    
+    public SeedTypeEntity getSeedType() {
+        return seedType;
+    }
+
+    public void setSeedType(SeedTypeEntity seedType) {
+        this.seedType = seedType;
     }
 }

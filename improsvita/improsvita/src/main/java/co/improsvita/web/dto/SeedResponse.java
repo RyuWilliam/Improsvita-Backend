@@ -5,6 +5,7 @@ public class SeedResponse {
     private Integer id;
     private String name;
     private String type;
+    private Integer typeId;
     private String description;
     private Long totalAvailable;
     private Boolean active;
@@ -67,5 +68,12 @@ public class SeedResponse {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+        public Integer getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Integer typeId) {
+        this.typeId = typeId;
     }
 }

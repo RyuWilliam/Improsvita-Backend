@@ -4,7 +4,7 @@ public class Seed {
 
     private Integer id;
     private String name;
-    private SeedType type;
+    private SeedTypeCatalog seedType;
     private String description;
     private Boolean active;
 
@@ -13,10 +13,10 @@ public class Seed {
     public Seed() {
     }
 
-    public Seed(Integer id, String name, SeedType type, String description, Boolean active) {
+    public Seed(Integer id, String name, SeedTypeCatalog seedType, String description, Boolean active) {
         this.id = id;
         this.name = name;
-        this.type = type;
+        this.seedType = seedType;
         this.description = description;
         this.active = active;
     }
@@ -37,12 +37,12 @@ public class Seed {
         this.name = name;
     }
 
-    public SeedType getType() {
-        return type;
+    public SeedTypeCatalog getSeedType() {
+        return seedType;
     }
 
-    public void setType(SeedType type) {
-        this.type = type;
+    public void setSeedType(SeedTypeCatalog seedType) {
+        this.seedType = seedType;
     }
 
     public String getDescription() {

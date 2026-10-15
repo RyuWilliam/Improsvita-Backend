@@ -99,4 +99,26 @@ class SeedTypeServiceTest {
 
         assertNull(seedTypeService.getSeedTypeById(99));
     }
+
+        @Test
+    void resolve_porId_devuelveElTipo() {
+        when(seedTypeRepository.getById(1)).thenReturn(existing(1, "HYBRID"));
+
+        assertEquals("HYBRID", seedTypeService.resolveSeedType(1, null).getName());
+    }
+
+    @Test
+    void resolve_porNombreDeTextoViejo_devuelveElTipo() {
+        when(seedTypeRepository.getByName("HYBRID")).thenReturn(existing(1, "HYBRID"));
+
+        assertEquals(1, seedTypeService.resolveSeedType(null, " HYBRID ").getId());
+    }
+
+    @Test
+    void resolve_sinDatos_devuelveNullYConIdInexistenteLanzaError() {
+        assertNull(seedTypeService.resolveSeedType(null, "  "));
+
+        when(seedTypeRepository.getById(99)).thenReturn(null);
+        assertThrows(IllegalArgumentException.class, () -> seedTypeService.resolveSeedType(99, null));
+    }
 }

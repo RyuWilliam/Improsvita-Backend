@@ -4,6 +4,7 @@ public class SeedRequest {
 
     private String name;
     private String type;
+    private Integer typeId;
     private String description;
 
     public SeedRequest() {
@@ -37,5 +38,12 @@ public class SeedRequest {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+    public Integer getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Integer typeId) {
+        this.typeId = typeId;
     }
 }
