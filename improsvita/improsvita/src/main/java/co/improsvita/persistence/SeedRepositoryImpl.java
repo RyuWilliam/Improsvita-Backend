@@ -1,11 +1,12 @@
 package co.improsvita.persistence;
 
 import co.improsvita.domain.model.Seed;
-import co.improsvita.domain.model.SeedType;
 import co.improsvita.domain.repository.SeedRepository;
 import co.improsvita.persistence.crud.SeedJpaRepository;
 import co.improsvita.persistence.crud.SeedLotJpaRepository;
+import co.improsvita.persistence.crud.SeedTypeJpaRepository;
 import co.improsvita.persistence.entities.SeedEntity;
+import co.improsvita.persistence.entities.SeedTypeEntity;
 import co.improsvita.persistence.mapper.SeedMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,10 +20,14 @@ public class SeedRepositoryImpl implements SeedRepository {
 
     private final SeedJpaRepository seedJpaRepository;
     private final SeedLotJpaRepository seedLotJpaRepository;
+    private final SeedTypeJpaRepository seedTypeJpaRepository;
 
-    public SeedRepositoryImpl(SeedJpaRepository seedJpaRepository, SeedLotJpaRepository seedLotJpaRepository) {
+    public SeedRepositoryImpl(SeedJpaRepository seedJpaRepository,
+                              SeedLotJpaRepository seedLotJpaRepository,
+                              SeedTypeJpaRepository seedTypeJpaRepository) {
         this.seedJpaRepository = seedJpaRepository;
         this.seedLotJpaRepository = seedLotJpaRepository;
+        this.seedTypeJpaRepository = seedTypeJpaRepository;
     }
 
     @Override
@@ -51,6 +56,12 @@ public class SeedRepositoryImpl implements SeedRepository {
     @Transactional
     public Seed save(Seed seed) {
         SeedEntity entity = SeedMapper.toEntity(seed);
+        if (seed.getSeedType() != null && seed.getSeedType().getId() != null) {
+            Integer seedTypeId = seed.getSeedType().getId();
+            SeedTypeEntity seedType = seedTypeJpaRepository.findById(seedTypeId)
+                    .orElseThrow(() -> new IllegalArgumentException("Tipo de semilla no encontrado: " + seedTypeId));
+            entity.setSeedType(seedType);
+        }
         SeedEntity saved = seedJpaRepository.save(entity);
         return toDomainWithStock(saved);
     }
@@ -76,13 +87,8 @@ public class SeedRepositoryImpl implements SeedRepository {
     }
 
     @Override
-    public List<Seed> getByType(SeedType type) {
-        co.improsvita.persistence.enums.SeedType entityType = switch (type) {
-            case HYBRID -> co.improsvita.persistence.enums.SeedType.HYBRID;
-            case TRADITIONAL -> co.improsvita.persistence.enums.SeedType.TRADITIONAL;
-            case MODIFIED -> co.improsvita.persistence.enums.SeedType.MODIFIED;
-        };
-        return seedJpaRepository.findByType(entityType)
+    public List<Seed> getByTypeName(String typeName) {
+        return seedJpaRepository.findBySeedType_NameIgnoreCase(typeName)
                 .stream()
                 .map(this::toDomainWithStock)
                 .collect(Collectors.toList());
