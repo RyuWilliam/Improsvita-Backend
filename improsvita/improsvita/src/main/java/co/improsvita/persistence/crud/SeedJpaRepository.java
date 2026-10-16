@@ -12,7 +12,6 @@ public interface SeedJpaRepository extends JpaRepository<SeedEntity, Integer> {
     Optional<SeedEntity> findByName(String name);
     void deleteByName(String name);
     List<SeedEntity> findBySeedType_NameIgnoreCase(String name);
-    List<SeedEntity> findBySeedTypeIsNull();
     boolean existsBySeedType_Id(Integer seedTypeId);
 
     @Query("SELECT ss.seed FROM SeedSupplierEntity ss WHERE ss.supplier.supplierId = :supplierId AND ss.active = true")

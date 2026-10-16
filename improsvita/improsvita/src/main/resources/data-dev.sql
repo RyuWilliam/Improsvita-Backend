@@ -18,46 +18,59 @@ SELECT 2, 'AgroSeed Colombia', '3119876543', 'ventas@agroseed.co', CURRENT_TIMES
 WHERE NOT EXISTS (SELECT 1 FROM suppliers WHERE supplier_id = 2 OR email = 'ventas@agroseed.co');
 
 -- ---------------------------------------------------------------------
+-- 1b. SEED_TYPES (catálogo, IDs fijos 1-3; Seeds referencia por FK)
+-- ---------------------------------------------------------------------
+INSERT INTO seed_types (seed_type_id, name, description)
+SELECT 1, 'HYBRID', 'Semilla híbrida'
+WHERE NOT EXISTS (SELECT 1 FROM seed_types WHERE seed_type_id = 1 OR name = 'HYBRID');
+INSERT INTO seed_types (seed_type_id, name, description)
+SELECT 2, 'TRADITIONAL', 'Semilla tradicional'
+WHERE NOT EXISTS (SELECT 1 FROM seed_types WHERE seed_type_id = 2 OR name = 'TRADITIONAL');
+INSERT INTO seed_types (seed_type_id, name, description)
+SELECT 3, 'MODIFIED', 'Semilla modificada'
+WHERE NOT EXISTS (SELECT 1 FROM seed_types WHERE seed_type_id = 3 OR name = 'MODIFIED');
+
+-- ---------------------------------------------------------------------
 -- 2. SEEDS 1-10
 -- ---------------------------------------------------------------------
-INSERT INTO seeds (seed_id, name, seed_type, description, created_date, last_updated, active)
-SELECT 1, 'Frijol Modificado', 'MODIFIED', 'Semilla de frijol modificada para mejorar su resistencia y rendimiento.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+INSERT INTO seeds (seed_id, name, seed_type_id, description, created_date, last_updated, active)
+SELECT 1, 'Frijol Modificado', 3, 'Semilla de frijol modificada para mejorar su resistencia y rendimiento.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
 WHERE NOT EXISTS (SELECT 1 FROM seeds WHERE seed_id = 1 OR name = 'Frijol Modificado');
 
-INSERT INTO seeds (seed_id, name, seed_type, description, created_date, last_updated, active)
-SELECT 2, 'Maíz Híbrido', 'HYBRID', 'Semilla de maíz híbrido seleccionada para obtener un buen rendimiento agrícola.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+INSERT INTO seeds (seed_id, name, seed_type_id, description, created_date, last_updated, active)
+SELECT 2, 'Maíz Híbrido', 1, 'Semilla de maíz híbrido seleccionada para obtener un buen rendimiento agrícola.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
 WHERE NOT EXISTS (SELECT 1 FROM seeds WHERE seed_id = 2 OR name = 'Maíz Híbrido');
 
-INSERT INTO seeds (seed_id, name, seed_type, description, created_date, last_updated, active)
-SELECT 3, 'Arroz Tradicional', 'TRADITIONAL', 'Variedad tradicional de arroz utilizada para cultivos de producción alimentaria.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+INSERT INTO seeds (seed_id, name, seed_type_id, description, created_date, last_updated, active)
+SELECT 3, 'Arroz Tradicional', 2, 'Variedad tradicional de arroz utilizada para cultivos de producción alimentaria.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
 WHERE NOT EXISTS (SELECT 1 FROM seeds WHERE seed_id = 3 OR name = 'Arroz Tradicional');
 
-INSERT INTO seeds (seed_id, name, seed_type, description, created_date, last_updated, active)
-SELECT 4, 'Tomate Híbrido', 'HYBRID', 'Semilla de tomate híbrido con características orientadas a una producción uniforme.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+INSERT INTO seeds (seed_id, name, seed_type_id, description, created_date, last_updated, active)
+SELECT 4, 'Tomate Híbrido', 1, 'Semilla de tomate híbrido con características orientadas a una producción uniforme.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
 WHERE NOT EXISTS (SELECT 1 FROM seeds WHERE seed_id = 4 OR name = 'Tomate Híbrido');
 
-INSERT INTO seeds (seed_id, name, seed_type, description, created_date, last_updated, active)
-SELECT 5, 'Papa Modificada', 'MODIFIED', 'Semilla de papa modificada para mejorar determinadas características de cultivo.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+INSERT INTO seeds (seed_id, name, seed_type_id, description, created_date, last_updated, active)
+SELECT 5, 'Papa Modificada', 3, 'Semilla de papa modificada para mejorar determinadas características de cultivo.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
 WHERE NOT EXISTS (SELECT 1 FROM seeds WHERE seed_id = 5 OR name = 'Papa Modificada');
 
-INSERT INTO seeds (seed_id, name, seed_type, description, created_date, last_updated, active)
-SELECT 6, 'Lechuga Tradicional', 'TRADITIONAL', 'Variedad tradicional de lechuga destinada a cultivos de producción hortícola.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+INSERT INTO seeds (seed_id, name, seed_type_id, description, created_date, last_updated, active)
+SELECT 6, 'Lechuga Tradicional', 2, 'Variedad tradicional de lechuga destinada a cultivos de producción hortícola.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
 WHERE NOT EXISTS (SELECT 1 FROM seeds WHERE seed_id = 6 OR name = 'Lechuga Tradicional');
 
-INSERT INTO seeds (seed_id, name, seed_type, description, created_date, last_updated, active)
-SELECT 7, 'Zanahoria Híbrida', 'HYBRID', 'Semilla de zanahoria híbrida seleccionada para favorecer un crecimiento uniforme.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+INSERT INTO seeds (seed_id, name, seed_type_id, description, created_date, last_updated, active)
+SELECT 7, 'Zanahoria Híbrida', 1, 'Semilla de zanahoria híbrida seleccionada para favorecer un crecimiento uniforme.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
 WHERE NOT EXISTS (SELECT 1 FROM seeds WHERE seed_id = 7 OR name = 'Zanahoria Híbrida');
 
-INSERT INTO seeds (seed_id, name, seed_type, description, created_date, last_updated, active)
-SELECT 8, 'Soya Modificada', 'MODIFIED', 'Semilla de soya modificada con características orientadas a mejorar su producción.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+INSERT INTO seeds (seed_id, name, seed_type_id, description, created_date, last_updated, active)
+SELECT 8, 'Soya Modificada', 3, 'Semilla de soya modificada con características orientadas a mejorar su producción.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
 WHERE NOT EXISTS (SELECT 1 FROM seeds WHERE seed_id = 8 OR name = 'Soya Modificada');
 
-INSERT INTO seeds (seed_id, name, seed_type, description, created_date, last_updated, active)
-SELECT 9, 'Cebolla Tradicional', 'TRADITIONAL', 'Variedad tradicional de cebolla utilizada en cultivos agrícolas.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+INSERT INTO seeds (seed_id, name, seed_type_id, description, created_date, last_updated, active)
+SELECT 9, 'Cebolla Tradicional', 2, 'Variedad tradicional de cebolla utilizada en cultivos agrícolas.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
 WHERE NOT EXISTS (SELECT 1 FROM seeds WHERE seed_id = 9 OR name = 'Cebolla Tradicional');
 
-INSERT INTO seeds (seed_id, name, seed_type, description, created_date, last_updated, active)
-SELECT 10, 'Pepino Híbrido', 'HYBRID', 'Semilla de pepino híbrido seleccionada para obtener plantas de desarrollo uniforme.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+INSERT INTO seeds (seed_id, name, seed_type_id, description, created_date, last_updated, active)
+SELECT 10, 'Pepino Híbrido', 1, 'Semilla de pepino híbrido seleccionada para obtener plantas de desarrollo uniforme.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
 WHERE NOT EXISTS (SELECT 1 FROM seeds WHERE seed_id = 10 OR name = 'Pepino Híbrido');
 
 -- ---------------------------------------------------------------------
@@ -209,6 +222,7 @@ WHERE NOT EXISTS (SELECT 1 FROM seed_movement WHERE lot_id = 7 AND movement_type
 -- ---------------------------------------------------------------------
 SELECT setval(pg_get_serial_sequence('suppliers', 'supplier_id'), (SELECT MAX(supplier_id) FROM suppliers));
 SELECT setval(pg_get_serial_sequence('seeds', 'seed_id'), (SELECT MAX(seed_id) FROM seeds));
+SELECT setval(pg_get_serial_sequence('seed_types', 'seed_type_id'), (SELECT MAX(seed_type_id) FROM seed_types));
 SELECT setval(pg_get_serial_sequence('locations', 'location_id'), (SELECT MAX(location_id) FROM locations));
 SELECT setval(pg_get_serial_sequence('seeds_suppliers', 'seed_provider_id'), (SELECT MAX(seed_provider_id) FROM seeds_suppliers));
 SELECT setval(pg_get_serial_sequence('seed_lots', 'lot_id'), (SELECT MAX(lot_id) FROM seed_lots));
