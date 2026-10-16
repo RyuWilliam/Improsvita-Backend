@@ -1,6 +1,5 @@
 package co.improsvita.persistence.entities;
 
-import co.improsvita.persistence.enums.SeedType;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -21,10 +20,6 @@ public class SeedEntity {
 
     @Column(nullable = false)
     private String name;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "seed_type")
-    private SeedType type;
 
     @ManyToOne
     @JoinColumn(name = "seed_type_id")
@@ -53,10 +48,9 @@ public class SeedEntity {
     public SeedEntity() {
     }
 
-    public SeedEntity(Integer seedId, String name, SeedType type, String description, LocalDateTime createdDate, LocalDateTime lastUpdated, Boolean active) {
+    public SeedEntity(Integer seedId, String name, String description, LocalDateTime createdDate, LocalDateTime lastUpdated, Boolean active) {
         this.seedId = seedId;
         this.name = name;
-        this.type = type;
         this.description = description;
         this.createdDate = createdDate;
         this.lastUpdated = lastUpdated;
@@ -77,14 +71,6 @@ public class SeedEntity {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public SeedType getType() {
-        return type;
-    }
-
-    public void setType(SeedType type) {
-        this.type = type;
     }
 
     public String getDescription() {
