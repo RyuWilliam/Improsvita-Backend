@@ -84,8 +84,9 @@ public class InventoryService {
         lot.setLotNumber(lotNumber);
         lot.setSeedId(seed.getId());
         lot.setLocationId(location.getId());
-        lot.setEntryDate(entryDate != null ? entryDate : LocalDate.now());
-        lot.setDueDate(dueDate);
+        LocalDate entry = entryDate != null ? entryDate : LocalDate.now();
+        lot.setEntryDate(entry);
+        lot.setDueDate(dueDate != null ? dueDate : entry.plusYears(2));
         lot.setGerminationPercentage(germinationPercentage);
         lot.setInitialQuantity(quantity);
         lot.setAvailableQuantity(quantity);
@@ -105,35 +106,14 @@ public class InventoryService {
     }
 
     @Transactional
-    public SeedLot registerExit(Integer lotId, Integer quantity, String reason) {
-        requirePositive(quantity, "La cantidad de salida debe ser mayor a cero");
-
-        SeedLot lot = requireLot(lotId);
-        if (lot.getAvailableQuantity() < quantity) {
-            throw new IllegalStateException("Stock insuficiente en el lote " + lotId
-                    + ": disponible " + lot.getAvailableQuantity() + ", solicitado " + quantity);
-        }
-
-        SeedMovement movement = new SeedMovement();
-        movement.setLotId(lot.getId());
-        movement.setSupplierId(null);
-        movement.setMovementType(MovementType.EXIT);
-        movement.setQuantity(quantity);
-        movement.setMovementDate(LocalDateTime.now());
-        movement.setReason(reason);
-        seedMovementRepository.save(movement);
-
-        lot.setAvailableQuantity(lot.getAvailableQuantity() - quantity);
-        if (lot.getAvailableQuantity() == 0) {
-            lot.setStatus(SeedLotStatus.DEPLETED);
-        }
-        return seedLotRepository.save(lot);
-    }
-
-    @Transactional
-    public SeedLot adjustStock(Integer lotId, Integer quantity, String reason) {
+    public SeedLot adjustQuantity(Integer lotId, Integer quantity, String reason,
+                                  Integer germinationPercentage) {
         if (quantity == null || quantity == 0) {
-            throw new IllegalArgumentException("La cantidad del ajuste debe ser distinta de cero (positiva suma, negativa resta)");
+            throw new IllegalArgumentException("La cantidad debe ser distinta de cero (positiva suma, negativa resta)");
+        }
+        if (germinationPercentage != null
+                && (germinationPercentage < 1 || germinationPercentage > 100)) {
+            throw new IllegalArgumentException("El porcentaje de germinación debe estar entre 1 y 100");
         }
 
         SeedLot lot = requireLot(lotId);
@@ -152,6 +132,9 @@ public class InventoryService {
         seedMovementRepository.save(movement);
 
         lot.setAvailableQuantity(updated);
+        if (germinationPercentage != null) {
+            lot.setGerminationPercentage(germinationPercentage);
+        }
         if (updated == 0) {
             lot.setStatus(SeedLotStatus.DEPLETED);
         } else if (lot.getStatus() == SeedLotStatus.DEPLETED) {
@@ -164,7 +147,7 @@ public class InventoryService {
         return seedLotRepository.getById(lotId);
     }
 
-        @Transactional
+    @Transactional
     public Sowing sow(Integer lotId, Integer bedId, Integer quantity,
                       LocalDate sowingDate, LocalDate expectedGerminationDate, String notes,
                       SowingStatus status) {

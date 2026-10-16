@@ -10,6 +10,15 @@ public class SowingMapper {
     private SowingMapper() {
     }
 
+    private static Integer estimatedSeedlings(SowingEntity entity) {
+        if (entity.getQuantitySown() == null || entity.getSeedLot() == null
+                || entity.getSeedLot().getGerminationPercentage() == null) {
+            return null;
+        }
+        return (int) (entity.getQuantitySown().longValue()
+                * entity.getSeedLot().getGerminationPercentage() / 100);
+    }
+
     public static Sowing toDomain(SowingEntity entity) {
         if (entity == null) return null;
         Sowing sowing = new Sowing();
@@ -17,6 +26,7 @@ public class SowingMapper {
         sowing.setLotId(entity.getSeedLot() != null ? entity.getSeedLot().getLotId() : null);
         sowing.setBedId(entity.getBed() != null ? entity.getBed().getBedId() : null);
         sowing.setQuantitySown(entity.getQuantitySown());
+        sowing.setEstimatedSeedlings(estimatedSeedlings(entity));
         sowing.setSowingDate(entity.getSowingDate());
         sowing.setExpectedGerminationDate(entity.getExpectedGerminationDate());
         sowing.setStatus(mapStatus(entity.getStatus()));
