@@ -7,8 +7,11 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -111,6 +114,28 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleNoResource(NoResourceFoundException ex) {
         return "Ruta no encontrada: /" + ex.getResourcePath();
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<String> handleUnsupportedMediaType(HttpMediaTypeNotSupportedException ex) {
+        return plainText(HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+                "Content-Type no soportado: " + ex.getContentType() + ". Usa application/json");
+    }
+
+    /**
+     * El cliente no acepta text/plain (que es lo único que producimos). Se fija el
+     * Content-Type a mano para que Spring no reintente negociar y se genere un bucle.
+     */
+    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+    public ResponseEntity<String> handleNotAcceptable(HttpMediaTypeNotAcceptableException ex) {
+        return plainText(HttpStatus.NOT_ACCEPTABLE,
+                "No puedo responder en los formatos que acepta el cliente. Este API solo produce text/plain y application/json");
+    }
+
+    private ResponseEntity<String> plainText(HttpStatus status, String body) {
+        return ResponseEntity.status(status)
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(body);
     }
 
     @ExceptionHandler(Exception.class)
