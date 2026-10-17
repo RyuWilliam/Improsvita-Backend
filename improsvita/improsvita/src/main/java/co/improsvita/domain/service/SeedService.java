@@ -35,10 +35,6 @@ public class SeedService {
         return seedRepository.save(seed);
     }
 
-    public void deleteSeedByName(String name) {
-        seedRepository.deleteByName(name);
-    }
-
     public void deleteSeedById(Integer id) {
         seedRepository.deleteById(id);
     }

@@ -9,6 +9,5 @@ public interface SupplierRepository {
     Supplier getById(Integer id);
     Supplier getByName(String name);
     Supplier save(Supplier supplier);
-    void deleteByName(String name);
     void deleteById(Integer id);
 }

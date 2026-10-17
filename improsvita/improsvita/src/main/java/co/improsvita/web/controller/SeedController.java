@@ -101,12 +101,6 @@ public class SeedController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/name/{name}")
-    public ResponseEntity<Void> deleteSeedByName(@PathVariable String name) {
-        seedService.deleteSeedByName(name);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping("/type/{type}")
     public ResponseEntity<List<SeedResponse>> getSeedsByType(@PathVariable String type) {
         List<SeedResponse> seeds = seedService.getSeedsByType(type)

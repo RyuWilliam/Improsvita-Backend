@@ -10,7 +10,6 @@ import java.util.Optional;
 
 public interface SeedJpaRepository extends JpaRepository<SeedEntity, Integer> {
     Optional<SeedEntity> findByName(String name);
-    void deleteByName(String name);
     List<SeedEntity> findBySeedType_NameIgnoreCase(String name);
     boolean existsBySeedType_Id(Integer seedTypeId);
 

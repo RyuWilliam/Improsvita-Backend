@@ -9,9 +9,7 @@ public interface SeedRepository {
     Seed getById(Integer id);
     Seed getByName(String name);
     Seed save(Seed seed);
-    void deleteByName(String name);
     void deleteById(Integer id);
     List<Seed> getBySupplierId(Integer supplierId);
     List<Seed> getByTypeName(String typeName);
-    Long getStockBySeedId(Integer seedId);
 }

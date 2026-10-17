@@ -219,11 +219,6 @@ public class InventoryService {
         return seedMovementRepository.getByLotId(lotId);
     }
 
-    public Long getStockBySeedId(Integer seedId) {
-        requireSeed(seedId);
-        return seedRepository.getStockBySeedId(seedId);
-    }
-
     private Seed requireSeed(Integer seedId) {
         Seed seed = seedRepository.getById(seedId);
         if (seed == null) {

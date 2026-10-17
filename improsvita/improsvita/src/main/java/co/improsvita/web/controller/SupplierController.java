@@ -80,12 +80,6 @@ public class SupplierController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/name/{name}")
-    public ResponseEntity<Void> deleteSupplierByName(@PathVariable String name) {
-        supplierService.deleteSupplierByName(name);
-        return ResponseEntity.noContent().build();
-    }
-
     private SupplierResponse toResponse(Supplier supplier) {
         SupplierResponse response = new SupplierResponse();
         response.setId(supplier.getId());

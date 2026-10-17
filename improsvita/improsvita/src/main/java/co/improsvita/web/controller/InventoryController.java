@@ -8,7 +8,6 @@ import co.improsvita.web.dto.EntryRequest;
 import co.improsvita.web.dto.LotAdjustRequest;
 import co.improsvita.web.dto.MovementResponse;
 import co.improsvita.web.dto.SeedLotResponse;
-import co.improsvita.web.dto.StockResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -87,15 +86,6 @@ public class InventoryController {
                     .map(this::toMovementResponse)
                     .collect(Collectors.toList());
             return ResponseEntity.ok(movements);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @GetMapping("/stock/seed/{seedId}")
-    public ResponseEntity<?> getStockBySeed(@PathVariable Integer seedId) {
-        try {
-            return ResponseEntity.ok(new StockResponse(seedId, inventoryService.getStockBySeedId(seedId)));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

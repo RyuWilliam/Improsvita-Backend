@@ -35,10 +35,6 @@ public class SupplierService {
         return supplierRepository.save(supplier);
     }
 
-    public void deleteSupplierByName(String name) {
-        supplierRepository.deleteByName(name);
-    }
-
     public void deleteSupplierById(Integer id) {
         supplierRepository.deleteById(id);
     }
