@@ -6,6 +6,7 @@ import co.improsvita.domain.model.VisitResult;
 import co.improsvita.domain.service.SowingService;
 import co.improsvita.domain.service.VisitService;
 import co.improsvita.web.dto.VisitRequest;
+import jakarta.validation.Valid;
 import co.improsvita.web.dto.VisitResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class VisitController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createVisit(@PathVariable Integer sowingId, @RequestBody VisitRequest request) {
+    public ResponseEntity<?> createVisit(@PathVariable Integer sowingId, @Valid @RequestBody VisitRequest request) {
         if (sowingService.getSowingById(sowingId) == null) {
             return ResponseEntity.notFound().build();
         }
@@ -55,7 +56,7 @@ public class VisitController {
 
     @PutMapping("/{visitId}")
     public ResponseEntity<?> updateVisit(@PathVariable Integer sowingId, @PathVariable Integer visitId,
-                                         @RequestBody VisitRequest request) {
+                                         @Valid @RequestBody VisitRequest request) {
         try {
             Visit visit = visitService.updateVisit(
                     visitId, request.getVisitDate(), request.getSuitableEstimated(),

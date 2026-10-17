@@ -5,6 +5,7 @@ import co.improsvita.domain.model.SeedTypeCatalog;
 import co.improsvita.domain.service.SeedService;
 import co.improsvita.domain.service.SeedTypeService;
 import co.improsvita.web.dto.SeedRequest;
+import jakarta.validation.Valid;
 import co.improsvita.web.dto.SeedResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,7 +53,7 @@ public class SeedController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createSeed(@RequestBody SeedRequest request) {
+    public ResponseEntity<?> createSeed(@Valid @RequestBody SeedRequest request) {
         try {
             SeedTypeCatalog seedType = seedTypeService.resolveSeedType(request.getTypeId(), request.getType());
             if (seedType == null) {
@@ -73,7 +74,7 @@ public class SeedController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateSeed(@PathVariable Integer id, @RequestBody SeedRequest request) {
+    public ResponseEntity<?> updateSeed(@PathVariable Integer id, @Valid @RequestBody SeedRequest request) {
         Seed existing = seedService.getSeedById(id);
         if (existing == null) {
             return ResponseEntity.notFound().build();

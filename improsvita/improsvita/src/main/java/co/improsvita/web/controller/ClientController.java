@@ -3,6 +3,7 @@ package co.improsvita.web.controller;
 import co.improsvita.domain.model.Client;
 import co.improsvita.domain.service.ClientService;
 import co.improsvita.web.dto.ClientRequest;
+import jakarta.validation.Valid;
 import co.improsvita.web.dto.ClientResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +49,7 @@ public class ClientController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createClient(@RequestBody ClientRequest request) {
+    public ResponseEntity<?> createClient(@Valid @RequestBody ClientRequest request) {
         try {
             Client client = new Client();
             client.setName(request.getName());
@@ -64,7 +65,7 @@ public class ClientController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateClient(@PathVariable Integer id, @RequestBody ClientRequest request) {
+    public ResponseEntity<?> updateClient(@PathVariable Integer id, @Valid @RequestBody ClientRequest request) {
         Client existing = clientService.getClientById(id);
         if (existing == null) {
             return ResponseEntity.notFound().build();

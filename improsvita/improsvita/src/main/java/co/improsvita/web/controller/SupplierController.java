@@ -3,6 +3,7 @@ package co.improsvita.web.controller;
 import co.improsvita.domain.model.Supplier;
 import co.improsvita.domain.service.SupplierService;
 import co.improsvita.web.dto.SupplierRequest;
+import jakarta.validation.Valid;
 import co.improsvita.web.dto.SupplierResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +49,7 @@ public class SupplierController {
     }
 
     @PostMapping
-    public ResponseEntity<SupplierResponse> createSupplier(@RequestBody SupplierRequest request) {
+    public ResponseEntity<SupplierResponse> createSupplier(@Valid @RequestBody SupplierRequest request) {
         Supplier supplier = new Supplier();
         supplier.setName(request.getName());
         supplier.setPhone(request.getPhone());
@@ -60,7 +61,7 @@ public class SupplierController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SupplierResponse> updateSupplier(@PathVariable Integer id, @RequestBody SupplierRequest request) {
+    public ResponseEntity<SupplierResponse> updateSupplier(@PathVariable Integer id, @Valid @RequestBody SupplierRequest request) {
         Supplier existing = supplierService.getSupplierById(id);
         if (existing == null) {
             return ResponseEntity.notFound().build();
