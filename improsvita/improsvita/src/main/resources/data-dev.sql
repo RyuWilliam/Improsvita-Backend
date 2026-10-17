@@ -212,9 +212,9 @@ INSERT INTO sowings (sowing_id, lot_id, bed_id, quantity_sown, sowing_date, expe
 SELECT 3, 7, 1, 150, DATE '2026-10-02', DATE '2026-10-09', 'IN_PROGRESS', 'Siembra en curso de zanahoria en CAMA-A-01.', true
 WHERE NOT EXISTS (SELECT 1 FROM sowings WHERE sowing_id = 3);
 
--- EXIT que respalda la siembra 3 (lote 7: 550 - 150 = 400)
-INSERT INTO seed_movement (supplier_id, lot_id, movement_type, quantity, movement_date, reason)
-SELECT NULL, 7, 'EXIT', 150, TIMESTAMP '2026-10-02 09:00:00', 'Siembra en cama CAMA-A-01'
+-- EXIT que respalda la siembra 3 (lote 7: 550 - 150 = 400), ligado a la siembra 3
+INSERT INTO seed_movement (supplier_id, lot_id, sowing_id, movement_type, quantity, movement_date, reason)
+SELECT NULL, 7, 3, 'EXIT', 150, TIMESTAMP '2026-10-02 09:00:00', 'Siembra en cama CAMA-A-01'
 WHERE NOT EXISTS (SELECT 1 FROM seed_movement WHERE lot_id = 7 AND movement_type = 'EXIT' AND quantity = 150 AND reason = 'Siembra en cama CAMA-A-01');
 
 -- ---------------------------------------------------------------------

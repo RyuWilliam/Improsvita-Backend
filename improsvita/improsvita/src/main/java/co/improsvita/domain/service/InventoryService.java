@@ -171,9 +171,22 @@ public class InventoryService {
                     + ": disponible " + lot.getAvailableQuantity() + ", solicitado " + quantity);
         }
 
+        Sowing sowing = new Sowing();
+        sowing.setLotId(lot.getId());
+        sowing.setBedId(bed.getId());
+        sowing.setQuantitySown(quantity);
+        sowing.setSowingDate(sowingDate != null ? sowingDate : LocalDate.now());
+        sowing.setExpectedGerminationDate(expectedGerminationDate);
+        sowing.setStatus(initialStatus);
+        sowing.setNotes(notes);
+        sowing.setActive(true);
+        Sowing savedSowing = sowingRepository.save(sowing);
+
+        // El movimiento EXIT queda ligado a la siembra para poder revertirlo si se elimina.
         SeedMovement movement = new SeedMovement();
         movement.setLotId(lot.getId());
         movement.setSupplierId(null);
+        movement.setSowingId(savedSowing.getId());
         movement.setMovementType(MovementType.EXIT);
         movement.setQuantity(quantity);
         movement.setMovementDate(LocalDateTime.now());
@@ -186,16 +199,7 @@ public class InventoryService {
         }
         seedLotRepository.save(lot);
 
-        Sowing sowing = new Sowing();
-        sowing.setLotId(lot.getId());
-        sowing.setBedId(bed.getId());
-        sowing.setQuantitySown(quantity);
-        sowing.setSowingDate(sowingDate != null ? sowingDate : LocalDate.now());
-        sowing.setExpectedGerminationDate(expectedGerminationDate);
-        sowing.setStatus(initialStatus);
-        sowing.setNotes(notes);
-        sowing.setActive(true);
-        return sowingRepository.save(sowing);
+        return savedSowing;
     }
 
     public List<SeedLot> getAllLots() {

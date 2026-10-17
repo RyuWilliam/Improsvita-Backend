@@ -111,6 +111,7 @@ public class InventoryController {
         response.setId(movement.getId());
         response.setLotId(movement.getLotId());
         response.setSupplierId(movement.getSupplierId());
+        response.setSowingId(movement.getSowingId());
         response.setMovementType(movement.getMovementType() != null ? movement.getMovementType().name() : null);
         response.setQuantity(movement.getQuantity());
         response.setMovementDate(movement.getMovementDate());
