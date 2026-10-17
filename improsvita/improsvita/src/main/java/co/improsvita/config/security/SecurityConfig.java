@@ -65,7 +65,7 @@ public class SecurityConfig {
                 "https://improsvita-frontend.vercel.app",
                 "https://*.vercel.app"
         ));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
         // Auth es JWT por header Authorization (no cookies), no se necesitan credentials.
@@ -96,10 +96,12 @@ public class SecurityConfig {
                         // Seeds y Suppliers - GETs públicos
                         .requestMatchers(HttpMethod.GET, "/seeds/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/suppliers/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/clients/**").permitAll()
 
-                        // POST/PUT/DELETE solo ADMIN
+                        // POST/PUT/PATCH/DELETE solo ADMIN
                         .requestMatchers(HttpMethod.POST, "/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.PUT, "/**").hasRole(ADMIN)
+                        .requestMatchers(HttpMethod.PATCH, "/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.DELETE, "/**").hasRole(ADMIN)
 
                         // Cualquier otra cosa autenticada
