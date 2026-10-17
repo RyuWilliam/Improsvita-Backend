@@ -42,16 +42,16 @@ public class SupplierRepositoryImpl implements SupplierRepository {
 
     @Override
     public Supplier save(Supplier supplier) {
-        if (supplier.getEmail() != null) {
-            supplierJpaRepository.findByEmail(supplier.getEmail())
-                    .filter(existing -> !existing.getSupplierId().equals(supplier.getId()))
-                    .ifPresent(existing -> {
-                        throw new IllegalStateException("Ya existe un proveedor con el email " + supplier.getEmail());
-                    });
-        }
         var entity = ProviderMapper.toEntity(supplier);
         var saved = supplierJpaRepository.save(entity);
         return ProviderMapper.toDomain(saved);
+    }
+
+    @Override
+    public Supplier getByEmail(String email) {
+        return supplierJpaRepository.findByEmail(email)
+                .map(ProviderMapper::toDomain)
+                .orElse(null);
     }
 
     @Override

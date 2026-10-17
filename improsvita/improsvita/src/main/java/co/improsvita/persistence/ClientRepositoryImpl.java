@@ -43,15 +43,15 @@ public class ClientRepositoryImpl implements ClientRepository {
 
     @Override
     public Client save(Client client) {
-        if (client.getEmail() != null) {
-            clientJpaRepository.findByEmail(client.getEmail())
-                    .filter(existing -> !existing.getClientId().equals(client.getId()))
-                    .ifPresent(existing -> {
-                        throw new IllegalStateException("Ya existe un cliente con el email " + client.getEmail());
-                    });
-        }
         ClientEntity saved = clientJpaRepository.save(ClientMapper.toEntity(client));
         return ClientMapper.toDomain(saved);
+    }
+
+    @Override
+    public Client getByEmail(String email) {
+        return clientJpaRepository.findByEmail(email)
+                .map(ClientMapper::toDomain)
+                .orElse(null);
     }
 
     @Override

@@ -50,18 +50,14 @@ public class ClientController {
 
     @PostMapping
     public ResponseEntity<?> createClient(@Valid @RequestBody ClientRequest request) {
-        try {
-            Client client = new Client();
-            client.setName(request.getName());
-            client.setPhone(request.getPhone());
-            client.setEmail(request.getEmail());
-            client.setActive(true);
+        Client client = new Client();
+        client.setName(request.getName());
+        client.setPhone(request.getPhone());
+        client.setEmail(request.getEmail());
+        client.setActive(true);
 
-            Client created = clientService.createClient(client);
-            return ResponseEntity.ok(toResponse(created));
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        Client created = clientService.createClient(client);
+        return ResponseEntity.ok(toResponse(created));
     }
 
     @PutMapping("/{id}")
@@ -75,12 +71,8 @@ public class ClientController {
         existing.setPhone(request.getPhone());
         existing.setEmail(request.getEmail());
 
-        try {
-            Client updated = clientService.updateClient(existing);
-            return ResponseEntity.ok(toResponse(updated));
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        Client updated = clientService.updateClient(existing);
+        return ResponseEntity.ok(toResponse(updated));
     }
 
     @DeleteMapping("/{id}")

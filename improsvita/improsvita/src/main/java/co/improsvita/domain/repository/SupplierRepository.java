@@ -8,6 +8,7 @@ public interface SupplierRepository {
     List<Supplier> getAll();
     Supplier getById(Integer id);
     Supplier getByName(String name);
+    Supplier getByEmail(String email);
     Supplier save(Supplier supplier);
     void deleteById(Integer id);
 }

@@ -8,6 +8,7 @@ public interface ClientRepository {
     List<Client> getAll();
     Client getById(Integer id);
     Client getByName(String name);
+    Client getByEmail(String email);
     Client save(Client client);
     void deleteById(Integer id);
 }
