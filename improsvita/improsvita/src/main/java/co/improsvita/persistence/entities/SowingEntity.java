@@ -4,6 +4,7 @@ import co.improsvita.persistence.enums.SowingStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "sowings",
@@ -39,6 +40,9 @@ public class SowingEntity {
 
     @Column(columnDefinition = "TEXT")
     private String notes;
+
+    @OneToMany(mappedBy = "sowing")
+    private List<VisitEntity> visits;
 
     @Column(nullable = false)
     private Boolean active = true;
@@ -108,6 +112,14 @@ public class SowingEntity {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public List<VisitEntity> getVisits() {
+        return visits;
+    }
+
+    public void setVisits(List<VisitEntity> visits) {
+        this.visits = visits;
     }
 
     public Boolean getActive() {
