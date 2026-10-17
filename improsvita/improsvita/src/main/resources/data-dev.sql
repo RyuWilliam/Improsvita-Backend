@@ -218,6 +218,16 @@ SELECT NULL, 7, 'EXIT', 150, TIMESTAMP '2026-10-02 09:00:00', 'Siembra en cama C
 WHERE NOT EXISTS (SELECT 1 FROM seed_movement WHERE lot_id = 7 AND movement_type = 'EXIT' AND quantity = 150 AND reason = 'Siembra en cama CAMA-A-01');
 
 -- ---------------------------------------------------------------------
+-- 9b. CLIENTES (guarda: client_id O email)
+-- ---------------------------------------------------------------------
+INSERT INTO clients (client_id, name, phone, email, created_date, last_updated, active)
+SELECT 1, 'Finca La Esperanza', '3201112233', 'contacto@laesperanza.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+WHERE NOT EXISTS (SELECT 1 FROM clients WHERE client_id = 1 OR email = 'contacto@laesperanza.com');
+INSERT INTO clients (client_id, name, phone, email, created_date, last_updated, active)
+SELECT 2, 'AgroInsumos del Norte', '3014445566', 'ventas@agroinsumosnorte.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+WHERE NOT EXISTS (SELECT 1 FROM clients WHERE client_id = 2 OR email = 'ventas@agroinsumosnorte.com');
+
+-- ---------------------------------------------------------------------
 -- 10. Avanzar secuencias IDENTITY tras inserts con ID fijo
 -- ---------------------------------------------------------------------
 SELECT setval(pg_get_serial_sequence('suppliers', 'supplier_id'), (SELECT MAX(supplier_id) FROM suppliers));
@@ -229,3 +239,4 @@ SELECT setval(pg_get_serial_sequence('seed_lots', 'lot_id'), (SELECT MAX(lot_id)
 SELECT setval(pg_get_serial_sequence('seed_movement', 'transaction_id'), (SELECT MAX(transaction_id) FROM seed_movement));
 SELECT setval(pg_get_serial_sequence('beds', 'bed_id'), (SELECT MAX(bed_id) FROM beds));
 SELECT setval(pg_get_serial_sequence('sowings', 'sowing_id'), (SELECT MAX(sowing_id) FROM sowings));
+SELECT setval(pg_get_serial_sequence('clients', 'client_id'), (SELECT MAX(client_id) FROM clients));
