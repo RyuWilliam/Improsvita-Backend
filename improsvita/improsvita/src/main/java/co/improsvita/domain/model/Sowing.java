@@ -8,6 +8,7 @@ public class Sowing {
     private Integer lotId;
     private Integer bedId;
     private Integer quantitySown;
+    private Integer estimatedSeedlings;
     private LocalDate sowingDate;
     private LocalDate expectedGerminationDate;
     private SowingStatus status;
@@ -47,6 +48,14 @@ public class Sowing {
 
     public void setQuantitySown(Integer quantitySown) {
         this.quantitySown = quantitySown;
+    }
+
+    public Integer getEstimatedSeedlings() {
+        return estimatedSeedlings;
+    }
+
+    public void setEstimatedSeedlings(Integer estimatedSeedlings) {
+        this.estimatedSeedlings = estimatedSeedlings;
     }
 
     public LocalDate getSowingDate() {

@@ -1,11 +1,12 @@
 package co.improsvita.web.dto;
 
-public class AdjustRequest {
+public class LotAdjustRequest {
 
     private Integer quantity;
     private String reason;
+    private Integer germinationPercentage;
 
-    public AdjustRequest() {
+    public LotAdjustRequest() {
     }
 
     public Integer getQuantity() {
@@ -22,5 +23,13 @@ public class AdjustRequest {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public Integer getGerminationPercentage() {
+        return germinationPercentage;
+    }
+
+    public void setGerminationPercentage(Integer germinationPercentage) {
+        this.germinationPercentage = germinationPercentage;
     }
 }

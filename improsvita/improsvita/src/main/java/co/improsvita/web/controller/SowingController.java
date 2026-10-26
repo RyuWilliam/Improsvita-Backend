@@ -105,6 +105,7 @@ public class SowingController {
         response.setLotId(sowing.getLotId());
         response.setBedId(sowing.getBedId());
         response.setQuantitySown(sowing.getQuantitySown());
+        response.setEstimatedSeedlings(sowing.getEstimatedSeedlings());
         response.setSowingDate(sowing.getSowingDate());
         response.setExpectedGerminationDate(sowing.getExpectedGerminationDate());
         response.setStatus(sowing.getStatus() != null ? sowing.getStatus().name() : null);

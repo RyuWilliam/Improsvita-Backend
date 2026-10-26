@@ -4,9 +4,8 @@ import co.improsvita.domain.model.SeedLot;
 import co.improsvita.domain.model.SeedLotStatus;
 import co.improsvita.domain.model.SeedMovement;
 import co.improsvita.domain.service.InventoryService;
-import co.improsvita.web.dto.AdjustRequest;
 import co.improsvita.web.dto.EntryRequest;
-import co.improsvita.web.dto.ExitRequest;
+import co.improsvita.web.dto.LotAdjustRequest;
 import co.improsvita.web.dto.MovementResponse;
 import co.improsvita.web.dto.SeedLotResponse;
 import co.improsvita.web.dto.StockResponse;
@@ -40,20 +39,13 @@ public class InventoryController {
         }
     }
 
-    @PostMapping("/lots/{lotId}/exits")
-    public ResponseEntity<?> registerExit(@PathVariable Integer lotId, @RequestBody ExitRequest request) {
+    @PatchMapping("/lots/{lotId}")
+    public ResponseEntity<?> adjustQuantity(@PathVariable Integer lotId,
+                                            @RequestBody LotAdjustRequest request) {
         try {
-            SeedLot lot = inventoryService.registerExit(lotId, request.getQuantity(), request.getReason());
-            return ResponseEntity.ok(toLotResponse(lot));
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @PostMapping("/lots/{lotId}/adjustments")
-    public ResponseEntity<?> adjustStock(@PathVariable Integer lotId, @RequestBody AdjustRequest request) {
-        try {
-            SeedLot lot = inventoryService.adjustStock(lotId, request.getQuantity(), request.getReason());
+            SeedLot lot = inventoryService.adjustQuantity(
+                    lotId, request.getQuantity(), request.getReason(),
+                    request.getGerminationPercentage());
             return ResponseEntity.ok(toLotResponse(lot));
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
