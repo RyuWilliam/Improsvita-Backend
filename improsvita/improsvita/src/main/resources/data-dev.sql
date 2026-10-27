@@ -18,6 +18,21 @@ SELECT 2, 'AgroSeed Colombia', '3119876543', 'ventas@agroseed.co', CURRENT_TIMES
 WHERE NOT EXISTS (SELECT 1 FROM suppliers WHERE supplier_id = 2 OR email = 'ventas@agroseed.co');
 
 -- ---------------------------------------------------------------------
+-- 1a. CONTACTS (clientes; guarda: contact_id O document_number / email)
+-- ---------------------------------------------------------------------
+INSERT INTO contacts (contact_id, name, document_type, document_number, phone, email, address, created_date, last_updated, active)
+SELECT 1, 'Juan Pérez', 'CC', '1020304050', '3201234567', 'juan.perez@example.com', 'Calle 10 # 5-20, Bogotá', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+WHERE NOT EXISTS (SELECT 1 FROM contacts WHERE contact_id = 1 OR document_number = '1020304050' OR email = 'juan.perez@example.com');
+
+INSERT INTO contacts (contact_id, name, document_type, document_number, phone, email, address, created_date, last_updated, active)
+SELECT 2, 'María Gómez', 'CC', '1098765432', '3159876543', 'maria.gomez@example.com', 'Carrera 7 # 45-12, Medellín', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+WHERE NOT EXISTS (SELECT 1 FROM contacts WHERE contact_id = 2 OR document_number = '1098765432' OR email = 'maria.gomez@example.com');
+
+INSERT INTO contacts (contact_id, name, document_type, document_number, phone, email, address, created_date, last_updated, active)
+SELECT 3, 'Vivero La Esperanza', 'NIT', '900123456-7', '6012345678', 'ventas@viveroesperanza.co', 'Km 5 Vía Funza, Cundinamarca', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+WHERE NOT EXISTS (SELECT 1 FROM contacts WHERE contact_id = 3 OR document_number = '900123456-7' OR email = 'ventas@viveroesperanza.co');
+
+-- ---------------------------------------------------------------------
 -- 1b. SEED_TYPES (catálogo, IDs fijos 1-3; Seeds referencia por FK)
 -- ---------------------------------------------------------------------
 INSERT INTO seed_types (seed_type_id, name, description)
@@ -220,6 +235,7 @@ WHERE NOT EXISTS (SELECT 1 FROM seed_movement WHERE lot_id = 7 AND movement_type
 -- ---------------------------------------------------------------------
 -- 10. Avanzar secuencias IDENTITY tras inserts con ID fijo
 -- ---------------------------------------------------------------------
+SELECT setval(pg_get_serial_sequence('contacts', 'contact_id'), (SELECT MAX(contact_id) FROM contacts));
 SELECT setval(pg_get_serial_sequence('suppliers', 'supplier_id'), (SELECT MAX(supplier_id) FROM suppliers));
 SELECT setval(pg_get_serial_sequence('seeds', 'seed_id'), (SELECT MAX(seed_id) FROM seeds));
 SELECT setval(pg_get_serial_sequence('seed_types', 'seed_type_id'), (SELECT MAX(seed_type_id) FROM seed_types));
