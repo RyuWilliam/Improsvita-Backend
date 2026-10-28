@@ -9,6 +9,7 @@ import co.improsvita.domain.model.SowingStatus;
 import co.improsvita.domain.repository.SeedLotRepository;
 import co.improsvita.domain.repository.SeedMovementRepository;
 import co.improsvita.domain.repository.SowingRepository;
+import co.improsvita.domain.repository.ReservationRepository;
 import co.improsvita.domain.repository.VisitRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,15 +28,18 @@ public class SowingService {
     private final SeedMovementRepository seedMovementRepository;
     private final SeedLotRepository seedLotRepository;
     private final VisitRepository visitRepository;
+    private final ReservationRepository reservationRepository;
 
     public SowingService(SowingRepository sowingRepository,
                          SeedMovementRepository seedMovementRepository,
                          SeedLotRepository seedLotRepository,
-                         VisitRepository visitRepository) {
+                         VisitRepository visitRepository,
+                         ReservationRepository reservationRepository) {
         this.sowingRepository = sowingRepository;
         this.seedMovementRepository = seedMovementRepository;
         this.seedLotRepository = seedLotRepository;
         this.visitRepository = visitRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<Sowing> getAllSowings() {
@@ -85,6 +89,11 @@ public class SowingService {
         if (!visitRepository.getBySowingId(id).isEmpty()) {
             throw new IllegalStateException("La siembra " + id
                     + " tiene visitas registradas. Elimina primero sus visitas.");
+        }
+
+        if (!reservationRepository.getBySowingId(id).isEmpty()) {
+            throw new IllegalStateException("La siembra " + id
+                    + " tiene reservas registradas. Elimina primero sus reservas.");
         }
 
         List<SeedMovement> exits = seedMovementRepository.getBySowingId(id).stream()
