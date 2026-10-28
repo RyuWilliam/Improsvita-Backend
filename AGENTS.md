@@ -47,10 +47,13 @@ $env:SPRING_PROFILES_ACTIVE="prod"; ./gradlew bootRun
 - Error bodies are **plain text** (not JSON). `web/error/GlobalExceptionHandler` is the catch-all for anything the controllers do not catch.
 
 ## API Notes
-- `ClientEntity` mirrors `SupplierEntity` but is unconnected to any other table.
+- `ClientEntity` mirrors `SupplierEntity`; it has no inverse collection, but `reservations` references it.
 - `Visits` hang off `Sowing` (1:N, `mappedBy`, no cascade) and are exposed only as `/sowings/{sowingId}/visits`.
+- `Reservations` link `Sowing` + `Client` and live at top level: `/reservations` with filters `?sowingId=`, `?clientId=`, `?status=`. Reads require a token (not a public catalog).
+- **One live reservation per sowing**: a sowing is blocked while it has a reservation that is neither `CANCELLED` nor inactive. Cancelling frees it. A live reservation is only allowed on `PLANNED`/`IN_PROGRESS` sowings.
+- `reservations.total_price` is `BigDecimal(12,2)` — the only monetary field in the model.
 - Every inventory movement is traceable: `seed_movement.sowing_id` links the EXIT created when sowing, so deleting a sowing can reverse the exact amount consumed.
-- `DELETE /sowings/{id}` returns the consumed stock to the lot (compensating `ADJUSTMENT`) and refuses with 409 if the sowing has visits.
+- `DELETE /sowings/{id}` returns the consumed stock to the lot (compensating `ADJUSTMENT`) and refuses with 409 if the sowing has visits **or reservations**.
 - All quantities are `Integer`; seed `totalAvailable` is a SQL `SUM` exposed as `Long`.
 
 ## Gotchas

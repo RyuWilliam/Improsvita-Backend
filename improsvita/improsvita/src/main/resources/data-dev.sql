@@ -228,6 +228,21 @@ SELECT 2, 'AgroInsumos del Norte', '3014445566', 'ventas@agroinsumosnorte.com', 
 WHERE NOT EXISTS (SELECT 1 FROM clients WHERE client_id = 2 OR email = 'ventas@agroinsumosnorte.com');
 
 -- ---------------------------------------------------------------------
+-- 9c. RESERVAS (guarda: reservation_id)
+--     Una siembra admite una sola reserva viva: siembra 1 (PENDING),
+--     siembra 2 (CONFIRMED) y siembra 3 (CANCELLED, que la deja libre).
+-- ---------------------------------------------------------------------
+INSERT INTO reservations (reservation_id, sowing_id, client_id, reservation_date, total_price, reservation_status, notes, created_date, last_updated, active)
+SELECT 1, 1, 1, DATE '2026-10-12', 450000.00, 'PENDING', 'Reserva de la producción de arroz en CAMA-A-01.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+WHERE NOT EXISTS (SELECT 1 FROM reservations WHERE reservation_id = 1);
+INSERT INTO reservations (reservation_id, sowing_id, client_id, reservation_date, total_price, reservation_status, notes, created_date, last_updated, active)
+SELECT 2, 2, 2, DATE '2026-10-13', 900000.00, 'CONFIRMED', 'Reserva confirmada de la producción de papa en CAMA-A-02.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+WHERE NOT EXISTS (SELECT 1 FROM reservations WHERE reservation_id = 2);
+INSERT INTO reservations (reservation_id, sowing_id, client_id, reservation_date, total_price, reservation_status, notes, created_date, last_updated, active)
+SELECT 3, 3, 1, DATE '2026-10-14', 300000.00, 'CANCELLED', 'Reserva cancelada; la siembra vuelve a estar disponible.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+WHERE NOT EXISTS (SELECT 1 FROM reservations WHERE reservation_id = 3);
+
+-- ---------------------------------------------------------------------
 -- 10. Avanzar secuencias IDENTITY tras inserts con ID fijo
 -- ---------------------------------------------------------------------
 SELECT setval(pg_get_serial_sequence('suppliers', 'supplier_id'), (SELECT MAX(supplier_id) FROM suppliers));
@@ -240,3 +255,4 @@ SELECT setval(pg_get_serial_sequence('seed_movement', 'transaction_id'), (SELECT
 SELECT setval(pg_get_serial_sequence('beds', 'bed_id'), (SELECT MAX(bed_id) FROM beds));
 SELECT setval(pg_get_serial_sequence('sowings', 'sowing_id'), (SELECT MAX(sowing_id) FROM sowings));
 SELECT setval(pg_get_serial_sequence('clients', 'client_id'), (SELECT MAX(client_id) FROM clients));
+SELECT setval(pg_get_serial_sequence('reservations', 'reservation_id'), (SELECT MAX(reservation_id) FROM reservations));
