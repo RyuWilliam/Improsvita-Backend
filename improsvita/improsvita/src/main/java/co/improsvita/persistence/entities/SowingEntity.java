@@ -44,6 +44,9 @@ public class SowingEntity {
     @OneToMany(mappedBy = "sowing")
     private List<VisitEntity> visits;
 
+    @OneToMany(mappedBy = "sowing")
+    private List<ReservationEntity> reservations;
+
     @Column(nullable = false)
     private Boolean active = true;
 
@@ -120,6 +123,14 @@ public class SowingEntity {
 
     public void setVisits(List<VisitEntity> visits) {
         this.visits = visits;
+    }
+
+    public List<ReservationEntity> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<ReservationEntity> reservations) {
+        this.reservations = reservations;
     }
 
     public Boolean getActive() {
