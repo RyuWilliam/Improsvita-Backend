@@ -1,10 +1,13 @@
 package co.improsvita.config.security;
 
+import java.io.IOException;
 import java.util.Arrays;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -65,7 +68,7 @@ public class SecurityConfig {
                 "https://improsvita-frontend.vercel.app",
                 "https://*.vercel.app"
         ));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
         // Auth es JWT por header Authorization (no cookies), no se necesitan credentials.
@@ -85,6 +88,16 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                .exceptionHandling(handling -> handling
+                        // Sin token / token inválido -> 401 (antes Spring devolvía 403 por defecto)
+                        .authenticationEntryPoint((request, response, authException) ->
+                                writeError(response, HttpServletResponse.SC_UNAUTHORIZED,
+                                        "No autenticado: falta el token o es inválido o expiró"))
+                        // Autenticado pero sin permiso -> 403 (aquí sí significa "sin permisos")
+                        .accessDeniedHandler((request, response, accessDeniedException) ->
+                                writeError(response, HttpServletResponse.SC_FORBIDDEN,
+                                        "Acceso denegado: no tienes permisos para esta operación"))
+                )
                 .authorizeHttpRequests(auth -> auth
                         // Públicos
                         .requestMatchers("/auth/**").permitAll()
@@ -93,13 +106,19 @@ public class SecurityConfig {
                         // Swagger / docs (el .html no lo cubre /**)
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
+                        // /error debe ser público: si no, cualquier 404/405/500 que el contenedor
+                        // reenvía como error dispatch queda bloqueado y se ve como un 403 vacío.
+                        .requestMatchers("/error").permitAll()
+
                         // Seeds y Suppliers - GETs públicos
                         .requestMatchers(HttpMethod.GET, "/seeds/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/suppliers/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/clients/**").permitAll()
 
-                        // POST/PUT/DELETE solo ADMIN
+                        // POST/PUT/PATCH/DELETE solo ADMIN
                         .requestMatchers(HttpMethod.POST, "/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.PUT, "/**").hasRole(ADMIN)
+                        .requestMatchers(HttpMethod.PATCH, "/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.DELETE, "/**").hasRole(ADMIN)
 
                         // Cualquier otra cosa autenticada
@@ -108,5 +127,13 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
+    }
+
+    private static void writeError(HttpServletResponse response, int status, String message)
+            throws IOException {
+        response.setStatus(status);
+        response.setContentType(MediaType.TEXT_PLAIN_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(message);
     }
 }

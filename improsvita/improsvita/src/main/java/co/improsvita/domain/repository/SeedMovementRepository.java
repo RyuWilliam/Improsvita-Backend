@@ -8,4 +8,6 @@ public interface SeedMovementRepository {
     SeedMovement save(SeedMovement movement);
     List<SeedMovement> getByLotId(Integer lotId);
     List<SeedMovement> getBySupplierId(Integer supplierId);
+    List<SeedMovement> getBySowingId(Integer sowingId);
+    void detachFromSowing(Integer sowingId);
 }

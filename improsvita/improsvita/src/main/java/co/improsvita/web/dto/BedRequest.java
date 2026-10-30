@@ -1,8 +1,12 @@
 package co.improsvita.web.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class BedRequest {
 
+    @NotBlank(message = "El código de la cama es obligatorio")
     private String code;
+
     private Integer maxCapacity;
     private Boolean active;
 

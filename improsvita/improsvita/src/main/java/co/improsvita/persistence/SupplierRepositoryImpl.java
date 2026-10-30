@@ -48,9 +48,10 @@ public class SupplierRepositoryImpl implements SupplierRepository {
     }
 
     @Override
-    public void deleteByName(String name) {
-        supplierJpaRepository.findByName(name)
-                .ifPresent(supplierJpaRepository::delete);
+    public Supplier getByEmail(String email) {
+        return supplierJpaRepository.findByEmail(email)
+                .map(ProviderMapper::toDomain)
+                .orElse(null);
     }
 
     @Override

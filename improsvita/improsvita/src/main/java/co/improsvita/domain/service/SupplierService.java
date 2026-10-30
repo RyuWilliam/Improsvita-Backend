@@ -28,18 +28,30 @@ public class SupplierService {
     }
 
     public Supplier createSupplier(Supplier supplier) {
+        assertEmailAvailable(supplier.getEmail(), null);
         return supplierRepository.save(supplier);
     }
 
     public Supplier updateSupplier(Supplier supplier) {
+        assertEmailAvailable(supplier.getEmail(), supplier.getId());
         return supplierRepository.save(supplier);
-    }
-
-    public void deleteSupplierByName(String name) {
-        supplierRepository.deleteByName(name);
     }
 
     public void deleteSupplierById(Integer id) {
         supplierRepository.deleteById(id);
+    }
+
+    /**
+     * Regla de negocio en el servicio, no en el @Repository: si se lanza desde
+     * un bean de persistencia, Spring la envuelve en una DataAccessException.
+     */
+    private void assertEmailAvailable(String email, Integer ownId) {
+        if (email == null || email.isBlank()) {
+            return;
+        }
+        Supplier existing = supplierRepository.getByEmail(email);
+        if (existing != null && !existing.getId().equals(ownId)) {
+            throw new IllegalStateException("Ya existe un proveedor con el email " + email);
+        }
     }
 }

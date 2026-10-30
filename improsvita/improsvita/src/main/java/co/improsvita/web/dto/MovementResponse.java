@@ -7,6 +7,7 @@ public class MovementResponse {
     private Integer id;
     private Integer lotId;
     private Integer supplierId;
+    private Integer sowingId;
     private String movementType;
     private Integer quantity;
     private LocalDateTime movementDate;
@@ -37,6 +38,14 @@ public class MovementResponse {
 
     public void setSupplierId(Integer supplierId) {
         this.supplierId = supplierId;
+    }
+
+    public Integer getSowingId() {
+        return sowingId;
+    }
+
+    public void setSowingId(Integer sowingId) {
+        this.sowingId = sowingId;
     }
 
     public String getMovementType() {
