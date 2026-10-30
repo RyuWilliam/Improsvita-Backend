@@ -62,7 +62,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Arrays.asList(
+                "http://localhost",
                 "http://localhost:*",
+                "http://127.0.0.1",
+                "http://127.0.0.1:*",
                 "https://*.ngrok-free.dev",
                 "https://*.ngrok.io",
                 "https://improsvita-frontend.vercel.app",
