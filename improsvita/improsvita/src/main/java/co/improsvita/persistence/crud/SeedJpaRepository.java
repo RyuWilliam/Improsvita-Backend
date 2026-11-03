@@ -14,6 +14,6 @@ public interface SeedJpaRepository extends JpaRepository<SeedEntity, Integer> {
     List<SeedEntity> findBySeedType_NameIgnoreCase(String name);
     boolean existsBySeedType_Id(Integer seedTypeId);
 
-    @Query("SELECT ss.seed FROM SeedSupplierEntity ss WHERE ss.supplier.supplierId = :supplierId AND ss.active = true")
+    @Query("SELECT ss.seed FROM SeedSupplierEntity ss WHERE ss.supplier.contactId = :supplierId AND ss.active = true")
     List<SeedEntity> findActiveBySupplierId(@Param("supplierId") Integer supplierId);
 }

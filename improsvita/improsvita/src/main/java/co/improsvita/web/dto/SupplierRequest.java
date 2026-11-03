@@ -1,9 +1,18 @@
 package co.improsvita.web.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 public class SupplierRequest {
 
+    @NotBlank
     private String name;
+
+    @NotBlank
     private String phone;
+
+    @NotBlank
+    @Email
     private String email;
 
     public SupplierRequest() {

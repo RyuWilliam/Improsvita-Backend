@@ -1,6 +1,8 @@
 package co.improsvita.domain.service;
 
 import co.improsvita.domain.model.Bed;
+import co.improsvita.domain.model.Contact;
+import co.improsvita.domain.model.ContactRole;
 import co.improsvita.domain.model.Location;
 import co.improsvita.domain.model.MovementType;
 import co.improsvita.domain.model.Seed;
@@ -10,7 +12,6 @@ import co.improsvita.domain.model.SeedMovement;
 import co.improsvita.domain.model.SeedSupplier;
 import co.improsvita.domain.model.Sowing;
 import co.improsvita.domain.model.SowingStatus;
-import co.improsvita.domain.model.Supplier;
 import co.improsvita.domain.repository.BedRepository;
 import co.improsvita.domain.repository.LocationRepository;
 import co.improsvita.domain.repository.SeedLotRepository;
@@ -18,7 +19,6 @@ import co.improsvita.domain.repository.SeedMovementRepository;
 import co.improsvita.domain.repository.SeedRepository;
 import co.improsvita.domain.repository.SeedSupplierRepository;
 import co.improsvita.domain.repository.SowingRepository;
-import co.improsvita.domain.repository.SupplierRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +32,7 @@ import java.util.Set;
 public class InventoryService {
 
     private final SeedRepository seedRepository;
-    private final SupplierRepository supplierRepository;
+    private final ContactService contactService;
     private final LocationRepository locationRepository;
     private final SeedLotRepository seedLotRepository;
     private final SeedMovementRepository seedMovementRepository;
@@ -41,7 +41,7 @@ public class InventoryService {
     private final BedRepository bedRepository;
 
     public InventoryService(SeedRepository seedRepository,
-                            SupplierRepository supplierRepository,
+                            ContactService contactService,
                             LocationRepository locationRepository,
                             SeedLotRepository seedLotRepository,
                             SeedMovementRepository seedMovementRepository,
@@ -49,7 +49,7 @@ public class InventoryService {
                             SowingRepository sowingRepository,
                             BedRepository bedRepository) {
         this.seedRepository = seedRepository;
-        this.supplierRepository = supplierRepository;
+        this.contactService = contactService;
         this.locationRepository = locationRepository;
         this.seedLotRepository = seedLotRepository;
         this.seedMovementRepository = seedMovementRepository;
@@ -73,7 +73,7 @@ public class InventoryService {
         }
 
         Seed seed = requireSeed(seedId);
-        Supplier supplier = requireSupplier(supplierId);
+        Contact supplier = contactService.assertHasRole(supplierId, ContactRole.SUPPLIER);
         Location location = requireLocation(locationId);
 
         SeedSupplier bridge = seedSupplierRepository.findActiveBySeedAndSupplier(seed.getId(), supplier.getId())
@@ -230,14 +230,6 @@ public class InventoryService {
             throw new IllegalArgumentException("Semilla no encontrada: " + seedId);
         }
         return seed;
-    }
-
-    private Supplier requireSupplier(Integer supplierId) {
-        Supplier supplier = supplierRepository.getById(supplierId);
-        if (supplier == null) {
-            throw new IllegalArgumentException("Proveedor no encontrado: " + supplierId);
-        }
-        return supplier;
     }
 
     private Location requireLocation(Integer locationId) {

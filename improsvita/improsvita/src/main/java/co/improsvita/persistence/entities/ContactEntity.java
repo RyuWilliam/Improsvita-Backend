@@ -1,22 +1,24 @@
 package co.improsvita.persistence.entities;
 
+import co.improsvita.domain.model.ContactRole;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "suppliers")
-public class SupplierEntity {
+@Table(name = "contacts")
+public class ContactEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "supplier_id")
-    private Integer supplierId;
+    @Column(name = "contact_id")
+    private Integer contactId;
 
     @Column(nullable = false)
     private String name;
@@ -26,12 +28,6 @@ public class SupplierEntity {
 
     @Column(nullable = false, unique = true)
     private String email;
-
-    @OneToMany(mappedBy = "supplier")
-    private List<SeedSupplierEntity> seedSuppliers;
-
-    @OneToMany(mappedBy = "supplier")
-    private List<SeedMovementEntity> movements;
 
     @CreatedDate
     @Column(name = "created_date", updatable = false)
@@ -44,22 +40,28 @@ public class SupplierEntity {
     @Column(nullable = false)
     private Boolean active = true;
 
-    public SupplierEntity() {
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "contact_roles", joinColumns = @JoinColumn(name = "contact_id"))
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Set<ContactRole> roles = new HashSet<>();
+
+    public ContactEntity() {
     }
 
-    public SupplierEntity(String name, String phone, String email) {
+    public ContactEntity(String name, String phone, String email) {
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.active = true;
     }
 
-    public Integer getSupplierId() {
-        return supplierId;
+    public Integer getContactId() {
+        return contactId;
     }
 
-    public void setSupplierId(Integer supplierId) {
-        this.supplierId = supplierId;
+    public void setContactId(Integer contactId) {
+        this.contactId = contactId;
     }
 
     public String getName() {
@@ -86,22 +88,6 @@ public class SupplierEntity {
         this.email = email;
     }
 
-    public List<SeedSupplierEntity> getSeedSuppliers() {
-        return seedSuppliers;
-    }
-
-    public void setSeedSuppliers(List<SeedSupplierEntity> seedSuppliers) {
-        this.seedSuppliers = seedSuppliers;
-    }
-
-    public List<SeedMovementEntity> getMovements() {
-        return movements;
-    }
-
-    public void setMovements(List<SeedMovementEntity> movements) {
-        this.movements = movements;
-    }
-
     public LocalDateTime getCreatedDate() {
         return createdDate;
     }
@@ -124,5 +110,13 @@ public class SupplierEntity {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public Set<ContactRole> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<ContactRole> roles) {
+        this.roles = roles != null ? new HashSet<>(roles) : new HashSet<>();
     }
 }

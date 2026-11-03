@@ -17,7 +17,7 @@ public class SeedMovementEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_id")
-    private SupplierEntity supplier;
+    private ContactEntity supplier;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lot_id", nullable = false)
@@ -47,11 +47,11 @@ public class SeedMovementEntity {
         this.transactionId = transactionId;
     }
 
-    public SupplierEntity getSupplier() {
+    public ContactEntity getSupplier() {
         return supplier;
     }
 
-    public void setSupplier(SupplierEntity supplier) {
+    public void setSupplier(ContactEntity supplier) {
         this.supplier = supplier;
     }
 

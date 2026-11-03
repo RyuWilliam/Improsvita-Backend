@@ -93,9 +93,10 @@ public class SecurityConfig {
                         // Swagger / docs (el .html no lo cubre /**)
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
-                        // Seeds y Suppliers - GETs públicos
+                        // Seeds, Suppliers y Contacts - GETs públicos
                         .requestMatchers(HttpMethod.GET, "/seeds/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/suppliers/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/contacts/**").permitAll()
 
                         // POST/PUT/DELETE solo ADMIN
                         .requestMatchers(HttpMethod.POST, "/**").hasRole(ADMIN)

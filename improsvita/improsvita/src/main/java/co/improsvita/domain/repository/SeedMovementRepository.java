@@ -8,4 +8,5 @@ public interface SeedMovementRepository {
     SeedMovement save(SeedMovement movement);
     List<SeedMovement> getByLotId(Integer lotId);
     List<SeedMovement> getBySupplierId(Integer supplierId);
+    boolean existsBySupplierId(Integer supplierId);
 }

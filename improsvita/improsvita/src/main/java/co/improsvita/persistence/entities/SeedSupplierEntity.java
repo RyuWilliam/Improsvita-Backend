@@ -24,7 +24,7 @@ public class SeedSupplierEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_id", nullable = false)
-    private SupplierEntity supplier;
+    private ContactEntity supplier;
 
     @CreatedDate
     @Column(name = "created_date", updatable = false)
@@ -36,7 +36,7 @@ public class SeedSupplierEntity {
     public SeedSupplierEntity() {
     }
 
-    public SeedSupplierEntity(SeedEntity seed, SupplierEntity supplier) {
+    public SeedSupplierEntity(SeedEntity seed, ContactEntity supplier) {
         this.seed = seed;
         this.supplier = supplier;
         this.active = true;
@@ -58,11 +58,11 @@ public class SeedSupplierEntity {
         this.seed = seed;
     }
 
-    public SupplierEntity getSupplier() {
+    public ContactEntity getSupplier() {
         return supplier;
     }
 
-    public void setSupplier(SupplierEntity supplier) {
+    public void setSupplier(ContactEntity supplier) {
         this.supplier = supplier;
     }
 

@@ -3,6 +3,7 @@ package co.improsvita.web.controller;
 import co.improsvita.domain.model.SeedLot;
 import co.improsvita.domain.model.SeedLotStatus;
 import co.improsvita.domain.model.SeedMovement;
+import co.improsvita.domain.service.ContactNotFoundException;
 import co.improsvita.domain.service.InventoryService;
 import co.improsvita.web.dto.EntryRequest;
 import co.improsvita.web.dto.LotAdjustRequest;
@@ -34,7 +35,7 @@ public class InventoryController {
                     request.getGerminationPercentage(),
                     request.getEntryDate(), request.getDueDate());
             return ResponseEntity.ok(toLotResponse(lot));
-        } catch (IllegalArgumentException | IllegalStateException e) {
+        } catch (IllegalArgumentException | IllegalStateException | ContactNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

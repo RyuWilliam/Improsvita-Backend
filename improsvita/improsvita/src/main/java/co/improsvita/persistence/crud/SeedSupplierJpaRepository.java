@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SeedSupplierJpaRepository extends JpaRepository<SeedSupplierEntity, Integer> {
-    Optional<SeedSupplierEntity> findBySeed_SeedIdAndSupplier_SupplierIdAndActiveTrue(Integer seedId, Integer supplierId);
+    Optional<SeedSupplierEntity> findBySeed_SeedIdAndSupplier_ContactIdAndActiveTrue(Integer seedId, Integer supplierId);
     List<SeedSupplierEntity> findBySeed_SeedId(Integer seedId);
-    List<SeedSupplierEntity> findBySupplier_SupplierId(Integer supplierId);
+    List<SeedSupplierEntity> findBySupplier_ContactId(Integer supplierId);
+    boolean existsBySupplier_ContactId(Integer supplierId);
 }

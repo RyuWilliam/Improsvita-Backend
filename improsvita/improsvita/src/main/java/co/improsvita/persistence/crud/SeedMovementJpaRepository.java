@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface SeedMovementJpaRepository extends JpaRepository<SeedMovementEntity, Integer> {
     List<SeedMovementEntity> findBySeedLot_LotIdOrderByMovementDateAsc(Integer lotId);
-    List<SeedMovementEntity> findBySupplier_SupplierId(Integer supplierId);
+    List<SeedMovementEntity> findBySupplier_ContactId(Integer supplierId);
+    boolean existsBySupplier_ContactId(Integer supplierId);
 }

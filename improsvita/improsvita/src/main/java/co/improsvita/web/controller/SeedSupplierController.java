@@ -1,6 +1,7 @@
 package co.improsvita.web.controller;
 
 import co.improsvita.domain.model.SeedSupplier;
+import co.improsvita.domain.service.ContactNotFoundException;
 import co.improsvita.domain.service.SeedSupplierService;
 import co.improsvita.web.dto.SeedSupplierRequest;
 import co.improsvita.web.dto.SeedSupplierResponse;
@@ -41,6 +42,8 @@ public class SeedSupplierController {
             SeedSupplier bridge = seedSupplierService.link(request.getSeedId(), request.getSupplierId());
             return ResponseEntity.ok(toResponse(bridge));
         } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (ContactNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
