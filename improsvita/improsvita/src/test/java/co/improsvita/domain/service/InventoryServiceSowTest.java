@@ -11,6 +11,7 @@ import co.improsvita.domain.repository.SeedMovementRepository;
 import co.improsvita.domain.repository.SeedRepository;
 import co.improsvita.domain.repository.SeedSupplierRepository;
 import co.improsvita.domain.repository.SowingRepository;
+import co.improsvita.domain.validation.DateRangeValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +38,7 @@ class InventoryServiceSowTest {
     @Mock private SeedSupplierRepository seedSupplierRepository;
     @Mock private SowingRepository sowingRepository;
     @Mock private BedRepository bedRepository;
+    @Mock private DateRangeValidator dateRangeValidator;
 
     @InjectMocks
     private InventoryService inventoryService;
