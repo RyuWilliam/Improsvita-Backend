@@ -113,9 +113,10 @@ public class SecurityConfig {
                         // reenvía como error dispatch queda bloqueado y se ve como un 403 vacío.
                         .requestMatchers("/error").permitAll()
 
-                        // Seeds y Suppliers - GETs públicos
+                        // Seeds, Suppliers, Contacts y Clients - GETs públicos
                         .requestMatchers(HttpMethod.GET, "/seeds/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/suppliers/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/contacts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/clients/**").permitAll()
 
                         // POST/PUT/PATCH/DELETE solo ADMIN

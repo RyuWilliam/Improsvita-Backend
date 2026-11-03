@@ -1,10 +1,10 @@
 package co.improsvita.persistence.mapper;
 
 import co.improsvita.domain.model.SeedMovement;
+import co.improsvita.persistence.entities.ContactEntity;
 import co.improsvita.persistence.entities.SeedLotEntity;
 import co.improsvita.persistence.entities.SeedMovementEntity;
 import co.improsvita.persistence.entities.SowingEntity;
-import co.improsvita.persistence.entities.SupplierEntity;
 
 public class SeedMovementMapper {
 
@@ -16,7 +16,7 @@ public class SeedMovementMapper {
         SeedMovement movement = new SeedMovement();
         movement.setId(entity.getTransactionId());
         movement.setLotId(entity.getSeedLot() != null ? entity.getSeedLot().getLotId() : null);
-        movement.setSupplierId(entity.getSupplier() != null ? entity.getSupplier().getSupplierId() : null);
+        movement.setSupplierId(entity.getSupplier() != null ? entity.getSupplier().getContactId() : null);
         movement.setSowingId(entity.getSowing() != null ? entity.getSowing().getSowingId() : null);
         movement.setMovementType(mapType(entity.getMovementType()));
         movement.setQuantity(entity.getQuantity());
@@ -25,7 +25,7 @@ public class SeedMovementMapper {
         return movement;
     }
 
-    public static SeedMovementEntity toEntity(SeedMovement domain, SeedLotEntity lot, SupplierEntity supplier,
+    public static SeedMovementEntity toEntity(SeedMovement domain, SeedLotEntity lot, ContactEntity supplier,
                                               SowingEntity sowing) {
         if (domain == null) return null;
         SeedMovementEntity entity = new SeedMovementEntity();

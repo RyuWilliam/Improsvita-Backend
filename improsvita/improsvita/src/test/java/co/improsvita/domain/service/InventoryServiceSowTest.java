@@ -11,7 +11,7 @@ import co.improsvita.domain.repository.SeedMovementRepository;
 import co.improsvita.domain.repository.SeedRepository;
 import co.improsvita.domain.repository.SeedSupplierRepository;
 import co.improsvita.domain.repository.SowingRepository;
-import co.improsvita.domain.repository.SupplierRepository;
+import co.improsvita.domain.validation.DateRangeValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,13 +31,14 @@ import static org.mockito.Mockito.when;
 class InventoryServiceSowTest {
 
     @Mock private SeedRepository seedRepository;
-    @Mock private SupplierRepository supplierRepository;
+    @Mock private ContactService contactService;
     @Mock private LocationRepository locationRepository;
     @Mock private SeedLotRepository seedLotRepository;
     @Mock private SeedMovementRepository seedMovementRepository;
     @Mock private SeedSupplierRepository seedSupplierRepository;
     @Mock private SowingRepository sowingRepository;
     @Mock private BedRepository bedRepository;
+    @Mock private DateRangeValidator dateRangeValidator;
 
     @InjectMocks
     private InventoryService inventoryService;

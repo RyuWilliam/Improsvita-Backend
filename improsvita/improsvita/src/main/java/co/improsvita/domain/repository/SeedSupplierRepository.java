@@ -10,4 +10,5 @@ public interface SeedSupplierRepository {
     Optional<SeedSupplier> findActiveBySeedAndSupplier(Integer seedId, Integer supplierId);
     List<SeedSupplier> getBySeedId(Integer seedId);
     List<SeedSupplier> getBySupplierId(Integer supplierId);
+    boolean existsBySupplierId(Integer supplierId);
 }

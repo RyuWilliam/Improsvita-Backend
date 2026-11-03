@@ -2,12 +2,12 @@ package co.improsvita.persistence;
 
 import co.improsvita.domain.model.SeedSupplier;
 import co.improsvita.domain.repository.SeedSupplierRepository;
+import co.improsvita.persistence.crud.ContactJpaRepository;
 import co.improsvita.persistence.crud.SeedJpaRepository;
 import co.improsvita.persistence.crud.SeedSupplierJpaRepository;
-import co.improsvita.persistence.crud.SupplierJpaRepository;
+import co.improsvita.persistence.entities.ContactEntity;
 import co.improsvita.persistence.entities.SeedEntity;
 import co.improsvita.persistence.entities.SeedSupplierEntity;
-import co.improsvita.persistence.entities.SupplierEntity;
 import co.improsvita.persistence.mapper.SeedSupplierMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,29 +22,34 @@ public class SeedSupplierRepositoryImpl implements SeedSupplierRepository {
 
     private final SeedSupplierJpaRepository seedSupplierJpaRepository;
     private final SeedJpaRepository seedJpaRepository;
-    private final SupplierJpaRepository supplierJpaRepository;
+    private final ContactJpaRepository contactJpaRepository;
 
     public SeedSupplierRepositoryImpl(SeedSupplierJpaRepository seedSupplierJpaRepository,
                                       SeedJpaRepository seedJpaRepository,
-                                      SupplierJpaRepository supplierJpaRepository) {
+                                      ContactJpaRepository contactJpaRepository) {
         this.seedSupplierJpaRepository = seedSupplierJpaRepository;
         this.seedJpaRepository = seedJpaRepository;
-        this.supplierJpaRepository = supplierJpaRepository;
+        this.contactJpaRepository = contactJpaRepository;
     }
 
     @Override
     @Transactional
     public SeedSupplier save(SeedSupplier seedSupplier) {
         SeedEntity seed = seedJpaRepository.getReferenceById(seedSupplier.getSeedId());
-        SupplierEntity supplier = supplierJpaRepository.getReferenceById(seedSupplier.getSupplierId());
+        ContactEntity supplier = contactJpaRepository.getReferenceById(seedSupplier.getSupplierId());
         SeedSupplierEntity saved = seedSupplierJpaRepository.save(SeedSupplierMapper.toEntity(seedSupplier, seed, supplier));
         return SeedSupplierMapper.toDomain(saved);
     }
 
     @Override
     public Optional<SeedSupplier> findActiveBySeedAndSupplier(Integer seedId, Integer supplierId) {
-        return seedSupplierJpaRepository.findBySeed_SeedIdAndSupplier_SupplierIdAndActiveTrue(seedId, supplierId)
+        return seedSupplierJpaRepository.findBySeed_SeedIdAndSupplier_ContactIdAndActiveTrue(seedId, supplierId)
                 .map(SeedSupplierMapper::toDomain);
+    }
+
+    @Override
+    public boolean existsBySupplierId(Integer supplierId) {
+        return seedSupplierJpaRepository.existsBySupplier_ContactId(supplierId);
     }
 
     @Override
@@ -57,7 +62,7 @@ public class SeedSupplierRepositoryImpl implements SeedSupplierRepository {
 
     @Override
     public List<SeedSupplier> getBySupplierId(Integer supplierId) {
-        return seedSupplierJpaRepository.findBySupplier_SupplierId(supplierId)
+        return seedSupplierJpaRepository.findBySupplier_ContactId(supplierId)
                 .stream()
                 .map(SeedSupplierMapper::toDomain)
                 .collect(Collectors.toList());

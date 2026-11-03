@@ -1,9 +1,9 @@
 package co.improsvita.domain.service;
 
+import co.improsvita.domain.model.ContactRole;
 import co.improsvita.domain.model.SeedSupplier;
 import co.improsvita.domain.repository.SeedRepository;
 import co.improsvita.domain.repository.SeedSupplierRepository;
-import co.improsvita.domain.repository.SupplierRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,23 +13,21 @@ public class SeedSupplierService {
 
     private final SeedSupplierRepository seedSupplierRepository;
     private final SeedRepository seedRepository;
-    private final SupplierRepository supplierRepository;
+    private final ContactService contactService;
 
     public SeedSupplierService(SeedSupplierRepository seedSupplierRepository,
                                SeedRepository seedRepository,
-                               SupplierRepository supplierRepository) {
+                               ContactService contactService) {
         this.seedSupplierRepository = seedSupplierRepository;
         this.seedRepository = seedRepository;
-        this.supplierRepository = supplierRepository;
+        this.contactService = contactService;
     }
 
     public SeedSupplier link(Integer seedId, Integer supplierId) {
         if (seedRepository.getById(seedId) == null) {
             throw new IllegalArgumentException("Semilla no encontrada: " + seedId);
         }
-        if (supplierRepository.getById(supplierId) == null) {
-            throw new IllegalArgumentException("Proveedor no encontrado: " + supplierId);
-        }
+        contactService.assertHasRole(supplierId, ContactRole.SUPPLIER);
         return seedSupplierRepository.findActiveBySeedAndSupplier(seedId, supplierId)
                 .orElseGet(() -> {
                     SeedSupplier bridge = new SeedSupplier();

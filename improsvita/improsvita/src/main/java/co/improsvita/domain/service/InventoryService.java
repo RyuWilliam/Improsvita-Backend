@@ -1,6 +1,8 @@
 package co.improsvita.domain.service;
 
 import co.improsvita.domain.model.Bed;
+import co.improsvita.domain.model.Contact;
+import co.improsvita.domain.model.ContactRole;
 import co.improsvita.domain.model.Location;
 import co.improsvita.domain.model.MovementType;
 import co.improsvita.domain.model.Seed;
@@ -10,7 +12,6 @@ import co.improsvita.domain.model.SeedMovement;
 import co.improsvita.domain.model.SeedSupplier;
 import co.improsvita.domain.model.Sowing;
 import co.improsvita.domain.model.SowingStatus;
-import co.improsvita.domain.model.Supplier;
 import co.improsvita.domain.repository.BedRepository;
 import co.improsvita.domain.repository.LocationRepository;
 import co.improsvita.domain.repository.SeedLotRepository;
@@ -18,7 +19,7 @@ import co.improsvita.domain.repository.SeedMovementRepository;
 import co.improsvita.domain.repository.SeedRepository;
 import co.improsvita.domain.repository.SeedSupplierRepository;
 import co.improsvita.domain.repository.SowingRepository;
-import co.improsvita.domain.repository.SupplierRepository;
+import co.improsvita.domain.validation.DateRangeValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,30 +33,33 @@ import java.util.Set;
 public class InventoryService {
 
     private final SeedRepository seedRepository;
-    private final SupplierRepository supplierRepository;
+    private final ContactService contactService;
     private final LocationRepository locationRepository;
     private final SeedLotRepository seedLotRepository;
     private final SeedMovementRepository seedMovementRepository;
     private final SeedSupplierRepository seedSupplierRepository;
     private final SowingRepository sowingRepository;
     private final BedRepository bedRepository;
+    private final DateRangeValidator dateRangeValidator;
 
     public InventoryService(SeedRepository seedRepository,
-                            SupplierRepository supplierRepository,
+                            ContactService contactService,
                             LocationRepository locationRepository,
                             SeedLotRepository seedLotRepository,
                             SeedMovementRepository seedMovementRepository,
                             SeedSupplierRepository seedSupplierRepository,
                             SowingRepository sowingRepository,
-                            BedRepository bedRepository) {
+                            BedRepository bedRepository,
+                            DateRangeValidator dateRangeValidator) {
         this.seedRepository = seedRepository;
-        this.supplierRepository = supplierRepository;
+        this.contactService = contactService;
         this.locationRepository = locationRepository;
         this.seedLotRepository = seedLotRepository;
         this.seedMovementRepository = seedMovementRepository;
         this.seedSupplierRepository = seedSupplierRepository;
         this.sowingRepository = sowingRepository;
         this.bedRepository = bedRepository;
+        this.dateRangeValidator = dateRangeValidator;
     }
 
     private static final Set<SowingStatus> INITIAL_STATUSES =
@@ -73,7 +77,7 @@ public class InventoryService {
         }
 
         Seed seed = requireSeed(seedId);
-        Supplier supplier = requireSupplier(supplierId);
+        Contact supplier = contactService.assertHasRole(supplierId, ContactRole.SUPPLIER);
         Location location = requireLocation(locationId);
 
         SeedSupplier bridge = seedSupplierRepository.findActiveBySeedAndSupplier(seed.getId(), supplier.getId())
@@ -93,14 +97,8 @@ public class InventoryService {
         lot.setStatus(SeedLotStatus.AVAILABLE);
         SeedLot saved = seedLotRepository.save(lot);
 
-        SeedMovement movement = new SeedMovement();
-        movement.setLotId(saved.getId());
-        movement.setSupplierId(bridge.getSupplierId());
-        movement.setMovementType(MovementType.ENTRY);
-        movement.setQuantity(quantity);
-        movement.setMovementDate(LocalDateTime.now());
-        movement.setReason("Entrada lote " + lotNumber);
-        seedMovementRepository.save(movement);
+        recordMovement(saved.getId(), bridge.getSupplierId(), null, MovementType.ENTRY, quantity,
+                "Entrada lote " + lotNumber);
 
         return saved;
     }
@@ -122,14 +120,7 @@ public class InventoryService {
             throw new IllegalStateException("El ajuste deja el lote " + lotId + " en negativo: " + updated);
         }
 
-        SeedMovement movement = new SeedMovement();
-        movement.setLotId(lot.getId());
-        movement.setSupplierId(null);
-        movement.setMovementType(MovementType.ADJUSTMENT);
-        movement.setQuantity(quantity);
-        movement.setMovementDate(LocalDateTime.now());
-        movement.setReason(reason);
-        seedMovementRepository.save(movement);
+        recordMovement(lot.getId(), null, null, MovementType.ADJUSTMENT, quantity, reason);
 
         lot.setAvailableQuantity(updated);
         if (germinationPercentage != null) {
@@ -171,11 +162,15 @@ public class InventoryService {
                     + ": disponible " + lot.getAvailableQuantity() + ", solicitado " + quantity);
         }
 
+        LocalDate effectiveSowingDate = sowingDate != null ? sowingDate : LocalDate.now();
+        dateRangeValidator.validateOptionalEnd(effectiveSowingDate, expectedGerminationDate,
+                "fecha de siembra", "fecha estimada de germinación");
+
         Sowing sowing = new Sowing();
         sowing.setLotId(lot.getId());
         sowing.setBedId(bed.getId());
         sowing.setQuantitySown(quantity);
-        sowing.setSowingDate(sowingDate != null ? sowingDate : LocalDate.now());
+        sowing.setSowingDate(effectiveSowingDate);
         sowing.setExpectedGerminationDate(expectedGerminationDate);
         sowing.setStatus(initialStatus);
         sowing.setNotes(notes);
@@ -183,15 +178,8 @@ public class InventoryService {
         Sowing savedSowing = sowingRepository.save(sowing);
 
         // El movimiento EXIT queda ligado a la siembra para poder revertirlo si se elimina.
-        SeedMovement movement = new SeedMovement();
-        movement.setLotId(lot.getId());
-        movement.setSupplierId(null);
-        movement.setSowingId(savedSowing.getId());
-        movement.setMovementType(MovementType.EXIT);
-        movement.setQuantity(quantity);
-        movement.setMovementDate(LocalDateTime.now());
-        movement.setReason("Siembra en cama " + bed.getCode());
-        seedMovementRepository.save(movement);
+        recordMovement(lot.getId(), null, savedSowing.getId(), MovementType.EXIT, quantity,
+                "Siembra en cama " + bed.getCode());
 
         lot.setAvailableQuantity(lot.getAvailableQuantity() - quantity);
         if (lot.getAvailableQuantity() == 0) {
@@ -223,20 +211,25 @@ public class InventoryService {
         return seedMovementRepository.getByLotId(lotId);
     }
 
+    private void recordMovement(Integer lotId, Integer supplierId, Integer sowingId,
+                                MovementType type, Integer quantity, String reason) {
+        SeedMovement movement = new SeedMovement();
+        movement.setLotId(lotId);
+        movement.setSupplierId(supplierId);
+        movement.setSowingId(sowingId);
+        movement.setMovementType(type);
+        movement.setQuantity(quantity);
+        movement.setMovementDate(LocalDateTime.now());
+        movement.setReason(reason);
+        seedMovementRepository.save(movement);
+    }
+
     private Seed requireSeed(Integer seedId) {
         Seed seed = seedRepository.getById(seedId);
         if (seed == null) {
             throw new IllegalArgumentException("Semilla no encontrada: " + seedId);
         }
         return seed;
-    }
-
-    private Supplier requireSupplier(Integer supplierId) {
-        Supplier supplier = supplierRepository.getById(supplierId);
-        if (supplier == null) {
-            throw new IllegalArgumentException("Proveedor no encontrado: " + supplierId);
-        }
-        return supplier;
     }
 
     private Location requireLocation(Integer locationId) {

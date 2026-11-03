@@ -7,15 +7,21 @@
 -- =====================================================================
 
 -- ---------------------------------------------------------------------
--- 1. SUPPLIERS
+-- 1. CONTACTS + CONTACT_ROLES (roles)
 -- ---------------------------------------------------------------------
-INSERT INTO suppliers (supplier_id, name, phone, email, created_date, last_updated, active)
+INSERT INTO contacts (contact_id, name, phone, email, created_date, last_updated, active)
 SELECT 1, 'Semillas del Valle', '3101234567', 'contacto@semillasvalle.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
-WHERE NOT EXISTS (SELECT 1 FROM suppliers WHERE supplier_id = 1 OR email = 'contacto@semillasvalle.com');
+WHERE NOT EXISTS (SELECT 1 FROM contacts WHERE contact_id = 1 OR email = 'contacto@semillasvalle.com');
 
-INSERT INTO suppliers (supplier_id, name, phone, email, created_date, last_updated, active)
+INSERT INTO contacts (contact_id, name, phone, email, created_date, last_updated, active)
 SELECT 2, 'AgroSeed Colombia', '3119876543', 'ventas@agroseed.co', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
-WHERE NOT EXISTS (SELECT 1 FROM suppliers WHERE supplier_id = 2 OR email = 'ventas@agroseed.co');
+WHERE NOT EXISTS (SELECT 1 FROM contacts WHERE contact_id = 2 OR email = 'ventas@agroseed.co');
+
+INSERT INTO contact_roles (contact_id, role)
+SELECT 1, 'SUPPLIER' WHERE NOT EXISTS (SELECT 1 FROM contact_roles WHERE contact_id = 1 AND role = 'SUPPLIER');
+
+INSERT INTO contact_roles (contact_id, role)
+SELECT 2, 'SUPPLIER' WHERE NOT EXISTS (SELECT 1 FROM contact_roles WHERE contact_id = 2 AND role = 'SUPPLIER');
 
 -- ---------------------------------------------------------------------
 -- 1b. SEED_TYPES (catálogo, IDs fijos 1-3; Seeds referencia por FK)
@@ -245,7 +251,7 @@ WHERE NOT EXISTS (SELECT 1 FROM reservations WHERE reservation_id = 3);
 -- ---------------------------------------------------------------------
 -- 10. Avanzar secuencias IDENTITY tras inserts con ID fijo
 -- ---------------------------------------------------------------------
-SELECT setval(pg_get_serial_sequence('suppliers', 'supplier_id'), (SELECT MAX(supplier_id) FROM suppliers));
+SELECT setval(pg_get_serial_sequence('contacts', 'contact_id'), (SELECT MAX(contact_id) FROM contacts));
 SELECT setval(pg_get_serial_sequence('seeds', 'seed_id'), (SELECT MAX(seed_id) FROM seeds));
 SELECT setval(pg_get_serial_sequence('seed_types', 'seed_type_id'), (SELECT MAX(seed_type_id) FROM seed_types));
 SELECT setval(pg_get_serial_sequence('locations', 'location_id'), (SELECT MAX(location_id) FROM locations));

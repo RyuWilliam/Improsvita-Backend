@@ -10,7 +10,8 @@ import java.util.List;
 
 public interface SeedMovementJpaRepository extends JpaRepository<SeedMovementEntity, Integer> {
     List<SeedMovementEntity> findBySeedLot_LotIdOrderByMovementDateAsc(Integer lotId);
-    List<SeedMovementEntity> findBySupplier_SupplierId(Integer supplierId);
+    List<SeedMovementEntity> findBySupplier_ContactId(Integer supplierId);
+    boolean existsBySupplier_ContactId(Integer supplierId);
     List<SeedMovementEntity> findBySowing_SowingId(Integer sowingId);
 
     /** Desliga los movimientos de una siembra antes de borrarla (evita romper la FK). */
