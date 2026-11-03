@@ -5,14 +5,14 @@ import jakarta.validation.constraints.NotBlank;
 
 public class SupplierRequest {
 
-    @NotBlank
+    @NotBlank(message = "El nombre es obligatorio")
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "El teléfono es obligatorio")
     private String phone;
 
-    @NotBlank
-    @Email
+    @NotBlank(message = "El email es obligatorio")
+    @Email(message = "El email no tiene un formato válido")
     private String email;
 
     public SupplierRequest() {

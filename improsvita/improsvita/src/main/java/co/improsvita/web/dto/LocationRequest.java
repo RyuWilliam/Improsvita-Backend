@@ -1,8 +1,12 @@
 package co.improsvita.web.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class LocationRequest {
 
+    @NotBlank(message = "El nombre de la ubicación es obligatorio")
     private String locationName;
+
     private Boolean active;
 
     public LocationRequest() {

@@ -1,8 +1,12 @@
 package co.improsvita.web.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class SeedTypeRequest {
 
+    @NotBlank(message = "El nombre del tipo de semilla es obligatorio")
     private String name;
+
     private String description;
 
     public SeedTypeRequest() {

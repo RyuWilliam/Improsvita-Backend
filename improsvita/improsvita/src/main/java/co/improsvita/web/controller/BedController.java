@@ -3,6 +3,7 @@ package co.improsvita.web.controller;
 import co.improsvita.domain.model.Bed;
 import co.improsvita.domain.service.BedService;
 import co.improsvita.web.dto.BedRequest;
+import jakarta.validation.Valid;
 import co.improsvita.web.dto.BedResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +49,7 @@ public class BedController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createBed(@RequestBody BedRequest request) {
+    public ResponseEntity<?> createBed(@Valid @RequestBody BedRequest request) {
         try {
             Bed bed = new Bed();
             bed.setCode(request.getCode());
@@ -63,7 +64,7 @@ public class BedController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateBed(@PathVariable Integer id, @RequestBody BedRequest request) {
+    public ResponseEntity<?> updateBed(@PathVariable Integer id, @Valid @RequestBody BedRequest request) {
         Bed existing = bedService.getBedById(id);
         if (existing == null) {
             return ResponseEntity.notFound().build();

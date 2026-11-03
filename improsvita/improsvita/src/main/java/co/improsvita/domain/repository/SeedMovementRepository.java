@@ -9,4 +9,6 @@ public interface SeedMovementRepository {
     List<SeedMovement> getByLotId(Integer lotId);
     List<SeedMovement> getBySupplierId(Integer supplierId);
     boolean existsBySupplierId(Integer supplierId);
+    List<SeedMovement> getBySowingId(Integer sowingId);
+    void detachFromSowing(Integer sowingId);
 }

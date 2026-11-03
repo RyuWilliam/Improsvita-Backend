@@ -3,6 +3,7 @@ package co.improsvita.web.controller;
 import co.improsvita.domain.model.Location;
 import co.improsvita.domain.service.LocationService;
 import co.improsvita.web.dto.LocationRequest;
+import jakarta.validation.Valid;
 import co.improsvita.web.dto.LocationResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,7 @@ public class LocationController {
     }
 
     @PostMapping
-    public ResponseEntity<LocationResponse> createLocation(@RequestBody LocationRequest request) {
+    public ResponseEntity<LocationResponse> createLocation(@Valid @RequestBody LocationRequest request) {
         Location location = new Location();
         location.setLocationName(request.getLocationName());
         location.setActive(true);
@@ -49,7 +50,7 @@ public class LocationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LocationResponse> updateLocation(@PathVariable Integer id, @RequestBody LocationRequest request) {
+    public ResponseEntity<LocationResponse> updateLocation(@PathVariable Integer id, @Valid @RequestBody LocationRequest request) {
         Location existing = locationService.getLocationById(id);
         if (existing == null) {
             return ResponseEntity.notFound().build();

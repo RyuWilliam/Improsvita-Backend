@@ -23,6 +23,10 @@ public class SeedMovementEntity {
     @JoinColumn(name = "lot_id", nullable = false)
     private SeedLotEntity seedLot;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sowing_id")
+    private SowingEntity sowing;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "movement_type", nullable = false)
     private MovementType movementType;
@@ -61,6 +65,14 @@ public class SeedMovementEntity {
 
     public void setSeedLot(SeedLotEntity seedLot) {
         this.seedLot = seedLot;
+    }
+
+    public SowingEntity getSowing() {
+        return sowing;
+    }
+
+    public void setSowing(SowingEntity sowing) {
+        this.sowing = sowing;
     }
 
     public MovementType getMovementType() {

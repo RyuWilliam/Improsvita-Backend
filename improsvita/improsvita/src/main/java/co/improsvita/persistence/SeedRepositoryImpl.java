@@ -68,12 +68,6 @@ public class SeedRepositoryImpl implements SeedRepository {
 
     @Override
     @Transactional
-    public void deleteByName(String name) {
-        seedJpaRepository.deleteByName(name);
-    }
-
-    @Override
-    @Transactional
     public void deleteById(Integer id) {
         seedJpaRepository.deleteById(id);
     }
@@ -92,11 +86,6 @@ public class SeedRepositoryImpl implements SeedRepository {
                 .stream()
                 .map(this::toDomainWithStock)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public Long getStockBySeedId(Integer seedId) {
-        return seedLotJpaRepository.sumAvailableBySeedId(seedId);
     }
 
     private Seed toDomainWithStock(SeedEntity entity) {
