@@ -39,6 +39,7 @@ public class InventoryService {
     private final SeedSupplierRepository seedSupplierRepository;
     private final SowingRepository sowingRepository;
     private final BedRepository bedRepository;
+    private final DateRangeValidator dateRangeValidator;
 
     public InventoryService(SeedRepository seedRepository,
                             ContactService contactService,
@@ -47,7 +48,8 @@ public class InventoryService {
                             SeedMovementRepository seedMovementRepository,
                             SeedSupplierRepository seedSupplierRepository,
                             SowingRepository sowingRepository,
-                            BedRepository bedRepository) {
+                            BedRepository bedRepository,
+                            DateRangeValidator dateRangeValidator) {
         this.seedRepository = seedRepository;
         this.contactService = contactService;
         this.locationRepository = locationRepository;
@@ -56,6 +58,7 @@ public class InventoryService {
         this.seedSupplierRepository = seedSupplierRepository;
         this.sowingRepository = sowingRepository;
         this.bedRepository = bedRepository;
+        this.dateRangeValidator = dateRangeValidator;
     }
 
     private static final Set<SowingStatus> INITIAL_STATUSES =
@@ -93,14 +96,7 @@ public class InventoryService {
         lot.setStatus(SeedLotStatus.AVAILABLE);
         SeedLot saved = seedLotRepository.save(lot);
 
-        SeedMovement movement = new SeedMovement();
-        movement.setLotId(saved.getId());
-        movement.setSupplierId(bridge.getSupplierId());
-        movement.setMovementType(MovementType.ENTRY);
-        movement.setQuantity(quantity);
-        movement.setMovementDate(LocalDateTime.now());
-        movement.setReason("Entrada lote " + lotNumber);
-        seedMovementRepository.save(movement);
+        recordMovement(saved.getId(), bridge.getSupplierId(), MovementType.ENTRY, quantity, "Entrada lote " + lotNumber);
 
         return saved;
     }
@@ -122,14 +118,7 @@ public class InventoryService {
             throw new IllegalStateException("El ajuste deja el lote " + lotId + " en negativo: " + updated);
         }
 
-        SeedMovement movement = new SeedMovement();
-        movement.setLotId(lot.getId());
-        movement.setSupplierId(null);
-        movement.setMovementType(MovementType.ADJUSTMENT);
-        movement.setQuantity(quantity);
-        movement.setMovementDate(LocalDateTime.now());
-        movement.setReason(reason);
-        seedMovementRepository.save(movement);
+        recordMovement(lot.getId(), null, MovementType.ADJUSTMENT, quantity, reason);
 
         lot.setAvailableQuantity(updated);
         if (germinationPercentage != null) {
@@ -171,14 +160,7 @@ public class InventoryService {
                     + ": disponible " + lot.getAvailableQuantity() + ", solicitado " + quantity);
         }
 
-        SeedMovement movement = new SeedMovement();
-        movement.setLotId(lot.getId());
-        movement.setSupplierId(null);
-        movement.setMovementType(MovementType.EXIT);
-        movement.setQuantity(quantity);
-        movement.setMovementDate(LocalDateTime.now());
-        movement.setReason("Siembra en cama " + bed.getCode());
-        seedMovementRepository.save(movement);
+        recordMovement(lot.getId(), null, MovementType.EXIT, quantity, "Siembra en cama " + bed.getCode());
 
         lot.setAvailableQuantity(lot.getAvailableQuantity() - quantity);
         if (lot.getAvailableQuantity() == 0) {
@@ -190,7 +172,7 @@ public class InventoryService {
         sowing.setLotId(lot.getId());
         sowing.setBedId(bed.getId());
         sowing.setQuantitySown(quantity);
-        sowing.setSowingDate(sowingDate != null ? sowingDate : LocalDate.now());
+        sowing.setSowingDate(effectiveSowingDate);
         sowing.setExpectedGerminationDate(expectedGerminationDate);
         sowing.setStatus(initialStatus);
         sowing.setNotes(notes);
