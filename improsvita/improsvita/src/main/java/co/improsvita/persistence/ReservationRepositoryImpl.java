@@ -2,10 +2,10 @@ package co.improsvita.persistence;
 
 import co.improsvita.domain.model.Reservation;
 import co.improsvita.domain.repository.ReservationRepository;
-import co.improsvita.persistence.crud.ClientJpaRepository;
+import co.improsvita.persistence.crud.ContactJpaRepository;
 import co.improsvita.persistence.crud.ReservationJpaRepository;
 import co.improsvita.persistence.crud.SowingJpaRepository;
-import co.improsvita.persistence.entities.ClientEntity;
+import co.improsvita.persistence.entities.ContactEntity;
 import co.improsvita.persistence.entities.SowingEntity;
 import co.improsvita.persistence.mapper.ReservationMapper;
 import org.springframework.data.domain.Sort;
@@ -23,14 +23,14 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     private final ReservationJpaRepository reservationJpaRepository;
     private final SowingJpaRepository sowingJpaRepository;
-    private final ClientJpaRepository clientJpaRepository;
+    private final ContactJpaRepository contactJpaRepository;
 
     public ReservationRepositoryImpl(ReservationJpaRepository reservationJpaRepository,
                                      SowingJpaRepository sowingJpaRepository,
-                                     ClientJpaRepository clientJpaRepository) {
+                                     ContactJpaRepository contactJpaRepository) {
         this.reservationJpaRepository = reservationJpaRepository;
         this.sowingJpaRepository = sowingJpaRepository;
-        this.clientJpaRepository = clientJpaRepository;
+        this.contactJpaRepository = contactJpaRepository;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     @Override
     public List<Reservation> getByClientId(Integer clientId) {
-        return reservationJpaRepository.findByClient_ClientIdOrderByReservationDateDesc(clientId)
+        return reservationJpaRepository.findByContact_ContactIdOrderByReservationDateDesc(clientId)
                 .stream()
                 .map(ReservationMapper::toDomain)
                 .collect(Collectors.toList());
@@ -68,9 +68,9 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Transactional
     public Reservation save(Reservation reservation) {
         SowingEntity sowing = sowingJpaRepository.getReferenceById(reservation.getSowingId());
-        ClientEntity client = clientJpaRepository.getReferenceById(reservation.getClientId());
+        ContactEntity contact = contactJpaRepository.getReferenceById(reservation.getClientId());
         return ReservationMapper.toDomain(
-                reservationJpaRepository.save(ReservationMapper.toEntity(reservation, sowing, client)));
+                reservationJpaRepository.save(ReservationMapper.toEntity(reservation, sowing, contact)));
     }
 
     @Override

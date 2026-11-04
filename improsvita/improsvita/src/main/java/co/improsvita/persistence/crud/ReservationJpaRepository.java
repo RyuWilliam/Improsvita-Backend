@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ReservationJpaRepository extends JpaRepository<ReservationEntity, Integer> {
     List<ReservationEntity> findBySowing_SowingIdOrderByReservationDateDesc(Integer sowingId);
-    List<ReservationEntity> findByClient_ClientIdOrderByReservationDateDesc(Integer clientId);
+    List<ReservationEntity> findByContact_ContactIdOrderByReservationDateDesc(Integer contactId);
 }
