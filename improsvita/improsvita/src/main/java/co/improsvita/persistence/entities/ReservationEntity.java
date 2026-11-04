@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "reservations",
-        indexes = {@Index(columnList = "sowing_id"), @Index(columnList = "client_id"),
+        indexes = {@Index(columnList = "sowing_id"), @Index(columnList = "contact_id"),
                 @Index(columnList = "reservation_status"), @Index(columnList = "reservation_date")})
 public class ReservationEntity {
 
@@ -27,8 +27,8 @@ public class ReservationEntity {
     private SowingEntity sowing;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_id", nullable = false)
-    private ClientEntity client;
+    @JoinColumn(name = "contact_id", nullable = false)
+    private ContactEntity contact;
 
     @Column(name = "reservation_date", nullable = false)
     private LocalDate reservationDate;
@@ -73,12 +73,12 @@ public class ReservationEntity {
         this.sowing = sowing;
     }
 
-    public ClientEntity getClient() {
-        return client;
+    public ContactEntity getContact() {
+        return contact;
     }
 
-    public void setClient(ClientEntity client) {
-        this.client = client;
+    public void setContact(ContactEntity contact) {
+        this.contact = contact;
     }
 
     public LocalDate getReservationDate() {

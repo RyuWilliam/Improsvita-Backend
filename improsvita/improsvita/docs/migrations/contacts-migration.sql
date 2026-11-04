@@ -15,7 +15,8 @@
 --   contact_roles(contact_id, role) con PK (contact_id, role)
 --   seeds_suppliers.supplier_id -> contacts.contact_id
 --   seed_movement.supplier_id   -> contacts.contact_id
---   Sin tablas suppliers, clients ni employees.
+--   Sin tablas suppliers ni employees. La tabla clients se migra aparte
+--   con clients-to-contacts.sql.
 -- =====================================================================
 
 BEGIN;
@@ -101,8 +102,9 @@ BEGIN
         ON CONFLICT DO NOTHING;
     END IF;
 
-    -- 5. Eliminar tablas del modelo anterior junto con sus FKs
-    DROP TABLE IF EXISTS clients CASCADE;
+    -- 5. Eliminar tablas del modelo anterior junto con sus FKs.
+    --    clients NO se borra aquí: lo migra clients-to-contacts.sql, que debe
+    --    ejecutarse después de este script (reservations aún lo referencia).
     DROP TABLE IF EXISTS employees CASCADE;
     DROP TABLE IF EXISTS suppliers CASCADE;
 

@@ -224,28 +224,32 @@ SELECT NULL, 7, 3, 'EXIT', 150, TIMESTAMP '2026-10-02 09:00:00', 'Siembra en cam
 WHERE NOT EXISTS (SELECT 1 FROM seed_movement WHERE lot_id = 7 AND movement_type = 'EXIT' AND quantity = 150 AND reason = 'Siembra en cama CAMA-A-01');
 
 -- ---------------------------------------------------------------------
--- 9b. CLIENTES (guarda: client_id O email)
+-- 9b. CLIENTES (contactos con rol CLIENT; guarda: contact_id O email)
 -- ---------------------------------------------------------------------
-INSERT INTO clients (client_id, name, phone, email, created_date, last_updated, active)
-SELECT 1, 'Finca La Esperanza', '3201112233', 'contacto@laesperanza.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
-WHERE NOT EXISTS (SELECT 1 FROM clients WHERE client_id = 1 OR email = 'contacto@laesperanza.com');
-INSERT INTO clients (client_id, name, phone, email, created_date, last_updated, active)
-SELECT 2, 'AgroInsumos del Norte', '3014445566', 'ventas@agroinsumosnorte.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
-WHERE NOT EXISTS (SELECT 1 FROM clients WHERE client_id = 2 OR email = 'ventas@agroinsumosnorte.com');
+INSERT INTO contacts (contact_id, name, phone, email, created_date, last_updated, active)
+SELECT 3, 'Finca La Esperanza', '3201112233', 'contacto@laesperanza.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+WHERE NOT EXISTS (SELECT 1 FROM contacts WHERE contact_id = 3 OR email = 'contacto@laesperanza.com');
+INSERT INTO contacts (contact_id, name, phone, email, created_date, last_updated, active)
+SELECT 4, 'AgroInsumos del Norte', '3014445566', 'ventas@agroinsumosnorte.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+WHERE NOT EXISTS (SELECT 1 FROM contacts WHERE contact_id = 4 OR email = 'ventas@agroinsumosnorte.com');
+INSERT INTO contact_roles (contact_id, role)
+SELECT 3, 'CLIENT' WHERE NOT EXISTS (SELECT 1 FROM contact_roles WHERE contact_id = 3 AND role = 'CLIENT');
+INSERT INTO contact_roles (contact_id, role)
+SELECT 4, 'CLIENT' WHERE NOT EXISTS (SELECT 1 FROM contact_roles WHERE contact_id = 4 AND role = 'CLIENT');
 
 -- ---------------------------------------------------------------------
 -- 9c. RESERVAS (guarda: reservation_id)
 --     Una siembra admite una sola reserva viva: siembra 1 (PENDING),
 --     siembra 2 (CONFIRMED) y siembra 3 (CANCELLED, que la deja libre).
 -- ---------------------------------------------------------------------
-INSERT INTO reservations (reservation_id, sowing_id, client_id, reservation_date, total_price, reservation_status, notes, created_date, last_updated, active)
-SELECT 1, 1, 1, DATE '2026-10-12', 450000.00, 'PENDING', 'Reserva de la producción de arroz en CAMA-A-01.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+INSERT INTO reservations (reservation_id, sowing_id, contact_id, reservation_date, total_price, reservation_status, notes, created_date, last_updated, active)
+SELECT 1, 1, 3, DATE '2026-10-12', 450000.00, 'PENDING', 'Reserva de la producción de arroz en CAMA-A-01.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
 WHERE NOT EXISTS (SELECT 1 FROM reservations WHERE reservation_id = 1);
-INSERT INTO reservations (reservation_id, sowing_id, client_id, reservation_date, total_price, reservation_status, notes, created_date, last_updated, active)
-SELECT 2, 2, 2, DATE '2026-10-13', 900000.00, 'CONFIRMED', 'Reserva confirmada de la producción de papa en CAMA-A-02.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+INSERT INTO reservations (reservation_id, sowing_id, contact_id, reservation_date, total_price, reservation_status, notes, created_date, last_updated, active)
+SELECT 2, 2, 4, DATE '2026-10-13', 900000.00, 'CONFIRMED', 'Reserva confirmada de la producción de papa en CAMA-A-02.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
 WHERE NOT EXISTS (SELECT 1 FROM reservations WHERE reservation_id = 2);
-INSERT INTO reservations (reservation_id, sowing_id, client_id, reservation_date, total_price, reservation_status, notes, created_date, last_updated, active)
-SELECT 3, 3, 1, DATE '2026-10-14', 300000.00, 'CANCELLED', 'Reserva cancelada; la siembra vuelve a estar disponible.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+INSERT INTO reservations (reservation_id, sowing_id, contact_id, reservation_date, total_price, reservation_status, notes, created_date, last_updated, active)
+SELECT 3, 3, 3, DATE '2026-10-14', 300000.00, 'CANCELLED', 'Reserva cancelada; la siembra vuelve a estar disponible.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
 WHERE NOT EXISTS (SELECT 1 FROM reservations WHERE reservation_id = 3);
 
 -- ---------------------------------------------------------------------
@@ -260,5 +264,4 @@ SELECT setval(pg_get_serial_sequence('seed_lots', 'lot_id'), (SELECT MAX(lot_id)
 SELECT setval(pg_get_serial_sequence('seed_movement', 'transaction_id'), (SELECT MAX(transaction_id) FROM seed_movement));
 SELECT setval(pg_get_serial_sequence('beds', 'bed_id'), (SELECT MAX(bed_id) FROM beds));
 SELECT setval(pg_get_serial_sequence('sowings', 'sowing_id'), (SELECT MAX(sowing_id) FROM sowings));
-SELECT setval(pg_get_serial_sequence('clients', 'client_id'), (SELECT MAX(client_id) FROM clients));
 SELECT setval(pg_get_serial_sequence('reservations', 'reservation_id'), (SELECT MAX(reservation_id) FROM reservations));

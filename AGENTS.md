@@ -5,13 +5,13 @@ Spring Boot 4.1.1 (Java 24) + Gradle + PostgreSQL
 
 ## Key Commands
 Run from `improsvita/improsvita/`:
-- `./gradlew bootRun` — start app (port 9010, context `/improsvita/api`)
+- `./gradlew bootRun` — start app (port 19010 in dev, 9010 in prod, context `/improsvita/api`)
 - `./gradlew test` — run tests (JUnit Platform)
 - `./gradlew build` — build jar
 - `docker compose up -d` — start PostgreSQL (port 9011)
 
 ## Profiles
-- **dev** (default): local PostgreSQL via Docker Compose (`compose.yaml`), `spring.docker.compose.enabled=true` implicitly, port 9011, `ddl-auto=update`.
+- **dev** (default): local PostgreSQL via Docker Compose (`compose.yaml`), `spring.docker.compose.enabled=true` implicitly, port 9011, `ddl-auto=create-drop` (schema + `data-dev.sql` recreated on each run).
 - **prod**: Railway PostgreSQL, `spring.docker.compose.enabled=false`, requires env vars (`SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`, `JWT_SECRET`).
 
 To run against Railway:
@@ -39,7 +39,7 @@ $env:SPRING_PROFILES_ACTIVE="prod"; ./gradlew bootRun
 
 ## Security
 - `SecurityFilterChain`: CORS enabled, CSRF disabled, stateless sessions
-- Public: `GET /seeds/**`, `GET /suppliers/**`, `GET /clients/**`, `/auth/**`, `/error`
+- Public: `GET /seeds/**`, `GET /contacts/**`, `GET /suppliers/**`, `GET /clients/**`, `/auth/**`, `/error`
 - Admin-only: `POST/PUT/PATCH/DELETE` on any path requires `ROLE_ADMIN`
 - JWT token via `Authorization: Bearer <token>` header
 - Unauthenticated → **401** (`AuthenticationEntryPoint`); authenticated without the role → **403** (`AccessDeniedHandler`). Do not remove these or Spring falls back to `Http403ForbiddenEntryPoint` and every unauthenticated call returns 403.
@@ -47,9 +47,12 @@ $env:SPRING_PROFILES_ACTIVE="prod"; ./gradlew bootRun
 - Error bodies are **plain text** (not JSON). `web/error/GlobalExceptionHandler` is the catch-all for anything the controllers do not catch.
 
 ## API Notes
-- `ClientEntity` mirrors `SupplierEntity`; it has no inverse collection, but `reservations` references it.
+- **`Contact` is the single person/company aggregate** (`contacts` + `contact_roles`). Roles: `SUPPLIER`, `CLIENT`, `EMPLOYEE`. There is no `Client` or `Supplier` domain/persistence class.
+- `/contacts` is the canonical CRUD (`?role=` filter). `/suppliers` and `/clients` are compatibility aliases that filter by role `SUPPLIER` / `CLIENT`.
+- `reservations.contact_id` → `contacts.contact_id`; reservations require the contact to have the `CLIENT` role.
+- Migrations: `docs/migrations/contacts-migration.sql` (suppliers → contacts) and then `docs/migrations/clients-to-contacts.sql` (clients → contacts + reservations FK). Run against prod before deploying.
 - `Visits` hang off `Sowing` (1:N, `mappedBy`, no cascade) and are exposed only as `/sowings/{sowingId}/visits`.
-- `Reservations` link `Sowing` + `Client` and live at top level: `/reservations` with filters `?sowingId=`, `?clientId=`, `?status=`. Reads require a token (not a public catalog).
+- `Reservations` link `Sowing` + `Contact` and live at top level: `/reservations` with filters `?sowingId=`, `?clientId=`, `?status=`. Reads require a token (not a public catalog).
 - **One live reservation per sowing**: a sowing is blocked while it has a reservation that is neither `CANCELLED` nor inactive. Cancelling frees it. A live reservation is only allowed on `PLANNED`/`IN_PROGRESS` sowings.
 - `reservations.total_price` is `BigDecimal(12,2)` — the only monetary field in the model.
 - Every inventory movement is traceable: `seed_movement.sowing_id` links the EXIT created when sowing, so deleting a sowing can reverse the exact amount consumed.
@@ -59,5 +62,5 @@ $env:SPRING_PROFILES_ACTIVE="prod"; ./gradlew bootRun
 ## Gotchas
 - Java 24 toolchain required (see `build.gradle:11-14`)
 - Use Gradle wrapper (`./gradlew`), not system Gradle
-- Context path is `/improsvita/api` — all URLs include it (e.g. `http://localhost:9010/improsvita/api/auth/login`)
+- Context path is `/improsvita/api` — all URLs include it (e.g. `http://localhost:19010/improsvita/api/auth/login` in dev)
 - Controllers use paths WITHOUT `/api` prefix (e.g. `@RequestMapping("/seeds")`) since context path already includes it

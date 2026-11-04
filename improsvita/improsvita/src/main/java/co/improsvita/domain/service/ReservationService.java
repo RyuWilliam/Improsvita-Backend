@@ -1,10 +1,10 @@
 package co.improsvita.domain.service;
 
+import co.improsvita.domain.model.ContactRole;
 import co.improsvita.domain.model.Reservation;
 import co.improsvita.domain.model.ReservationStatus;
 import co.improsvita.domain.model.Sowing;
 import co.improsvita.domain.model.SowingStatus;
-import co.improsvita.domain.repository.ClientRepository;
 import co.improsvita.domain.repository.ReservationRepository;
 import co.improsvita.domain.repository.SowingRepository;
 import org.springframework.stereotype.Service;
@@ -25,14 +25,14 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final SowingRepository sowingRepository;
-    private final ClientRepository clientRepository;
+    private final ContactService contactService;
 
     public ReservationService(ReservationRepository reservationRepository,
                               SowingRepository sowingRepository,
-                              ClientRepository clientRepository) {
+                              ContactService contactService) {
         this.reservationRepository = reservationRepository;
         this.sowingRepository = sowingRepository;
-        this.clientRepository = clientRepository;
+        this.contactService = contactService;
     }
 
     /**
@@ -135,7 +135,9 @@ public class ReservationService {
         if (sowing == null) {
             throw new IllegalArgumentException("Siembra no encontrada: " + sowingId);
         }
-        if (clientRepository.getById(clientId) == null) {
+        try {
+            contactService.assertHasRole(clientId, ContactRole.CLIENT);
+        } catch (ContactNotFoundException e) {
             throw new IllegalArgumentException("Cliente no encontrado: " + clientId);
         }
         if (totalPrice == null || totalPrice.compareTo(BigDecimal.ZERO) < 0) {
