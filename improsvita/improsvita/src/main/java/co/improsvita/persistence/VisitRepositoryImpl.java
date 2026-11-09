@@ -41,6 +41,14 @@ public class VisitRepositoryImpl implements VisitRepository {
     }
 
     @Override
+    public Visit getLatestActiveBySowingId(Integer sowingId) {
+        return visitJpaRepository
+                .findFirstBySowing_SowingIdAndActiveTrueOrderByVisitDateDescVisitIdDesc(sowingId)
+                .map(VisitMapper::toDomain)
+                .orElse(null);
+    }
+
+    @Override
     @Transactional
     public Visit save(Visit visit) {
         SowingEntity sowing = sowingJpaRepository.getReferenceById(visit.getSowingId());

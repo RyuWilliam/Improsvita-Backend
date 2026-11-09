@@ -13,7 +13,7 @@ public class SowingResponse {
     private LocalDate expectedGerminationDate;
     private String status;
     private String notes;
-    private Integer germinatedQuantity;
+    private Integer seedlingsAvailable;
     private Boolean active;
 
     public SowingResponse() {
@@ -98,11 +98,11 @@ public class SowingResponse {
     public void setActive(Boolean active) {
         this.active = active;
     }
-    public Integer getGerminatedQuantity() {
-        return germinatedQuantity;
+    public Integer getSeedlingsAvailable() {
+        return seedlingsAvailable;
     }
 
-    public void setGerminatedQuantity(Integer germinatedQuantity) {
-        this.germinatedQuantity = germinatedQuantity;
+    public void setSeedlingsAvailable(Integer seedlingsAvailable) {
+        this.seedlingsAvailable = seedlingsAvailable;
     }
 }

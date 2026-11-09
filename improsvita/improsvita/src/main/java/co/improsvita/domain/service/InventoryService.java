@@ -63,7 +63,7 @@ public class InventoryService {
     }
 
     private static final Set<SowingStatus> INITIAL_STATUSES =
-        EnumSet.of(SowingStatus.PLANNED, SowingStatus.IN_PROGRESS);
+        EnumSet.of(SowingStatus.PLANNED, SowingStatus.IN_PROGRESS, SowingStatus.COMPLETED);
 
     @Transactional
     public SeedLot registerEntry(Integer seedId, Integer supplierId, Integer locationId,
