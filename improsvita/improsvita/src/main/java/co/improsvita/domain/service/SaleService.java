@@ -1,6 +1,7 @@
 package co.improsvita.domain.service;
 
 import co.improsvita.domain.model.ContactRole;
+import co.improsvita.domain.model.PageResult;
 import co.improsvita.domain.model.Reservation;
 import co.improsvita.domain.model.Sale;
 import co.improsvita.domain.model.SaleType;
@@ -39,6 +40,9 @@ public class SaleService {
 
     private static final int MAX_NOTES_LENGTH = 500;
 
+    /** Tope de resultados por página en el historial. */
+    private static final int MAX_PAGE_SIZE = 100;
+
     private final SaleRepository saleRepository;
     private final SowingRepository sowingRepository;
     private final ContactService contactService;
@@ -62,6 +66,23 @@ public class SaleService {
         return saleRepository.getAll(contactId, type, from, to);
     }
 
+    /** Historial paginado. Tamaño máximo de página: {@value #MAX_PAGE_SIZE}. */
+    public PageResult<Sale> findSalesPage(Integer contactId, SaleType type, LocalDate from, LocalDate to,
+                                          int page, int size) {
+        validateRange(from, to);
+        if (page < 0) {
+            throw new IllegalArgumentException("El número de página no puede ser negativo");
+        }
+        if (size < 1) {
+            throw new IllegalArgumentException("El tamaño de página debe ser al menos 1");
+        }
+        if (size > MAX_PAGE_SIZE) {
+            throw new IllegalArgumentException(
+                    "El tamaño de página no puede superar " + MAX_PAGE_SIZE);
+        }
+        return saleRepository.getPage(contactId, type, from, to, page, size);
+    }
+
     public Sale getSaleById(Integer id) {
         return saleRepository.getById(id);
     }
@@ -73,6 +94,20 @@ public class SaleService {
     public Integer getAvailability(Integer sowingId) {
         Sowing sowing = requireSowing(sowingId);
         return available(sowing);
+    }
+
+    /** Desglose de la disponibilidad: plántulas de la última visita, vendidas y restantes. */
+    public Availability getAvailabilityDetail(Integer sowingId) {
+        Sowing sowing = requireSowing(sowingId);
+        Integer seedlings = visitService.getLatestAvailableSeedlings(sowing.getId());
+        int sold = saleRepository.getSoldQuantity(sowing.getId());
+        int remaining = seedlings == null ? 0 : Math.max(0, seedlings - sold);
+        return new Availability(sowing.getId(), seedlings, sold, remaining);
+    }
+
+    /** Resultado del cálculo de disponibilidad de una siembra. */
+    public record Availability(Integer sowingId, Integer seedlingsAvailable,
+                               Integer soldQuantity, Integer available) {
     }
 
     @Transactional

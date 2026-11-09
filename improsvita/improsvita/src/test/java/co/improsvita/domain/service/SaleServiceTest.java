@@ -2,6 +2,7 @@ package co.improsvita.domain.service;
 
 import co.improsvita.domain.model.Contact;
 import co.improsvita.domain.model.ContactRole;
+import co.improsvita.domain.model.PageResult;
 import co.improsvita.domain.model.Reservation;
 import co.improsvita.domain.model.ReservationStatus;
 import co.improsvita.domain.model.Sale;
@@ -421,5 +422,63 @@ class SaleServiceTest {
         when(saleRepository.getAll(null, null, null, null)).thenReturn(List.of(new Sale()));
 
         assertEquals(1, saleService.findSales(null, null, null, null).size());
+    }
+
+    @Test
+    void historialPaginado_valido_delegaEnElRepositorio() {
+        PageResult<Sale> page = new PageResult<>(List.of(new Sale()), 0, 20, 1, 1);
+        when(saleRepository.getPage(null, null, null, null, 0, 20)).thenReturn(page);
+
+        PageResult<Sale> result = saleService.findSalesPage(null, null, null, null, 0, 20);
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals(1, result.getContent().size());
+    }
+
+    @Test
+    void historialPaginado_paginaNegativa_lanzaIllegalArgument() {
+        assertThrows(IllegalArgumentException.class,
+                () -> saleService.findSalesPage(null, null, null, null, -1, 20));
+    }
+
+    @Test
+    void historialPaginado_tamanoCero_lanzaIllegalArgument() {
+        assertThrows(IllegalArgumentException.class,
+                () -> saleService.findSalesPage(null, null, null, null, 0, 0));
+    }
+
+    @Test
+    void historialPaginado_tamanoExcesivo_lanzaIllegalArgument() {
+        assertThrows(IllegalArgumentException.class,
+                () -> saleService.findSalesPage(null, null, null, null, 0, 101));
+        verify(saleRepository, never()).getPage(any(), any(), any(), any(), anyInt(), anyInt());
+    }
+
+    @Test
+    void historialPaginado_rangoInvertido_lanzaIllegalArgument() {
+        assertThrows(IllegalArgumentException.class, () -> saleService.findSalesPage(
+                null, null, LocalDate.now(), LocalDate.now().minusDays(1), 0, 20));
+    }
+
+    @Test
+    void disponibilidadDetalle_devuelveElDesglose() {
+        stubAvailability(120, 30);
+
+        SaleService.Availability detail = saleService.getAvailabilityDetail(SOWING_ID);
+
+        assertEquals(SOWING_ID, detail.sowingId());
+        assertEquals(120, detail.seedlingsAvailable());
+        assertEquals(30, detail.soldQuantity());
+        assertEquals(90, detail.available());
+    }
+
+    @Test
+    void disponibilidadDetalle_sinVisitas_disponibleCero() {
+        stubAvailability(null, 0);
+
+        SaleService.Availability detail = saleService.getAvailabilityDetail(SOWING_ID);
+
+        assertEquals(0, detail.available());
+        assertNull(detail.seedlingsAvailable());
     }
 }

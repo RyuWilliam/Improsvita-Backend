@@ -1,5 +1,6 @@
 package co.improsvita.domain.repository;
 
+import co.improsvita.domain.model.PageResult;
 import co.improsvita.domain.model.Sale;
 import co.improsvita.domain.model.SaleType;
 
@@ -10,6 +11,10 @@ public interface SaleRepository {
 
     /** Historial con filtros opcionales (todos pueden ser null). */
     List<Sale> getAll(Integer contactId, SaleType type, LocalDate from, LocalDate to);
+
+    /** Historial paginado con los mismos filtros opcionales. */
+    PageResult<Sale> getPage(Integer contactId, SaleType type, LocalDate from, LocalDate to,
+                             int page, int size);
 
     List<Sale> getBySowingId(Integer sowingId);
 
