@@ -1,5 +1,6 @@
 package co.improsvita.persistence;
 
+import co.improsvita.domain.model.PageResult;
 import co.improsvita.domain.model.Sale;
 import co.improsvita.domain.model.SaleType;
 import co.improsvita.domain.repository.SaleRepository;
@@ -13,6 +14,9 @@ import co.improsvita.persistence.entities.SaleEntity;
 import co.improsvita.persistence.entities.SowingEntity;
 import co.improsvita.persistence.mapper.SaleMapper;
 import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
@@ -49,6 +53,18 @@ public class SaleRepositoryImpl implements SaleRepository {
                 .stream()
                 .map(SaleMapper::toDomain)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public PageResult<Sale> getPage(Integer contactId, SaleType type, LocalDate from, LocalDate to,
+                                    int page, int size) {
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Order.desc("saleDate"), Sort.Order.desc("saleId")));
+        Page<SaleEntity> result = saleJpaRepository.findAll(
+                historyFilter(contactId, mapType(type), from, to), pageable);
+        return new PageResult<>(
+                result.getContent().stream().map(SaleMapper::toDomain).collect(Collectors.toList()),
+                result.getNumber(), result.getSize(), result.getTotalElements(), result.getTotalPages());
     }
 
     /**

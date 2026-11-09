@@ -58,6 +58,10 @@ $env:SPRING_PROFILES_ACTIVE="prod"; ./gradlew bootRun
 - `Reservations` link `Sowing` + `Contact` and live at top level: `/reservations` with filters `?sowingId=`, `?clientId=`, `?status=`. Reads require a token (not a public catalog).
 - **One live reservation per sowing**: a sowing is blocked while it has a reservation that is neither `CANCELLED` nor inactive. Cancelling frees it. A live reservation is only allowed on `PLANNED`/`IN_PROGRESS` sowings.
 - `reservations.total_price` is `BigDecimal(12,2)` — the only monetary field in the model.
+- **`sales`** registra las ventas de plántulas. `sowing_id` es obligatorio (el stock está en la siembra); `reservation_id` es `null` en venta directa y apunta a la reserva cuando la venta es su entrega. `sale_type` = `DIRECT`/`RESERVATION`. El total lo calcula el servidor (`quantity * unit_price`).
+- Disponibilidad vendible = `suitable_estimated` de la **última visita activa** − `SUM(sales.quantity)` con `active = true`. Nunca es negativa; sin visitas es 0.
+- Reglas de `SaleService`: comprador con rol `CLIENT`; siembra activa en `PLANNED`/`IN_PROGRESS`; **una reserva viva bloquea la venta directa**; una reserva se factura como máximo una vez; `DELETE /sales/{id}` es anulación lógica (`active = false`).
+- Endpoints: `POST /sales`, `POST /sales/reservation`, `GET /sales`, `GET /sales/page?page=&size=&contactId=&type=&from=&to=`, `GET /sales/{id}`, `GET /sales/availability/{sowingId}`, `DELETE /sales/{id}`. Tamaño de página máximo: 100.
 - Every inventory movement is traceable: `seed_movement.sowing_id` links the EXIT created when sowing, so deleting a sowing can reverse the exact amount consumed.
 - `DELETE /sowings/{id}` returns the consumed stock to the lot (compensating `ADJUSTMENT`) and refuses with 409 if the sowing has visits **or reservations**.
 - All quantities are `Integer`; seed `totalAvailable` is a SQL `SUM` exposed as `Long`.
