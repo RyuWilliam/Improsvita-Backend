@@ -52,6 +52,9 @@ $env:SPRING_PROFILES_ACTIVE="prod"; ./gradlew bootRun
 - `reservations.contact_id` → `contacts.contact_id`; reservations require the contact to have the `CLIENT` role.
 - Migrations: `docs/migrations/contacts-migration.sql` (suppliers → contacts) and then `docs/migrations/clients-to-contacts.sql` (clients → contacts + reservations FK). Run against prod before deploying.
 - `Visits` hang off `Sowing` (1:N, `mappedBy`, no cascade) and are exposed only as `/sowings/{sowingId}/visits`.
+- **`visits` es la única tabla de seguimiento de la plantación** (no existe `sowing_reviews`). `suitable_estimated` = plántulas aptas y es la fuente de disponibilidad para vender: se toma la **última visita activa** de la siembra.
+- Reglas de `VisitService`: `suitableEstimated` obligatorio y `>= 0`, **no mayor que `sowing.quantitySown`**; `visitDate` no futura ni anterior a la fecha de siembra.
+- `SowingResponse.seedlingsAvailable` = `suitableEstimated` de la última visita activa (`null` si no hay visitas).
 - `Reservations` link `Sowing` + `Contact` and live at top level: `/reservations` with filters `?sowingId=`, `?clientId=`, `?status=`. Reads require a token (not a public catalog).
 - **One live reservation per sowing**: a sowing is blocked while it has a reservation that is neither `CANCELLED` nor inactive. Cancelling frees it. A live reservation is only allowed on `PLANNED`/`IN_PROGRESS` sowings.
 - `reservations.total_price` is `BigDecimal(12,2)` — the only monetary field in the model.

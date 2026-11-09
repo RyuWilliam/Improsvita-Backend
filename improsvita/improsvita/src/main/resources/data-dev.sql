@@ -224,6 +224,19 @@ SELECT NULL, 7, 3, 'EXIT', 150, TIMESTAMP '2026-10-02 09:00:00', 'Siembra en cam
 WHERE NOT EXISTS (SELECT 1 FROM seed_movement WHERE lot_id = 7 AND movement_type = 'EXIT' AND quantity = 150 AND reason = 'Siembra en cama CAMA-A-01');
 
 -- ---------------------------------------------------------------------
+-- 9a-bis. VISITAS (seguimiento de la plantación: plántulas aptas)
+--     Fuente de la disponibilidad para vender: se toma la última visita
+--     activa de la siembra. Se agregan dos visitas a la siembra 3
+--     (IN_PROGRESS) para que tenga disponibilidad real.
+-- ---------------------------------------------------------------------
+INSERT INTO visits (sowing_id, visit_date, suitable_estimated, visit_method, result, active)
+SELECT 3, DATE '2026-10-05', 90, 'INSPECCION_VISUAL', 'ESTIMACION', true
+WHERE NOT EXISTS (SELECT 1 FROM visits WHERE sowing_id = 3 AND visit_date = DATE '2026-10-05');
+INSERT INTO visits (sowing_id, visit_date, suitable_estimated, visit_method, result, active)
+SELECT 3, DATE '2026-10-08', 120, 'CONTEO_TOTAL', 'VALIDADA', true
+WHERE NOT EXISTS (SELECT 1 FROM visits WHERE sowing_id = 3 AND visit_date = DATE '2026-10-08');
+
+-- ---------------------------------------------------------------------
 -- 9b. CLIENTES (contactos con rol CLIENT; guarda: contact_id O email)
 -- ---------------------------------------------------------------------
 INSERT INTO contacts (contact_id, name, phone, email, created_date, last_updated, active)

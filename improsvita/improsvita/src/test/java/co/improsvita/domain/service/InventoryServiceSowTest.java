@@ -84,11 +84,28 @@ class InventoryServiceSowTest {
     }
 
     @Test
-    void sow_conEstadoTerminal_lanzaErrorYNoToca​ElStock() {
+    void sow_conEstadoTerminal_lanzaErrorYNoTocaElStock() {
         assertThrows(IllegalArgumentException.class, () ->
-                inventoryService.sow(1, 2, 100, LocalDate.now(), null, null, SowingStatus.COMPLETED));
+                inventoryService.sow(1, 2, 100, LocalDate.now(), null, null, SowingStatus.FAILED));
 
         verifyNoInteractions(seedLotRepository, sowingRepository, seedMovementRepository);
+    }
+
+    @Test
+    void sow_conEstadoCancelled_lanzaErrorYNoTocaElStock() {
+        assertThrows(IllegalArgumentException.class, () ->
+                inventoryService.sow(1, 2, 100, LocalDate.now(), null, null, SowingStatus.CANCELLED));
+
+        verifyNoInteractions(seedLotRepository, sowingRepository, seedMovementRepository);
+    }
+
+    @Test
+    void sow_conEstadoCompleted_esValido() {
+        stubHappyPath();
+
+        Sowing result = inventoryService.sow(1, 2, 100, LocalDate.now(), null, null, SowingStatus.COMPLETED);
+
+        assertEquals(SowingStatus.COMPLETED, result.getStatus());
     }
 
     @Test
