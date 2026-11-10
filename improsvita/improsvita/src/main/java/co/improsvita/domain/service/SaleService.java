@@ -171,7 +171,10 @@ public class SaleService {
         sale.setSaleType(SaleType.RESERVATION);
         sale.setNotes(cleanNotes(notes));
         sale.setActive(true);
-        return saleRepository.save(sale);
+
+        Sale saved = saleRepository.save(sale);
+        reservationService.markDelivered(reservationId);
+        return saved;
     }
 
     /** Anula una venta (no se borra: el historial debe conservarse). */

@@ -3,9 +3,11 @@ package co.improsvita.domain.service;
 import co.improsvita.domain.model.ContactRole;
 import co.improsvita.domain.model.Reservation;
 import co.improsvita.domain.model.ReservationStatus;
+import co.improsvita.domain.model.Sale;
 import co.improsvita.domain.model.Sowing;
 import co.improsvita.domain.model.SowingStatus;
 import co.improsvita.domain.repository.ReservationRepository;
+import co.improsvita.domain.repository.SaleRepository;
 import co.improsvita.domain.repository.SowingRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,13 +28,16 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final SowingRepository sowingRepository;
     private final ContactService contactService;
+    private final SaleRepository saleRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               SowingRepository sowingRepository,
-                              ContactService contactService) {
+                              ContactService contactService,
+                              SaleRepository saleRepository) {
         this.reservationRepository = reservationRepository;
         this.sowingRepository = sowingRepository;
         this.contactService = contactService;
+        this.saleRepository = saleRepository;
     }
 
     /**
@@ -94,6 +99,15 @@ public class ReservationService {
 
         validate(targetSowingId, targetClientId, targetPrice, targetStatus, targetActive, id);
 
+        if (reservation.getReservationStatus() == ReservationStatus.DELIVERED
+                && targetStatus != ReservationStatus.DELIVERED) {
+            Sale linkedSale = saleRepository.getByReservationId(id);
+            if (linkedSale != null) {
+                linkedSale.setActive(false);
+                saleRepository.save(linkedSale);
+            }
+        }
+
         reservation.setSowingId(targetSowingId);
         reservation.setClientId(targetClientId);
         reservation.setTotalPrice(targetPrice);
@@ -114,6 +128,13 @@ public class ReservationService {
             throw new IllegalArgumentException("El estado de la reserva es obligatorio");
         }
         return updateReservation(id, null, null, null, null, status, null, null);
+    }
+
+    @Transactional
+    public Reservation markDelivered(Integer id) {
+        Reservation reservation = requireReservation(id);
+        reservation.setReservationStatus(ReservationStatus.DELIVERED);
+        return reservationRepository.save(reservation);
     }
 
     @Transactional
@@ -144,7 +165,9 @@ public class ReservationService {
             throw new IllegalArgumentException("El precio total es obligatorio y no puede ser negativo");
         }
 
-        boolean live = Boolean.TRUE.equals(active) && status != ReservationStatus.CANCELLED;
+        boolean live = Boolean.TRUE.equals(active)
+                && status != ReservationStatus.CANCELLED
+                && status != ReservationStatus.DELIVERED;
         if (!live) {
             return;
         }

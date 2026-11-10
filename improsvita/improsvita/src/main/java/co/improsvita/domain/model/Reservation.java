@@ -17,9 +17,11 @@ public class Reservation {
     public Reservation() {
     }
 
-    /** Una reserva cancelada o inactiva deja la siembra libre para volver a reservarse. */
+    /** Una reserva cancelada, entregada o inactiva deja la siembra libre. */
     public boolean isLive() {
-        return Boolean.TRUE.equals(active) && reservationStatus != ReservationStatus.CANCELLED;
+        return Boolean.TRUE.equals(active)
+                && reservationStatus != ReservationStatus.CANCELLED
+                && reservationStatus != ReservationStatus.DELIVERED;
     }
 
     public Integer getId() {

@@ -236,6 +236,15 @@ INSERT INTO visits (sowing_id, visit_date, suitable_estimated, visit_method, res
 SELECT 3, DATE '2026-10-08', 120, 'CONTEO_TOTAL', 'VALIDADA', true
 WHERE NOT EXISTS (SELECT 1 FROM visits WHERE sowing_id = 3 AND visit_date = DATE '2026-10-08');
 
+-- Visitas de las siembras 1 y 2 para que tengan disponibilidad vendible.
+INSERT INTO visits (sowing_id, visit_date, suitable_estimated, visit_method, result, active)
+SELECT 1, DATE '2026-10-20', 80, 'INSPECCION_VISUAL', 'ESTIMACION', true
+WHERE NOT EXISTS (SELECT 1 FROM visits WHERE sowing_id = 1 AND visit_date = DATE '2026-10-20');
+
+INSERT INTO visits (sowing_id, visit_date, suitable_estimated, visit_method, result, active)
+SELECT 2, DATE '2026-10-22', 150, 'INSPECCION_VISUAL', 'ESTIMACION', true
+WHERE NOT EXISTS (SELECT 1 FROM visits WHERE sowing_id = 2 AND visit_date = DATE '2026-10-22');
+
 -- ---------------------------------------------------------------------
 -- 9b. CLIENTES (contactos con rol CLIENT; guarda: contact_id O email)
 -- ---------------------------------------------------------------------
@@ -249,6 +258,21 @@ INSERT INTO contact_roles (contact_id, role)
 SELECT 3, 'CLIENT' WHERE NOT EXISTS (SELECT 1 FROM contact_roles WHERE contact_id = 3 AND role = 'CLIENT');
 INSERT INTO contact_roles (contact_id, role)
 SELECT 4, 'CLIENT' WHERE NOT EXISTS (SELECT 1 FROM contact_roles WHERE contact_id = 4 AND role = 'CLIENT');
+
+-- Clientes adicionales para que el ranking de ventas tenga variedad.
+INSERT INTO contacts (contact_id, name, phone, email, created_date, last_updated, active)
+SELECT 5, 'Vivero El Roble', '3127778899', 'contacto@viveroelroble.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+WHERE NOT EXISTS (SELECT 1 FROM contacts WHERE contact_id = 5 OR email = 'contacto@viveroelroble.com');
+
+INSERT INTO contacts (contact_id, name, phone, email, created_date, last_updated, active)
+SELECT 6, 'Hacienda San Pedro', '3186665544', 'contacto@haciendasanpedro.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+WHERE NOT EXISTS (SELECT 1 FROM contacts WHERE contact_id = 6 OR email = 'contacto@haciendasanpedro.com');
+
+INSERT INTO contact_roles (contact_id, role)
+SELECT 5, 'CLIENT' WHERE NOT EXISTS (SELECT 1 FROM contact_roles WHERE contact_id = 5 AND role = 'CLIENT');
+
+INSERT INTO contact_roles (contact_id, role)
+SELECT 6, 'CLIENT' WHERE NOT EXISTS (SELECT 1 FROM contact_roles WHERE contact_id = 6 AND role = 'CLIENT');
 
 -- ---------------------------------------------------------------------
 -- 9c. RESERVAS (guarda: reservation_id)
@@ -266,6 +290,36 @@ SELECT 3, 3, 3, DATE '2026-10-14', 300000.00, 'CANCELLED', 'Reserva cancelada; l
 WHERE NOT EXISTS (SELECT 1 FROM reservations WHERE reservation_id = 3);
 
 -- ---------------------------------------------------------------------
+-- 9d. VENTAS DEMO (3 tipos de semilla y 2 meses para los reportes)
+--     Siembra 1 -> Arroz Tradicional (TRADITIONAL)
+--     Siembra 2 -> Papa Modificada (MODIFIED)
+--     Siembra 3 -> Zanahoria Hibrida (HYBRID)
+-- ---------------------------------------------------------------------
+INSERT INTO sales (sale_id, contact_id, sowing_id, reservation_id, sale_date, quantity, unit_price, total, sale_type, notes, created_date, last_updated, active)
+SELECT 1, 3, 1, 1, DATE '2026-10-25', 20, 2500.00, 50000.00, 'RESERVATION', 'Entrega de la reserva de arroz.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+WHERE NOT EXISTS (SELECT 1 FROM sales WHERE sale_id = 1 OR reservation_id = 1);
+
+INSERT INTO sales (sale_id, contact_id, sowing_id, reservation_id, sale_date, quantity, unit_price, total, sale_type, notes, created_date, last_updated, active)
+SELECT 2, 4, 2, 2, DATE '2026-11-02', 25, 3000.00, 75000.00, 'RESERVATION', 'Entrega de la reserva de papa.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+WHERE NOT EXISTS (SELECT 1 FROM sales WHERE sale_id = 2 OR reservation_id = 2);
+
+INSERT INTO sales (sale_id, contact_id, sowing_id, reservation_id, sale_date, quantity, unit_price, total, sale_type, notes, created_date, last_updated, active)
+SELECT 3, 3, 3, NULL, DATE '2026-10-08', 10, 1500.00, 15000.00, 'DIRECT', 'Venta directa de zanahoria.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+WHERE NOT EXISTS (SELECT 1 FROM sales WHERE sale_id = 3);
+
+INSERT INTO sales (sale_id, contact_id, sowing_id, reservation_id, sale_date, quantity, unit_price, total, sale_type, notes, created_date, last_updated, active)
+SELECT 4, 4, 3, NULL, DATE '2026-10-20', 12, 1700.00, 20400.00, 'DIRECT', 'Venta directa de zanahoria.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+WHERE NOT EXISTS (SELECT 1 FROM sales WHERE sale_id = 4);
+
+INSERT INTO sales (sale_id, contact_id, sowing_id, reservation_id, sale_date, quantity, unit_price, total, sale_type, notes, created_date, last_updated, active)
+SELECT 5, 5, 3, NULL, DATE '2026-11-01', 8, 1600.00, 12800.00, 'DIRECT', 'Venta directa de zanahoria.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+WHERE NOT EXISTS (SELECT 1 FROM sales WHERE sale_id = 5);
+
+INSERT INTO sales (sale_id, contact_id, sowing_id, reservation_id, sale_date, quantity, unit_price, total, sale_type, notes, created_date, last_updated, active)
+SELECT 6, 6, 3, NULL, DATE '2026-11-07', 10, 1800.00, 18000.00, 'DIRECT', 'Venta directa de zanahoria.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true
+WHERE NOT EXISTS (SELECT 1 FROM sales WHERE sale_id = 6);
+
+-- ---------------------------------------------------------------------
 -- 10. Avanzar secuencias IDENTITY tras inserts con ID fijo
 -- ---------------------------------------------------------------------
 SELECT setval(pg_get_serial_sequence('contacts', 'contact_id'), (SELECT MAX(contact_id) FROM contacts));
@@ -278,3 +332,4 @@ SELECT setval(pg_get_serial_sequence('seed_movement', 'transaction_id'), (SELECT
 SELECT setval(pg_get_serial_sequence('beds', 'bed_id'), (SELECT MAX(bed_id) FROM beds));
 SELECT setval(pg_get_serial_sequence('sowings', 'sowing_id'), (SELECT MAX(sowing_id) FROM sowings));
 SELECT setval(pg_get_serial_sequence('reservations', 'reservation_id'), (SELECT MAX(reservation_id) FROM reservations));
+SELECT setval(pg_get_serial_sequence('sales', 'sale_id'), (SELECT MAX(sale_id) FROM sales));
