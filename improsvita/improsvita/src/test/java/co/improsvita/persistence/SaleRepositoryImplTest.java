@@ -4,6 +4,7 @@ import co.improsvita.domain.model.Sale;
 import co.improsvita.domain.model.SaleType;
 import co.improsvita.domain.model.PageResult;
 import co.improsvita.domain.repository.SaleRepository;
+import co.improsvita.persistence.crud.SaleJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ class SaleRepositoryImplTest {
     @Autowired
     private SaleRepository saleRepository;
 
+    @Autowired
+    private SaleJpaRepository saleJpaRepository;
+
     private Sale newSale(int quantity, String unitPrice, SaleType type, int contactId, LocalDate date) {
         Sale sale = new Sale();
         sale.setContactId(contactId);
@@ -50,8 +54,7 @@ class SaleRepositoryImplTest {
 
     @BeforeEach
     void clean() {
-        saleRepository.getAll(null, null, null, null)
-                .forEach(sale -> saleRepository.deleteById(sale.getId()));
+        saleJpaRepository.deleteAllInBatch();
     }
 
     @Test
