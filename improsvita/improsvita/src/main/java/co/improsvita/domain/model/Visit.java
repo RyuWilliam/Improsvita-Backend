@@ -10,6 +10,7 @@ public class Visit {
     private Integer suitableEstimated;
     private VisitMethod visitMethod;
     private VisitResult result;
+    private String notes;
     private Boolean active;
 
     public Visit() {
@@ -61,6 +62,14 @@ public class Visit {
 
     public void setResult(VisitResult result) {
         this.result = result;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
     public Boolean getActive() {

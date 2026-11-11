@@ -313,7 +313,7 @@ class SaleServiceTest {
         reservation.setClientId(CLIENT_ID);
         reservation.setActive(true);
         when(reservationService.getReservationById(7)).thenReturn(reservation);
-        when(saleRepository.getByReservationId(7)).thenReturn(null);
+        when(saleRepository.getByReservationIdIncludingInactive(7)).thenReturn(null);
         stubClient();
         stubAvailability(120, 0);
 
@@ -327,7 +327,7 @@ class SaleServiceTest {
     }
 
     @Test
-    void ventaDeReserva_yaFacturada_lanzaIllegalState() {
+    void ventaDeReserva_existenteActiva_actualizaLaVenta() {
         Reservation reservation = new Reservation();
         reservation.setId(7);
         reservation.setSowingId(SOWING_ID);
@@ -335,7 +335,52 @@ class SaleServiceTest {
         when(reservationService.getReservationById(7)).thenReturn(reservation);
         Sale existing = new Sale();
         existing.setId(50);
-        when(saleRepository.getByReservationId(7)).thenReturn(existing);
+        existing.setQuantity(5);
+        existing.setActive(true);
+        when(saleRepository.getByReservationIdIncludingInactive(7)).thenReturn(existing);
+        stubClient();
+        stubAvailability(120, 0);
+
+        Sale sale = saleService.registerReservationSale(7, 10, new BigDecimal("100.00"),
+                LocalDate.now(), null);
+
+        assertEquals(10, sale.getQuantity());
+        assertEquals(0, new BigDecimal("1000.00").compareTo(sale.getTotal()));
+        assertEquals(true, sale.getActive());
+        assertEquals(7, sale.getReservationId());
+        verify(reservationService).markDelivered(7);
+    }
+
+    @Test
+    void ventaDeReserva_existenteInactiva_reactivaLaVenta() {
+        Reservation reservation = new Reservation();
+        reservation.setId(7);
+        reservation.setSowingId(SOWING_ID);
+        reservation.setClientId(CLIENT_ID);
+        when(reservationService.getReservationById(7)).thenReturn(reservation);
+        Sale existing = new Sale();
+        existing.setId(50);
+        existing.setActive(false);
+        when(saleRepository.getByReservationIdIncludingInactive(7)).thenReturn(existing);
+        stubClient();
+        stubAvailability(120, 0);
+
+        Sale sale = saleService.registerReservationSale(7, 10, new BigDecimal("100.00"),
+                LocalDate.now(), null);
+
+        assertEquals(true, sale.getActive());
+        assertEquals(7, sale.getReservationId());
+        verify(reservationService).markDelivered(7);
+    }
+
+    @Test
+    void ventaDeReserva_cancelada_lanzaIllegalState() {
+        Reservation reservation = new Reservation();
+        reservation.setId(7);
+        reservation.setSowingId(SOWING_ID);
+        reservation.setClientId(CLIENT_ID);
+        reservation.setReservationStatus(ReservationStatus.CANCELLED);
+        when(reservationService.getReservationById(7)).thenReturn(reservation);
 
         assertThrows(IllegalStateException.class, () -> saleService.registerReservationSale(
                 7, 10, new BigDecimal("100.00"), LocalDate.now(), null));

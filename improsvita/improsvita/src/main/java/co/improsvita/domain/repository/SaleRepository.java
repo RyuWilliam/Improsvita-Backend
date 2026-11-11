@@ -26,6 +26,9 @@ public interface SaleRepository {
     /** Venta activa asociada a una reserva, o null si aún no se facturó. */
     Sale getByReservationId(Integer reservationId);
 
+    /** Venta asociada a una reserva, incluso si fue anulada. */
+    Sale getByReservationIdIncludingInactive(Integer reservationId);
+
     Sale save(Sale sale);
 
     void deleteById(Integer id);

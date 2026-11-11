@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface SowingJpaRepository extends JpaRepository<SowingEntity, Integer> {
+    boolean existsByBed_BedId(Integer bedId);
     List<SowingEntity> findBySeedLot_LotId(Integer lotId);
     List<SowingEntity> findByBed_BedId(Integer bedId);
     List<SowingEntity> findByStatus(SowingStatus status);

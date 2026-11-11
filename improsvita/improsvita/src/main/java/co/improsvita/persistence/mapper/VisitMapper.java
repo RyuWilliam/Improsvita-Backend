@@ -18,6 +18,7 @@ public class VisitMapper {
         visit.setSuitableEstimated(entity.getSuitableEstimated());
         visit.setVisitMethod(mapMethod(entity.getVisitMethod()));
         visit.setResult(mapResult(entity.getResult()));
+        visit.setNotes(entity.getNotes());
         visit.setActive(entity.getActive());
         return visit;
     }
@@ -31,6 +32,7 @@ public class VisitMapper {
         entity.setSuitableEstimated(domain.getSuitableEstimated());
         entity.setVisitMethod(mapMethod(domain.getVisitMethod()));
         entity.setResult(mapResult(domain.getResult()));
+        entity.setNotes(domain.getNotes());
         entity.setActive(domain.getActive());
         return entity;
     }

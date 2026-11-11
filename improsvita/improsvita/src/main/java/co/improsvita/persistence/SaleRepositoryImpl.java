@@ -124,6 +124,15 @@ public class SaleRepositoryImpl implements SaleRepository {
     }
 
     @Override
+    public Sale getByReservationIdIncludingInactive(Integer reservationId) {
+        return saleJpaRepository.findByReservation_ReservationId(reservationId)
+                .stream()
+                .findFirst()
+                .map(SaleMapper::toDomain)
+                .orElse(null);
+    }
+
+    @Override
     @Transactional
     public Sale save(Sale sale) {
         ContactEntity contact = contactJpaRepository.getReferenceById(sale.getContactId());

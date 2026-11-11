@@ -14,6 +14,8 @@ import java.util.List;
 @Service
 public class VisitService {
 
+    private static final int MAX_NOTES_LENGTH = 500;
+
     private final VisitRepository visitRepository;
     private final SowingRepository sowingRepository;
 
@@ -38,6 +40,11 @@ public class VisitService {
 
     public Visit createVisit(Integer sowingId, LocalDate visitDate, Integer suitableEstimated,
                              VisitMethod visitMethod, VisitResult result) {
+        return createVisit(sowingId, visitDate, suitableEstimated, visitMethod, result, null);
+    }
+
+    public Visit createVisit(Integer sowingId, LocalDate visitDate, Integer suitableEstimated,
+                             VisitMethod visitMethod, VisitResult result, String notes) {
         Sowing sowing = requireSowing(sowingId);
         LocalDate date = visitDate != null ? visitDate : LocalDate.now();
         validateSuitableEstimated(suitableEstimated, sowing);
@@ -49,12 +56,18 @@ public class VisitService {
         visit.setSuitableEstimated(suitableEstimated);
         visit.setVisitMethod(visitMethod != null ? visitMethod : VisitMethod.INSPECCION_VISUAL);
         visit.setResult(result != null ? result : VisitResult.ESTIMACION);
+        visit.setNotes(cleanNotes(notes));
         visit.setActive(true);
         return visitRepository.save(visit);
     }
 
     public Visit updateVisit(Integer id, LocalDate visitDate, Integer suitableEstimated,
                              VisitMethod visitMethod, VisitResult result, Boolean active) {
+        return updateVisit(id, visitDate, suitableEstimated, visitMethod, result, active, null);
+    }
+
+    public Visit updateVisit(Integer id, LocalDate visitDate, Integer suitableEstimated,
+                             VisitMethod visitMethod, VisitResult result, Boolean active, String notes) {
         Visit visit = requireVisit(id);
         Sowing sowing = requireSowing(visit.getSowingId());
         LocalDate date = visitDate != null ? visitDate : visit.getVisitDate();
@@ -65,6 +78,9 @@ public class VisitService {
         visit.setSuitableEstimated(suitableEstimated);
         visit.setVisitMethod(visitMethod != null ? visitMethod : visit.getVisitMethod());
         visit.setResult(result != null ? result : visit.getResult());
+        if (notes != null) {
+            visit.setNotes(cleanNotes(notes));
+        }
         if (active != null) {
             visit.setActive(active);
         }
@@ -74,6 +90,18 @@ public class VisitService {
     public void deleteVisitById(Integer id) {
         requireVisit(id);
         visitRepository.deleteById(id);
+    }
+
+    private String cleanNotes(String notes) {
+        if (notes == null || notes.isBlank()) {
+            return null;
+        }
+        String clean = notes.trim();
+        if (clean.length() > MAX_NOTES_LENGTH) {
+            throw new IllegalArgumentException(
+                    "Las observaciones no pueden superar los " + MAX_NOTES_LENGTH + " caracteres");
+        }
+        return clean;
     }
 
     private void validateSuitableEstimated(Integer suitableEstimated, Sowing sowing) {

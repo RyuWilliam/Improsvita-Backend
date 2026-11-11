@@ -85,9 +85,13 @@ public class BedController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBedById(@PathVariable Integer id) {
-        bedService.deleteBedById(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteBedById(@PathVariable Integer id) {
+        try {
+            bedService.deleteBedById(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     private BedResponse toResponse(Bed bed) {

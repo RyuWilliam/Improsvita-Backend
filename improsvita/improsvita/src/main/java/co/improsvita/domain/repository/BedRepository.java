@@ -9,5 +9,6 @@ public interface BedRepository {
     Bed getById(Integer id);
     Bed getByCode(String code);
     Bed save(Bed bed);
+    boolean hasSowings(Integer bedId);
     void deleteById(Integer id);
 }

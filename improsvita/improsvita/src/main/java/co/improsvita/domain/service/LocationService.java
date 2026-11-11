@@ -32,6 +32,10 @@ public class LocationService {
     }
 
     public void deleteLocationById(Integer id) {
+        if (locationRepository.hasLots(id)) {
+            throw new IllegalStateException(
+                    "No se puede eliminar la ubicación porque tiene lotes registrados.");
+        }
         locationRepository.deleteById(id);
     }
 }

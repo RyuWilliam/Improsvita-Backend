@@ -47,7 +47,8 @@ public class VisitController {
         try {
             Visit created = visitService.createVisit(
                     sowingId, request.getVisitDate(), request.getSuitableEstimated(),
-                    parseMethod(request.getVisitMethod()), parseResult(request.getResult()));
+                    parseMethod(request.getVisitMethod()), parseResult(request.getResult()),
+                    request.getNotes());
             return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(created));
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -61,7 +62,7 @@ public class VisitController {
             Visit visit = visitService.updateVisit(
                     visitId, request.getVisitDate(), request.getSuitableEstimated(),
                     parseMethod(request.getVisitMethod()), parseResult(request.getResult()),
-                    request.getActive());
+                    request.getActive(), request.getNotes());
             return ResponseEntity.ok(toResponse(visit));
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -110,6 +111,7 @@ public class VisitController {
         response.setSuitableEstimated(visit.getSuitableEstimated());
         response.setVisitMethod(visit.getVisitMethod() != null ? visit.getVisitMethod().name() : null);
         response.setResult(visit.getResult() != null ? visit.getResult().name() : null);
+        response.setNotes(visit.getNotes());
         response.setActive(visit.getActive());
         return response;
     }
