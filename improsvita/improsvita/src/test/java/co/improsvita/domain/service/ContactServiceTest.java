@@ -2,7 +2,9 @@ package co.improsvita.domain.service;
 
 import co.improsvita.domain.model.Contact;
 import co.improsvita.domain.model.ContactRole;
+import co.improsvita.domain.model.Reservation;
 import co.improsvita.domain.repository.ContactRepository;
+import co.improsvita.domain.repository.ReservationRepository;
 import co.improsvita.domain.repository.SeedMovementRepository;
 import co.improsvita.domain.repository.SeedSupplierRepository;
 import org.junit.jupiter.api.Test;
@@ -34,6 +36,9 @@ class ContactServiceTest {
 
     @Mock
     private SeedMovementRepository seedMovementRepository;
+
+    @Mock
+    private ReservationRepository reservationRepository;
 
     @InjectMocks
     private ContactService contactService;
@@ -121,6 +126,36 @@ class ContactServiceTest {
 
         assertFalse(updated.getRoles().contains(ContactRole.SUPPLIER));
         assertTrue(updated.getRoles().contains(ContactRole.CLIENT));
+    }
+
+    @Test
+    void update_quitarClientConReservas_lanzaContactRoleInUseException() {
+        Contact existing = contact(1, "cliente@test.com", Set.of(ContactRole.CLIENT));
+        Contact update = contact(null, "cliente@test.com", Set.of(ContactRole.SUPPLIER));
+
+        when(contactRepository.getById(1)).thenReturn(existing);
+        when(contactRepository.getByEmail("cliente@test.com")).thenReturn(existing);
+        when(reservationRepository.getByClientId(1)).thenReturn(List.of(new Reservation()));
+
+        assertThrows(ContactRoleInUseException.class,
+                () -> contactService.updateContact(1, update));
+        verify(contactRepository, never()).save(any());
+    }
+
+    @Test
+    void update_quitarClientSinReservas_actualizaRoles() {
+        Contact existing = contact(1, "cliente@test.com", Set.of(ContactRole.CLIENT));
+        Contact update = contact(null, "cliente@test.com", Set.of(ContactRole.SUPPLIER));
+
+        when(contactRepository.getById(1)).thenReturn(existing);
+        when(contactRepository.getByEmail("cliente@test.com")).thenReturn(existing);
+        when(reservationRepository.getByClientId(1)).thenReturn(List.of());
+        when(contactRepository.save(any(Contact.class))).thenAnswer(i -> i.getArgument(0));
+
+        Contact updated = contactService.updateContact(1, update);
+
+        assertFalse(updated.getRoles().contains(ContactRole.CLIENT));
+        assertTrue(updated.getRoles().contains(ContactRole.SUPPLIER));
     }
 
     @Test

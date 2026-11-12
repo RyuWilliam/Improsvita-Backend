@@ -8,5 +8,6 @@ public interface LocationRepository {
     List<Location> getAll();
     Location getById(Integer id);
     Location save(Location location);
+    boolean hasLots(Integer locationId);
     void deleteById(Integer id);
 }

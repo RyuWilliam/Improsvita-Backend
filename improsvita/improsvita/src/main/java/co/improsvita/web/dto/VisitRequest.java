@@ -2,6 +2,7 @@ package co.improsvita.web.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
@@ -14,6 +15,8 @@ public class VisitRequest {
     private Integer suitableEstimated;
     private String visitMethod;
     private String result;
+    @Size(max = 500, message = "Las observaciones no pueden superar los 500 caracteres")
+    private String notes;
     private Boolean active;
 
     public VisitRequest() {
@@ -49,6 +52,14 @@ public class VisitRequest {
 
     public void setResult(String result) {
         this.result = result;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
     public Boolean getActive() {

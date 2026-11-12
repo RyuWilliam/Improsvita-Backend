@@ -36,6 +36,10 @@ public class BedService {
     }
 
     public void deleteBedById(Integer id) {
+        if (bedRepository.hasSowings(id)) {
+            throw new IllegalStateException(
+                    "No se puede eliminar la cama porque tiene siembras registradas.");
+        }
         bedRepository.deleteById(id);
     }
 }

@@ -3,6 +3,7 @@ package co.improsvita.persistence;
 import co.improsvita.domain.model.Location;
 import co.improsvita.domain.repository.LocationRepository;
 import co.improsvita.persistence.crud.LocationJpaRepository;
+import co.improsvita.persistence.crud.SeedLotJpaRepository;
 import co.improsvita.persistence.entities.LocationEntity;
 import co.improsvita.persistence.mapper.LocationMapper;
 import org.springframework.stereotype.Repository;
@@ -16,9 +17,12 @@ import java.util.stream.Collectors;
 public class LocationRepositoryImpl implements LocationRepository {
 
     private final LocationJpaRepository locationJpaRepository;
+    private final SeedLotJpaRepository seedLotJpaRepository;
 
-    public LocationRepositoryImpl(LocationJpaRepository locationJpaRepository) {
+    public LocationRepositoryImpl(LocationJpaRepository locationJpaRepository,
+                                  SeedLotJpaRepository seedLotJpaRepository) {
         this.locationJpaRepository = locationJpaRepository;
+        this.seedLotJpaRepository = seedLotJpaRepository;
     }
 
     @Override
@@ -41,6 +45,11 @@ public class LocationRepositoryImpl implements LocationRepository {
     public Location save(Location location) {
         LocationEntity saved = locationJpaRepository.save(LocationMapper.toEntity(location));
         return LocationMapper.toDomain(saved);
+    }
+
+    @Override
+    public boolean hasLots(Integer locationId) {
+        return seedLotJpaRepository.existsByLocation_LocationId(locationId);
     }
 
     @Override

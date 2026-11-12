@@ -3,6 +3,7 @@ package co.improsvita.domain.service;
 import co.improsvita.domain.model.Contact;
 import co.improsvita.domain.model.ContactRole;
 import co.improsvita.domain.repository.ContactRepository;
+import co.improsvita.domain.repository.ReservationRepository;
 import co.improsvita.domain.repository.SeedMovementRepository;
 import co.improsvita.domain.repository.SeedSupplierRepository;
 import org.springframework.stereotype.Service;
@@ -16,13 +17,16 @@ public class ContactService {
     private final ContactRepository contactRepository;
     private final SeedSupplierRepository seedSupplierRepository;
     private final SeedMovementRepository seedMovementRepository;
+    private final ReservationRepository reservationRepository;
 
     public ContactService(ContactRepository contactRepository,
                           SeedSupplierRepository seedSupplierRepository,
-                          SeedMovementRepository seedMovementRepository) {
+                          SeedMovementRepository seedMovementRepository,
+                          ReservationRepository reservationRepository) {
         this.contactRepository = contactRepository;
         this.seedSupplierRepository = seedSupplierRepository;
         this.seedMovementRepository = seedMovementRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<Contact> getAllContacts(ContactRole role, boolean includeInactive) {
@@ -79,6 +83,14 @@ public class ContactService {
             throw new ContactRoleInUseException(
                     "No se puede quitar el rol SUPPLIER al contacto " + id
                             + " porque tiene registros en seeds_suppliers o seed_movement");
+        }
+
+        if (existing.getRoles().contains(ContactRole.CLIENT)
+                && !contact.getRoles().contains(ContactRole.CLIENT)
+                && !reservationRepository.getByClientId(id).isEmpty()) {
+            throw new ContactRoleInUseException(
+                    "No se puede quitar el rol CLIENT al contacto " + id
+                            + " porque tiene reservas registradas");
         }
 
         existing.setName(contact.getName());

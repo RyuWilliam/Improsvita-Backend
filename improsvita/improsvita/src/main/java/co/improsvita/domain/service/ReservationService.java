@@ -3,9 +3,11 @@ package co.improsvita.domain.service;
 import co.improsvita.domain.model.ContactRole;
 import co.improsvita.domain.model.Reservation;
 import co.improsvita.domain.model.ReservationStatus;
+import co.improsvita.domain.model.Sale;
 import co.improsvita.domain.model.Sowing;
 import co.improsvita.domain.model.SowingStatus;
 import co.improsvita.domain.repository.ReservationRepository;
+import co.improsvita.domain.repository.SaleRepository;
 import co.improsvita.domain.repository.SowingRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,13 +28,16 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final SowingRepository sowingRepository;
     private final ContactService contactService;
+    private final SaleRepository saleRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               SowingRepository sowingRepository,
-                              ContactService contactService) {
+                              ContactService contactService,
+                              SaleRepository saleRepository) {
         this.reservationRepository = reservationRepository;
         this.sowingRepository = sowingRepository;
         this.contactService = contactService;
+        this.saleRepository = saleRepository;
     }
 
     /**
@@ -62,7 +67,7 @@ public class ReservationService {
                                          BigDecimal totalPrice, ReservationStatus status, String notes) {
         ReservationStatus resultingStatus = status != null ? status : ReservationStatus.PENDING;
 
-        validate(sowingId, clientId, totalPrice, resultingStatus, Boolean.TRUE, null);
+        validate(sowingId, clientId, totalPrice, resultingStatus, Boolean.TRUE, null, false);
 
         Reservation reservation = new Reservation();
         reservation.setSowingId(sowingId);
@@ -91,8 +96,20 @@ public class ReservationService {
         BigDecimal targetPrice = totalPrice != null ? totalPrice : reservation.getTotalPrice();
         ReservationStatus targetStatus = status != null ? status : reservation.getReservationStatus();
         Boolean targetActive = active != null ? active : reservation.getActive();
+        boolean alreadyLiveOnSameSowing = reservation.isLive()
+                && targetSowingId.equals(reservation.getSowingId());
 
-        validate(targetSowingId, targetClientId, targetPrice, targetStatus, targetActive, id);
+        validate(targetSowingId, targetClientId, targetPrice, targetStatus, targetActive, id,
+                alreadyLiveOnSameSowing);
+
+        if (reservation.getReservationStatus() == ReservationStatus.DELIVERED
+                && targetStatus != ReservationStatus.DELIVERED) {
+            Sale linkedSale = saleRepository.getByReservationId(id);
+            if (linkedSale != null) {
+                linkedSale.setActive(false);
+                saleRepository.save(linkedSale);
+            }
+        }
 
         reservation.setSowingId(targetSowingId);
         reservation.setClientId(targetClientId);
@@ -117,6 +134,13 @@ public class ReservationService {
     }
 
     @Transactional
+    public Reservation markDelivered(Integer id) {
+        Reservation reservation = requireReservation(id);
+        reservation.setReservationStatus(ReservationStatus.DELIVERED);
+        return reservationRepository.save(reservation);
+    }
+
+    @Transactional
     public void deleteReservationById(Integer id) {
         requireReservation(id);
         reservationRepository.deleteById(id);
@@ -126,11 +150,13 @@ public class ReservationService {
      * Reglas de negocio:
      *  - la siembra y el cliente deben existir;
      *  - una siembra admite una sola reserva viva (cancelada o inactiva la libera);
-     *  - una reserva viva solo se permite sobre siembras PLANNED o IN_PROGRESS;
+     *  - una reserva viva solo puede crearse sobre siembras PLANNED o IN_PROGRESS;
+     *  - una reserva que ya estaba viva puede seguir editándose aunque la siembra haya cambiado de estado;
      *  - cancelar o inactivar siempre está permitido, sin importar el estado de la siembra.
      */
     private void validate(Integer sowingId, Integer clientId, BigDecimal totalPrice,
-                          ReservationStatus status, Boolean active, Integer ownReservationId) {
+                          ReservationStatus status, Boolean active, Integer ownReservationId,
+                          boolean alreadyLiveOnSameSowing) {
         Sowing sowing = sowingRepository.getById(sowingId);
         if (sowing == null) {
             throw new IllegalArgumentException("Siembra no encontrada: " + sowingId);
@@ -144,12 +170,14 @@ public class ReservationService {
             throw new IllegalArgumentException("El precio total es obligatorio y no puede ser negativo");
         }
 
-        boolean live = Boolean.TRUE.equals(active) && status != ReservationStatus.CANCELLED;
+        boolean live = Boolean.TRUE.equals(active)
+                && status != ReservationStatus.CANCELLED
+                && status != ReservationStatus.DELIVERED;
         if (!live) {
             return;
         }
 
-        if (!RESERVABLE.contains(sowing.getStatus())) {
+        if (!alreadyLiveOnSameSowing && !RESERVABLE.contains(sowing.getStatus())) {
             throw new IllegalStateException("No se puede reservar la siembra " + sowingId
                     + " porque está en estado " + sowing.getStatus()
                     + ". Solo se permite reservar siembras PLANNED o IN_PROGRESS");

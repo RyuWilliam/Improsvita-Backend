@@ -3,6 +3,7 @@ package co.improsvita.persistence;
 import co.improsvita.domain.model.Bed;
 import co.improsvita.domain.repository.BedRepository;
 import co.improsvita.persistence.crud.BedJpaRepository;
+import co.improsvita.persistence.crud.SowingJpaRepository;
 import co.improsvita.persistence.entities.BedEntity;
 import co.improsvita.persistence.mapper.BedMapper;
 import org.springframework.stereotype.Repository;
@@ -16,9 +17,12 @@ import java.util.stream.Collectors;
 public class BedRepositoryImpl implements BedRepository {
 
     private final BedJpaRepository bedJpaRepository;
+    private final SowingJpaRepository sowingJpaRepository;
 
-    public BedRepositoryImpl(BedJpaRepository bedJpaRepository) {
+    public BedRepositoryImpl(BedJpaRepository bedJpaRepository,
+                             SowingJpaRepository sowingJpaRepository) {
         this.bedJpaRepository = bedJpaRepository;
+        this.sowingJpaRepository = sowingJpaRepository;
     }
 
     @Override
@@ -48,6 +52,11 @@ public class BedRepositoryImpl implements BedRepository {
     public Bed save(Bed bed) {
         BedEntity saved = bedJpaRepository.save(BedMapper.toEntity(bed));
         return BedMapper.toDomain(saved);
+    }
+
+    @Override
+    public boolean hasSowings(Integer bedId) {
+        return sowingJpaRepository.existsByBed_BedId(bedId);
     }
 
     @Override

@@ -51,6 +51,7 @@ class SalePersistenceTest {
     void setUp() {
         buyer = contactJpaRepository.findById(3).orElseThrow();
         sowing = sowingJpaRepository.findById(3).orElseThrow();
+        saleJpaRepository.deleteAllInBatch();
     }
 
     private SaleEntity newSale(int quantity, String unitPrice, String total) {

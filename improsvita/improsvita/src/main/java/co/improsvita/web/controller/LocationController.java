@@ -66,9 +66,13 @@ public class LocationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLocationById(@PathVariable Integer id) {
-        locationService.deleteLocationById(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteLocationById(@PathVariable Integer id) {
+        try {
+            locationService.deleteLocationById(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     private LocationResponse toResponse(Location location) {

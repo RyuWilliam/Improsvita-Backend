@@ -72,6 +72,36 @@ class VisitServiceTest {
     }
 
     @Test
+    void create_conObservaciones_lasGuardaSinEspacios() {
+        stubSowing();
+        stubSave();
+
+        Visit visit = visitService.createVisit(
+                1, null, 10, null, null, "  Germinación pareja  ");
+
+        assertEquals("Germinación pareja", visit.getNotes());
+    }
+
+    @Test
+    void create_observacionesVacias_quedanNull() {
+        stubSowing();
+        stubSave();
+
+        Visit visit = visitService.createVisit(1, null, 10, null, null, "   ");
+
+        assertNull(visit.getNotes());
+    }
+
+    @Test
+    void create_observacionesLargas_lanzaIllegalArgument() {
+        stubSowing();
+
+        assertThrows(IllegalArgumentException.class,
+                () -> visitService.createVisit(1, null, 10, null, null, "x".repeat(501)));
+        verify(visitRepository, never()).save(any());
+    }
+
+    @Test
     void create_sinFecha_usaHoy() {
         stubSowing();
         stubSave();
@@ -162,6 +192,41 @@ class VisitServiceTest {
         assertEquals(VisitMethod.CONTEO_TOTAL, updated.getVisitMethod());
         assertEquals(VisitResult.VALIDADA, updated.getResult());
         assertEquals(false, updated.getActive());
+    }
+
+    @Test
+    void update_conObservaciones_lasActualiza() {
+        Visit existing = new Visit();
+        existing.setId(5);
+        existing.setSowingId(1);
+        existing.setVisitDate(LocalDate.now().minusDays(3));
+        existing.setSuitableEstimated(20);
+        existing.setNotes("Anterior");
+        when(visitRepository.getById(5)).thenReturn(existing);
+        stubSowing();
+        stubSave();
+
+        Visit updated = visitService.updateVisit(
+                5, null, 20, null, null, null, "  Nueva observación  ");
+
+        assertEquals("Nueva observación", updated.getNotes());
+    }
+
+    @Test
+    void update_sinObservaciones_conservaLaAnterior() {
+        Visit existing = new Visit();
+        existing.setId(5);
+        existing.setSowingId(1);
+        existing.setVisitDate(LocalDate.now().minusDays(3));
+        existing.setSuitableEstimated(20);
+        existing.setNotes("Anterior");
+        when(visitRepository.getById(5)).thenReturn(existing);
+        stubSowing();
+        stubSave();
+
+        Visit updated = visitService.updateVisit(5, null, 20, null, null, null, null);
+
+        assertEquals("Anterior", updated.getNotes());
     }
 
     @Test

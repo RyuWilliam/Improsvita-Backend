@@ -33,6 +33,9 @@ public class VisitEntity {
     @Column(nullable = false)
     private VisitResult result;
 
+    @Column(length = 500)
+    private String notes;
+
     @Column(nullable = false)
     private Boolean active = true;
 
@@ -85,6 +88,14 @@ public class VisitEntity {
 
     public void setResult(VisitResult result) {
         this.result = result;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
     public Boolean getActive() {

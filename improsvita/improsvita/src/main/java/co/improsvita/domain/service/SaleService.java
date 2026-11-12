@@ -3,6 +3,7 @@ package co.improsvita.domain.service;
 import co.improsvita.domain.model.ContactRole;
 import co.improsvita.domain.model.PageResult;
 import co.improsvita.domain.model.Reservation;
+import co.improsvita.domain.model.ReservationStatus;
 import co.improsvita.domain.model.Sale;
 import co.improsvita.domain.model.SaleType;
 import co.improsvita.domain.model.Sowing;
@@ -150,8 +151,8 @@ public class SaleService {
         if (reservation == null) {
             throw new IllegalArgumentException("Reserva no encontrada: " + reservationId);
         }
-        if (saleRepository.getByReservationId(reservationId) != null) {
-            throw new IllegalStateException("La reserva " + reservationId + " ya fue facturada");
+        if (reservation.getReservationStatus() == ReservationStatus.CANCELLED) {
+            throw new IllegalStateException("No se puede entregar una reserva cancelada");
         }
 
         Sowing sowing = requireSowing(reservation.getSowingId());
@@ -160,10 +161,13 @@ public class SaleService {
         BigDecimal price = validateUnitPrice(unitPrice);
         LocalDate date = validateSaleDate(saleDate, sowing);
 
-        Sale sale = new Sale();
+        Sale sale = saleRepository.getByReservationIdIncludingInactive(reservationId);
+        if (sale == null) {
+            sale = new Sale();
+        }
+        sale.setReservationId(reservationId);
         sale.setContactId(reservation.getClientId());
         sale.setSowingId(sowing.getId());
-        sale.setReservationId(reservationId);
         sale.setSaleDate(date);
         sale.setQuantity(quantity);
         sale.setUnitPrice(price);
@@ -171,7 +175,10 @@ public class SaleService {
         sale.setSaleType(SaleType.RESERVATION);
         sale.setNotes(cleanNotes(notes));
         sale.setActive(true);
-        return saleRepository.save(sale);
+
+        Sale saved = saleRepository.save(sale);
+        reservationService.markDelivered(reservationId);
+        return saved;
     }
 
     /** Anula una venta (no se borra: el historial debe conservarse). */

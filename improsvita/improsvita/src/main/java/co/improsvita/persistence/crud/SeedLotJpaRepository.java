@@ -12,6 +12,7 @@ public interface SeedLotJpaRepository extends JpaRepository<SeedLotEntity, Integ
     List<SeedLotEntity> findBySeed_SeedId(Integer seedId);
     List<SeedLotEntity> findByLocation_LocationId(Integer locationId);
     List<SeedLotEntity> findByStatus(SeedLotStatus status);
+    boolean existsByLocation_LocationId(Integer locationId);
 
     @Query("SELECT COALESCE(SUM(l.availableQuantity), 0) FROM SeedLotEntity l WHERE l.seed.seedId = :seedId")
     Long sumAvailableBySeedId(@Param("seedId") Integer seedId);
