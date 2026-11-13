@@ -24,7 +24,7 @@ import java.util.Set;
  * Reglas:
  * <ul>
  *   <li>El comprador debe existir y tener el rol CLIENT.</li>
- *   <li>La siembra debe existir, estar activa y en PLANNED/IN_PROGRESS.</li>
+ *   <li>La siembra debe existir, estar activa y en PLANNED/IN_PROGRESS/COMPLETED.</li>
  *   <li>Una siembra con reserva viva no se vende directo: esa producción está comprometida.</li>
  *   <li>La cantidad no puede superar las plántulas disponibles (última visita activa
  *       menos lo ya vendido).</li>
@@ -35,9 +35,9 @@ import java.util.Set;
 @Service
 public class SaleService {
 
-    /** Solo se vende producción que todavía no terminó. */
+    /** Se puede vender producción en curso o ya completada. */
     private static final Set<SowingStatus> SELLABLE = Set.of(
-            SowingStatus.PLANNED, SowingStatus.IN_PROGRESS);
+            SowingStatus.PLANNED, SowingStatus.IN_PROGRESS, SowingStatus.COMPLETED);
 
     private static final int MAX_NOTES_LENGTH = 500;
 
@@ -97,6 +97,11 @@ public class SaleService {
         return available(sowing);
     }
 
+    /** Cantidad ya vendida con ventas activas. */
+    public Integer getSoldQuantity(Integer sowingId) {
+        return saleRepository.getSoldQuantity(sowingId);
+    }
+
     /** Desglose de la disponibilidad: plántulas de la última visita, vendidas y restantes. */
     public Availability getAvailabilityDetail(Integer sowingId) {
         Sowing sowing = requireSowing(sowingId);
@@ -114,10 +119,10 @@ public class SaleService {
     @Transactional
     public Sale registerDirectSale(Integer contactId, Integer sowingId, Integer quantity,
                                    BigDecimal unitPrice, LocalDate saleDate, String notes) {
-        Sowing sowing = requireSowing(sowingId);
+        Sowing sowing = requireSowingForUpdate(sowingId);
         requireClient(contactId);
         requireSellable(sowing);
-        validateQuantity(quantity, sowing);
+        validateQuantity(quantity, sowing, 0);
         BigDecimal price = validateUnitPrice(unitPrice);
         LocalDate date = validateSaleDate(saleDate, sowing);
 
@@ -155,13 +160,18 @@ public class SaleService {
             throw new IllegalStateException("No se puede entregar una reserva cancelada");
         }
 
-        Sowing sowing = requireSowing(reservation.getSowingId());
+        Sowing sowing = requireSowingForUpdate(reservation.getSowingId());
         requireClient(reservation.getClientId());
-        validateQuantity(quantity, sowing);
+        requireSellable(sowing);
+
+        Sale sale = saleRepository.getByReservationIdIncludingInactive(reservationId);
+        int alreadyCounted = sale != null && !sale.isCancelled() && sale.getQuantity() != null
+                ? sale.getQuantity() : 0;
+        validateQuantity(quantity, sowing, alreadyCounted);
+
         BigDecimal price = validateUnitPrice(unitPrice);
         LocalDate date = validateSaleDate(saleDate, sowing);
 
-        Sale sale = saleRepository.getByReservationIdIncludingInactive(reservationId);
         if (sale == null) {
             sale = new Sale();
         }
@@ -196,12 +206,17 @@ public class SaleService {
     }
 
     private Integer available(Sowing sowing) {
+        return available(sowing, 0);
+    }
+
+    private Integer available(Sowing sowing, int alreadyCountedInSold) {
         Integer seedlings = visitService.getLatestAvailableSeedlings(sowing.getId());
         if (seedlings == null) {
             return 0;
         }
         int sold = saleRepository.getSoldQuantity(sowing.getId());
-        return Math.max(0, seedlings - sold);
+        int netSold = Math.max(0, sold - Math.max(0, alreadyCountedInSold));
+        return Math.max(0, seedlings - netSold);
     }
 
     private boolean hasLiveReservation(Integer sowingId) {
@@ -209,7 +224,7 @@ public class SaleService {
                 .anyMatch(Reservation::isLive);
     }
 
-    private void validateQuantity(Integer quantity, Sowing sowing) {
+    private void validateQuantity(Integer quantity, Sowing sowing, int alreadyCountedInSold) {
         if (quantity == null || quantity <= 0) {
             throw new IllegalArgumentException("La cantidad vendida debe ser mayor que cero");
         }
@@ -217,7 +232,7 @@ public class SaleService {
             throw new IllegalArgumentException("La cantidad vendida (" + quantity
                     + ") no puede superar la cantidad sembrada (" + sowing.getQuantitySown() + ")");
         }
-        int available = available(sowing);
+        int available = available(sowing, alreadyCountedInSold);
         if (quantity > available) {
             throw new IllegalStateException("No hay plántulas suficientes en la siembra "
                     + sowing.getId() + ": disponible " + available + ", solicitado " + quantity
@@ -267,12 +282,20 @@ public class SaleService {
         if (!SELLABLE.contains(sowing.getStatus())) {
             throw new IllegalStateException("No se puede vender la siembra " + sowing.getId()
                     + " porque está en estado " + sowing.getStatus()
-                    + ". Solo se permite vender siembras PLANNED o IN_PROGRESS");
+                    + ". Solo se permite vender siembras PLANNED, IN_PROGRESS o COMPLETED");
         }
     }
 
     private Sowing requireSowing(Integer sowingId) {
         Sowing sowing = sowingRepository.getById(sowingId);
+        if (sowing == null) {
+            throw new IllegalArgumentException("Siembra no encontrada: " + sowingId);
+        }
+        return sowing;
+    }
+
+    private Sowing requireSowingForUpdate(Integer sowingId) {
+        Sowing sowing = sowingRepository.getByIdForUpdate(sowingId);
         if (sowing == null) {
             throw new IllegalArgumentException("Siembra no encontrada: " + sowingId);
         }

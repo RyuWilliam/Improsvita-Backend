@@ -70,6 +70,7 @@ class SaleServiceTest {
         sowing.setActive(true);
 
         lenient().when(sowingRepository.getById(SOWING_ID)).thenReturn(sowing);
+        lenient().when(sowingRepository.getByIdForUpdate(SOWING_ID)).thenReturn(sowing);
         lenient().when(saleRepository.save(any(Sale.class))).thenAnswer(i -> {
             Sale s = i.getArgument(0);
             s.setId(99);
@@ -209,8 +210,30 @@ class SaleServiceTest {
     }
 
     @Test
-    void ventaDirecta_siembraTerminal_lanzaIllegalState() {
+    void ventaDirecta_siembraCompletada_esValida() {
         sowing.setStatus(SowingStatus.COMPLETED);
+        stubClient();
+        stubAvailability(120, 0);
+
+        Sale sale = registerDirect(10, "100.00");
+
+        assertEquals(SowingStatus.COMPLETED, sowing.getStatus());
+        assertEquals(10, sale.getQuantity());
+        verify(saleRepository).save(any(Sale.class));
+    }
+
+    @Test
+    void ventaDirecta_siembraFallida_lanzaIllegalState() {
+        sowing.setStatus(SowingStatus.FAILED);
+        stubClient();
+
+        assertThrows(IllegalStateException.class, () -> registerDirect(10, "100.00"));
+        verify(saleRepository, never()).save(any());
+    }
+
+    @Test
+    void ventaDirecta_siembraCancelada_lanzaIllegalState() {
+        sowing.setStatus(SowingStatus.CANCELLED);
         stubClient();
 
         assertThrows(IllegalStateException.class, () -> registerDirect(10, "100.00"));
@@ -227,7 +250,7 @@ class SaleServiceTest {
 
     @Test
     void ventaDirecta_siembraInexistente_lanzaIllegalArgument() {
-        when(sowingRepository.getById(999)).thenReturn(null);
+        when(sowingRepository.getByIdForUpdate(999)).thenReturn(null);
 
         assertThrows(IllegalArgumentException.class, () -> saleService.registerDirectSale(
                 CLIENT_ID, 999, 10, new BigDecimal("100.00"), LocalDate.now(), null));
@@ -349,6 +372,42 @@ class SaleServiceTest {
         assertEquals(true, sale.getActive());
         assertEquals(7, sale.getReservationId());
         verify(reservationService).markDelivered(7);
+    }
+
+    @Test
+    void ventaDeReserva_existenteActiva_noCuentaDosVecesSuCantidad() {
+        Reservation reservation = new Reservation();
+        reservation.setId(7);
+        reservation.setSowingId(SOWING_ID);
+        reservation.setClientId(CLIENT_ID);
+        when(reservationService.getReservationById(7)).thenReturn(reservation);
+        Sale existing = new Sale();
+        existing.setId(50);
+        existing.setQuantity(10);
+        existing.setActive(true);
+        when(saleRepository.getByReservationIdIncludingInactive(7)).thenReturn(existing);
+        stubClient();
+        stubAvailability(120, 15);
+
+        Sale sale = saleService.registerReservationSale(7, 110, new BigDecimal("100.00"),
+                LocalDate.now(), null);
+
+        assertEquals(110, sale.getQuantity());
+    }
+
+    @Test
+    void ventaDeReserva_siembraFallida_lanzaIllegalState() {
+        Reservation reservation = new Reservation();
+        reservation.setId(7);
+        reservation.setSowingId(SOWING_ID);
+        reservation.setClientId(CLIENT_ID);
+        when(reservationService.getReservationById(7)).thenReturn(reservation);
+        sowing.setStatus(SowingStatus.FAILED);
+        stubClient();
+
+        assertThrows(IllegalStateException.class, () -> saleService.registerReservationSale(
+                7, 10, new BigDecimal("100.00"), LocalDate.now(), null));
+        verify(saleRepository, never()).save(any());
     }
 
     @Test

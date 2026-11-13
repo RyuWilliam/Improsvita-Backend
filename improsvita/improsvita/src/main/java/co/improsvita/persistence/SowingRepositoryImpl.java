@@ -48,6 +48,13 @@ public class SowingRepositoryImpl implements SowingRepository {
     }
 
     @Override
+    public Sowing getByIdForUpdate(Integer id) {
+        return sowingJpaRepository.findByIdForUpdate(id)
+                .map(SowingMapper::toDomain)
+                .orElse(null);
+    }
+
+    @Override
     @Transactional
     public Sowing save(Sowing sowing) {
         SeedLotEntity lot = seedLotJpaRepository.getReferenceById(sowing.getLotId());
